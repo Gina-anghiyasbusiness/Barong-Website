@@ -1,0 +1,45 @@
+extends be_base 
+
+
+
+block content 
+
+	main.admin-orderList.wide-container 
+	
+		h2.admin__page--heading.mrgbtm--lg Transaction List
+		
+		form#searchByOrderNum.searchForm-orders(action='/admin/be_transaction-search' method="GET") 
+			input#searchNum(type="text" placeholder='Search By Order number' name='transactionSearch')
+			button(type='submit')
+				i(data-lucide='search')
+
+		
+		section.admin-transactionList--grid
+			h3.admin-orderList--heading Transaction ID
+			h3.admin-orderList--heading Order No.
+			h3.admin-orderList--heading Transacation Status
+			h3.admin-orderList--heading Order Status
+			//- h3.admin-orderList--heading Discount
+			h3.admin-orderList--heading Pay Method
+			h3.admin-orderList--heading Total
+			h3.admin-orderList--heading Date Paid
+			h3.admin-orderList--heading View Order 
+			
+			
+			each transaction in transactions 
+				- const formatted = new Date(transaction.paidAt).toLocaleDateString('en-GB');
+				
+				p #{transaction.transactionId}
+				p #{transaction.order ? transaction.order.orderNum : 'Order missing'}
+				p #{transaction.status}
+				p #{transaction.order ? transaction.order.status : 'Order missing'}
+				p #{transaction.order ? transaction.order. paymentMethod : 'Order missing'}
+				p #{transaction.order ? transaction.order. totalAmount : 'Order missing'}
+				p #{formatted}
+				if transaction.order 
+					a.admin-orderList-edit--link(href=`/admin/be_order-page/${transaction.order ? transaction.order.orderNum : 'Order missing'}`) ➡️
+				else 
+					p Order missing
+
+
+

@@ -1,0 +1,34 @@
+header 
+
+	.header
+
+		a(href="/admin/be_home") 
+			img(src='/img/logo/default-logo.png', alt='image',width="250",height="100", class='header__logo' fetchpriority="high")
+		
+		.header__nav--box
+		
+			h1.admin_heading Project Admin Page
+			nav.header 
+				ul.admin-nav 
+					li 
+						a(href="/admin/be_user-list") Users
+					li 
+						a(href="/admin/be_products-list") Products
+					li 
+						a(href="/admin/be_category-list") Categories
+					li 
+						a(href="/admin/be_order-list") Orders
+					li 
+						a(href="/admin/be_transaction-list") Transactions
+
+					li 
+						a(href="/admin/be_discount-list") Discounts
+				
+		.header__login--btn
+			if user
+				.admin_header-info--box
+					p.header__login--user Welcome #{user.name.split(" ")[0]}
+					a(href="/my-details" , class='admin_header-info--link') Edit Details 
+					a(href="/" class='header__login--link logout--btn') Logout
+			else
+				a(href="/login-page" class='header__login--link login--btn') Login/Signup

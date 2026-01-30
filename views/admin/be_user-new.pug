@@ -1,0 +1,32 @@
+extends be_base 
+
+
+include ../../mixins/_formFields
+include ../../mixins/_formSelectOptions
+
+
+block content 
+
+	main.container
+	
+		h2.admin__page--heading Add New User	
+			
+		section.admin__form--box 
+			
+			form.admin__form--create.user__form--create
+				.admin__form--group
+					+formRows('name','text')
+				.admin__form--group
+					+formRows('email','text')
+				.admin__form--group
+					+formRows('phone','text')
+				//- .user__form--group
+				//- 	+formRows('addresses','text')
+				.admin__form--group
+					+formRows('role','text')
+				.admin__form--group
+					+formRows('password','text')
+				.admin__form--group
+					+formRows('password_confirm','text')
+				
+				button#new-user__form-submit Create User

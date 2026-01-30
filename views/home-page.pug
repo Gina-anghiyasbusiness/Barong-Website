@@ -1,0 +1,137 @@
+
+extends base
+
+block content 
+
+	main.homePage__main.container#top
+	
+		section.homePage__hero.homePage__heading-box
+		
+			.homePage__hero-grid-2cols 
+			
+				.homePage__hero-flex
+		
+					h1.homePage--heading Custom Philippine Formalwear
+					p.homePage--sub-heading Handcrafted barongs, tailored for your special occasion
+					p.homePage--p Handcrafted barongs for weddings, special events, and formal occasions. Each piece is made-to-measure in premium fabrics, finished with meticulous attention to detail—delivering exceptional comfort and timeless Filipino elegance.
+					.hero__cta-box
+						a(href="/static/services" class='homePage__hero-cta') Custom Tailoring
+						p Made-to-measure • Sizing help • Fast dispatch
+				.heroImages
+					img(src="/img/other_imgs/heroImg-1.png", alt="" class='heroImgSmall')
+					img(src="/img/other_imgs/heroImg-2.png", alt="" class='heroImgBig')
+										
+		hr.section-divider
+		
+		section.homePage-productList
+		
+			h2.homePage--sub-heading.mrgbtm--xlg  Latest Products
+			
+			.productList 		
+			
+				each product in products
+					.productList__product 	
+						a(href=`/product/${product.slug}` class='productList__page--link') 
+							- const category = 	product.category ? product.category.name : "";
+							.productList-box--img 
+								
+								img(src=`/img/product_imgs/${product.imageCover}`, alt='image',width="400",height="400", class='productList__img' fetchpriority="high")
+							.productList-box
+								.productList-box--heading
+									h4 #{product.name}
+								.productList__group--box.muted-text
+									if product.discountPrice && product.discountPrice < product.originalPrice
+										p.price--old $#{product.originalPrice}
+										p.price--new $#{product.discountPrice}
+									else 
+										p.price--single $#{product.originalPrice}
+
+		hr.section-divider--middle
+		
+		section.homePage-services
+			h2.homePage--sub-heading  Why Choose Us
+			
+			.homePage__services--grid 
+				.homePage__services--grid-box 
+					.services--icon-box
+						img(src="/img/icons/ruler.svg", class='services-icon' alt="")
+					.services--heading-box
+						h3 Made-to-Measure
+					.services--text-box
+						p Custom-fitted barongs tailored for weddings and formal occasions.
+				.homePage__services--grid-box 
+					.services--icon-box
+						img(src="/img/icons/needle.svg", class='services-icon' alt="")
+					.services--heading-box
+						h3 Quality Craftsmanship
+					.services--text-box
+						p Premium fabrics and traditional embroidery with refined modern finishing.
+				
+				.homePage__services--grid-box 
+					.services--icon-box
+						img(src="/img/icons/list-checks.svg", class='services-icon' alt="")
+					.services--heading-box
+						h3 Clear Process & Timelines
+					.services--text-box
+						p Straightforward ordering, transparent timelines, and guided support throughout.
+				
+		hr.section-divider
+					
+		section.homePage-how-it-works
+			h2.homePage--sub-heading  How Custom Orders Work
+			
+			.homePage-how-it-works--grid
+				.how-it-works--box
+					.how-it-works--box-heading
+						h4 01
+					.how-it-works--box-sub-heading
+						p Consultation
+					.how-it-works--box-p 
+						p Discuss your occasion, style preferences, and specific requirements with our design team.					
+				.how-it-works--box
+					.how-it-works--box-heading
+						h4 02 
+					.how-it-works--box-sub-heading
+						p Measurements & Design
+					.how-it-works--box-p 
+						p   Precise measurements are taken and your custom design details are confirmed and finalized						
+				.how-it-works--box
+					.how-it-works--box-heading
+						h4 03 
+					.how-it-works--box-sub-heading
+						p Crafting & Delivery
+					.how-it-works--box-p 
+						p Your barong is expertly crafted with traditional techniques and delivered ready for your event.			
+
+		section.homePage-shoe-collection 
+			.homePage-shoe-collection-container
+				.homePage-shoe-collection-text-box
+					h2.homePage--sub-heading.sub-heading-light  Complete the Look
+					p Carefully selected shoes and accessories to pair with Filipino formalwear
+					.homePage__shoes-link--box
+						a(href="#" class='homePage__shoes-link') View Shoe Collection 
+				.homePage-shoe-collection-image-box
+					.homePage-shoe-collection-image.shoes-1
+						img(src="/img/product_imgs/shoes/shoes-1.png", class='shoe_collection-shoe ' alt="")
+					.homePage-shoe-collection-image.shoes-2
+						img(src="/img/product_imgs/shoes/shoes-2.png", class='shoe_collection-shoe ' alt="")
+					.homePage-shoe-collection-image.shoes-3
+						img(src="/img/product_imgs/shoes/shoes-3.png", class='shoe_collection-shoe ' alt="")
+					
+		
+		section.homePage-contact--cta
+			.homePage-contact--cta
+				.cta-heading
+					h2.homePage--sub-heading Ready to start your custom barong?
+				p Get in touch to discuss tailoring, measurements, and availability.
+					
+					.hero__cta-box
+						a(href="/static/services" class='homePage__hero-cta homePage_contact-cta') Enquire Now
+			
+					
+		
+				
+			
+			
+	
+	

@@ -1,0 +1,34 @@
+extends be_base 
+
+
+
+include ../../mixins/_formFields
+include ../../mixins/_formSelectOptions
+
+
+block content 
+
+
+	main.container 
+	
+		h2.admin__page--heading  Edit Category
+	
+		section.admin__form--box 
+		
+			form.admin__form--update.category__form--update(data-category-id=categoryPage._id ) 
+				.admin__form--group
+					+formRows('name','text',categoryPage.name)
+				.admin__form--group
+					+formRows('description','text',categoryPage.description)
+				.admin__form--group
+					+formRows('slug','text',categoryPage.slug)
+				.admin__form--group
+					+formSelectCodeNone('discounts', discounts, categoryPage.discount ? categoryPage.discount._id.toString() : '')
+
+				.category__form--img-box
+					label.product__form--group(for='category-image-cover') Upload Main Image:
+					input#category-image-cover(type='file', name='image', accept='image/*')
+					
+				.admin__form--buttons
+					button#deactivateCategory(type='button' , data-category-id=categoryPage._id) Deactivate Category
+					button.category__form--btn Update

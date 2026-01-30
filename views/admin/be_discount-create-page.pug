@@ -1,0 +1,43 @@
+extends be_base
+
+
+include ../../mixins/_formFields
+
+
+
+block content 
+
+	main.admin-orderList.wide-container 
+	
+		h2.admin__page--heading.mrgbtm--lg Create Discount
+		
+		
+		section.create_discount-grid 
+		
+			form#create-discount.create_discount-form
+				.create_discount--row
+					+formRows('code','text')
+				.create_discount--row
+					+formRows('percentage','number' )
+				.create_discount--row
+					+formRows('amount','number')
+				//- .create_discount--row
+				//- 	+formRows('products','text')
+				//- .create_discount--row
+				//- 	+formRows('category','text')
+				.create_discount--row
+					+formRows('startdate','date')
+				.create_discount--row
+					+formRows('enddate','date')
+				.create_discount--radio-flex
+					.create_discount--radio
+						label(for="active") ACTIVE 
+					.create_discount--inputs
+						.create_discount-inputs--flex
+							input#radioTrue(type="radio" name="active" value='true') 
+							| True
+						.create_discount-inputs--flex
+							input#radioFalse(type="radio" name="active" value='false') 
+							| False
+					
+				button(type='submit') Submit Discount

@@ -1,0 +1,59 @@
+
+extends be_base 
+
+
+block content 
+
+	main.admin-orderList.wide-container 
+	
+		h2.admin__page--heading.mrgbtm--lg Order List
+		
+		section.admin-orderList--search-box.mrgbtm--lg 
+		
+			form#searchByOrderNum.searchForm-orders(action='/admin/be_order-search' method="GET") 
+				input#searchNum(type="text" placeholder='Search By Order number' name='orderNumSearch')
+				button(type='submit')
+					i(data-lucide='search')
+			form#searchByEmail.searchForm-orders(action='/admin/be_order-search' method="GET")  
+				input#searchEmail(type="text" placeholder='Search By Email' name='emailSearch')
+				button(type='submit')
+					i(data-lucide='search')
+					
+		
+		section.admin-orderList--grid
+			h3.admin-orderList--heading Order No.
+			h3.admin-orderList--heading Date Ordered
+			h3.admin-orderList--heading Customer
+		
+			h3.admin-orderList--heading Shipping Address
+			h3.admin-orderList--heading Order Status
+			h3.admin-orderList--heading Pay Method
+			h3.admin-orderList--heading Transaction Status
+			h3.admin-orderList--heading Total
+			h3.admin-orderList--heading View
+		
+			each order in orders 
+				- const formatted = new Date(order.createdAt).toLocaleDateString('en-GB');
+				- const transStatus = order.transaction ? order.transaction.status : "No PayPal status"
+
+				
+				p #{order.orderNum}
+				p #{formatted}
+				p #{order.user ? order.user.email : order.guestEmail}
+						
+				.address
+				
+					p #{order.shippingAddress.label}
+					p #{order.shippingAddress.number + ' ' + order.shippingAddress.street.toUpperCase()}
+					p #{order.shippingAddress.city.toUpperCase()}
+					p #{order.shippingAddress.state.toUpperCase()}
+					p #{order.shippingAddress.postcode}
+				p #{order.status}
+				p #{order.paymentMethod}
+				p #{transStatus}
+				p #{order.totalAmount}
+				if order.transaction 
+					a.admin-orderList-edit--link(href=`/admin/be_order-page/${order.orderNum}`) ➡️
+				else 
+					p See paypal for transaction details
+				

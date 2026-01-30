@@ -1,0 +1,34 @@
+extends be_base 
+
+include ../../mixins/_formFields
+include ../../mixins/_formSelectOptions
+
+
+block content 
+
+	main.container 
+	
+		h2.admin__page--heading  New Product
+		
+		section.admin__form--box 
+		
+			form.admin__form--create.category__form--create
+					
+				.admin__form--group
+				
+					+formRows('name','text','')
+					
+				.admin__form--group
+				
+					+formRows('description','text','')
+					
+				//- .admin__form--group
+				
+				//- 	+formRows('parent-category','text','')
+					
+				.admin__form--group
+				
+					label.admin__categoryNew-form-label(for='category-image-cover') Upload Main Image (Cover):
+					input#category-image-cover(type='file', name='image', accept='image/*')
+					
+				button#new-category--form-submit Confirm

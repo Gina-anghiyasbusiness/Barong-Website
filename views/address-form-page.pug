@@ -1,0 +1,62 @@
+extends base 
+
+
+
+include ../mixins/_formFields
+
+
+block content
+
+	main.container.user--grid 
+
+		h2.admin__page--heading   User Address
+		
+
+		section.admin__form--box 
+		
+			- const hasAddressId = selectedAddress && selectedAddress.id
+			
+			form.admin__form--update.user__address--update(
+				data-address-id=hasAddressId ? selectedAddress.id : undefined,
+				data-user=`${user._id}`)
+			
+				.admin__form--group.user--address-update
+					label(for="type") ADDRESS TYPE:
+					select(name="type" id='type' , value=selectedAddress.label) 
+						option(value="Home", selected=selectedAddress.label === 'Home') Home 
+						option(value="Work", selected=selectedAddress.label === 'Work') Work
+						option(value="Other", selected=selectedAddress.label === 'Other') Other
+
+				.admin__form--group
+					+formRows('number','number', selectedAddress.number)
+				.admin__form--group
+					+formRows('street','text', selectedAddress.street)
+				.admin__form--group
+					+formRows('city','text', selectedAddress.city)
+				.admin__form--group
+					+formRows('state','text', selectedAddress.state)
+				.admin__form--group
+					+formRows('postcode','text', selectedAddress.postcode)
+				.admin__form--group
+					p.address-form-default Default Address:
+					label(for="isDefault-true") True
+					input(
+					  type="radio"
+					  id="isDefault-true"
+					  name="isDefault"
+					  value='true'
+					  checked=(selectedAddress && selectedAddress.isDefault === true)
+					)
+					label(for="isDefault-false") False
+					input(
+					  type="radio"
+					  id="isDefault-false"
+					  name="isDefault"
+					  value='false'
+					  checked=(selectedAddress && selectedAddress.isDefault === false)
+					)
+				.address__form--button--box
+					if hasAddressId 
+						button#user-address-submit(class='address__form--button') Update Address
+					else 
+						button#user-address-submit(class='address__form--button') Add New Address

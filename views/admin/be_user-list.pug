@@ -1,0 +1,55 @@
+extends be_base 
+
+
+block content
+
+
+	main.admin-productList.wide-container 
+	
+		h2.admin__page--heading All Users
+		
+		section.admin__create 
+		
+			.admin__create--box
+			
+				a(href="/admin/be_new-user-page" , class='admin__create--link') Add New User			
+		
+				form#selectRole(action="/admin/be_user-list" method="GET" class='form_role')
+				
+					.form_role--group 
+					
+						label(for="role") Role:					
+						select#roleSelected(name="role")
+							option(value="") All Roles
+							option(value="user", selected=selectedRole === 'user') Users
+							option(value="admin", selected=selectedRole === 'admin') Admins
+							option(value="supervisor", selected=selectedRole === 'supervisor') Supervisor
+							option(value="owner", selected=selectedRole === 'owner') Owners
+							
+				form(action="/admin/be_user-search" method='GET' class='user-search-form') 
+					input(type="text" name='userEmailSearch' , placeholder='Search User by email...')
+					button(type='submit')
+						i(data-lucide='search' class='form-icon')
+				
+	
+		section.admin-userList--grid
+			.admin-userList__headings 
+				p.admin-userList_head Name
+				p.admin-userList_head Email
+				p.admin-userList_head Phone
+				p.admin-userList_head Role
+				p.admin-userList_head Active
+				p.admin-userList_head Edit
+
+			each user in userList 
+				.admin-user 
+					h4.admin-user__heading #{user.name.toUpperCase()}
+					p.admin-user__text #{user.email}
+					p.admin-user__text #{user.phone}
+					p.admin-user__text #{user.role}
+					p.admin-user__text #{user.active ? 'Active' : 'Inactive'}
+					a(href=`/admin/be_user-page/${user.id}` class='admin_edit--arrow') ➡️
+		
+					
+
+				

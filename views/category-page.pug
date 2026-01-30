@@ -1,0 +1,29 @@
+extends base 
+
+
+
+block content 
+
+
+	main.category__page.container
+	
+		section.category__page
+		
+			h2.category__page.mrgbtm--lg #{category.name} Tees
+			.productList 		
+			
+				each product in products
+				
+					.cat_productList__product 			
+					
+						.cat_productList-box--img 
+						
+							a(href=`/product/${product.slug}`) 
+								img(src=`/img/product_imgs/${product.imageCover}`, alt='image',width="800",height="800", class='productList__img' fetchpriority="high")
+			
+						.cat_productList-box--text 
+						
+							p.cat_product-name #{product.name}
+							.cat_product-price-box
+								p.cat_product-oPrice Original Price: $#{product.originalPrice}
+								p.cat_product-cPrice Current Price: $#{product.discountPrice}

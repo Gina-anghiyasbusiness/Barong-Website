@@ -1,0 +1,65 @@
+extends be_base 
+
+
+block content 
+
+	main.admin-orderList.wide-container 
+	
+		h2.admin__page--heading Order Search Result
+		
+		section.admin-orderList--grid
+			h3.admin-orderList--heading Order No.
+			h3.admin-orderList--heading Date Ordered
+			h3.admin-orderList--heading Customer
+			//- h3.admin-orderList--heading Product
+			h3.admin-orderList--heading Shipping Address
+			h3.admin-orderList--heading Order Status
+			h3.admin-orderList--heading Pay Method
+			h3.admin-orderList--heading Transaction Status
+			h3.admin-orderList--heading Total
+			h3.admin-orderList--heading View
+			
+			if order		
+				- const formatted = new Date(order.createdAt).toLocaleDateString('en-GB');
+				p #{order.orderNum}
+				p #{formatted}
+				p #{order.user && order.user.name ? order.user.name : order.guestName || 'Guest'}
+
+
+				.address
+					//- p #{order.shippingAddress.label}
+					p #{order.shippingAddress.number + ' ' + order.shippingAddress.street.toUpperCase()}
+					p #{order.shippingAddress.city.toUpperCase()}
+					p #{order.shippingAddress.state.toUpperCase()}
+					p #{order.shippingAddress.postcode}
+				p #{order.status}
+				p #{order.paymentMethod}
+				p #{order.transaction.status}
+				p #{order.totalAmount}
+				a.admin-orderList-edit--link(href=`/admin/be_order-page/${order.orderNum}`) ➡️
+					
+			else
+				each order in orders 
+					- const formatted = new Date(order.createdAt).toLocaleDateString('en-GB');
+					
+					p #{order.orderNum}
+					p #{formatted}
+					p #{order.user ? order.user.name : order.guestName}
+					
+					//- .product
+					//- 	each item in order.product
+					//- 		p #{item.quantity} x #{item.product.name}
+							
+					.address
+						//- p #{order.shippingAddress.label}
+						p #{order.shippingAddress.number + ' ' + order.shippingAddress.street.toUpperCase()}
+						p #{order.shippingAddress.city.toUpperCase()}
+						p #{order.shippingAddress.state.toUpperCase()}
+						p #{order.shippingAddress.postcode}
+					p #{order.status}
+					p #{order.paymentMethod}
+					p #{order.transaction.status}
+					p #{order.totalAmount}
+					a.admin-orderList-edit--link(href=`/admin/be_order-page/${order.orderNum}`) ➡️
+		.admin-order-back
+			a.backtoorders(href="/admin/be_order-list") Back to Orders

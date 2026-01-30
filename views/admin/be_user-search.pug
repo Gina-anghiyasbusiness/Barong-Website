@@ -1,0 +1,28 @@
+extends be_base 
+
+
+block content 
+
+	main.admin-productList.wide-container 
+	
+		h2.admin__page--heading User Result
+
+		section.admin-userList--grid
+			.admin-userList__headings 
+				p.admin-userList_head Name
+				p.admin-userList_head Email
+				p.admin-userList_head Phone
+				p.admin-userList_head Role
+				p.admin-userList_head Active
+				p.admin-userList_head Edit
+				
+				
+			.admin-user 
+				h4.admin-user__heading #{userSearch.name.toUpperCase()}
+				p.admin-user__text #{userSearch.email}
+				p.admin-user__text #{userSearch.phone}
+				p.admin-user__text #{userSearch.role}
+				p.admin-user__text #{userSearch.active ? 'Active' : 'Inactive'}
+				a(href=`/admin/be_user-page/${userSearch.id}` class='admin_edit--arrow') ➡️
+		.admin-order-back
+			a.backtoorders(href="/admin/be_user-list") Back to Users

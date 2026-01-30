@@ -1,0 +1,38 @@
+
+
+mixin formSelect(field, optionsArray, selectedValue)
+	label(for=field required)= field.toUpperCase()
+	select(id=field, name=field, required)
+		each opt in optionsArray
+			- const val = typeof opt === 'object' ? opt._id : opt;
+			- const label = typeof opt === 'object' ? opt.name : opt;
+			if `${val}` === `${selectedValue}`
+				option(value=val selected)= label
+			else
+				option(value=val)= label
+				
+				
+mixin formSelectCode(field, optionsArray, selectedValue)
+	label(for=field required)= field.toUpperCase()
+	select(id=field, name=field, required)
+		each opt in optionsArray
+			- const val = typeof opt === 'object' ? opt._id : opt;
+			- const label = typeof opt === 'object' ? opt.code : opt;
+			if `${val}` === `${selectedValue}`
+				option(value=val selected)= label
+			else
+				option(value=val)= label
+				
+				
+mixin formSelectCodeNone(field, optionsArray, selectedValue)
+	label(for=field )= field.toUpperCase()
+	select(id=field, name=field)
+		option(value="" selected=(!selectedValue || selectedValue === '')) NONE
+		each opt in optionsArray
+			- const val = typeof opt === 'object' ? opt._id.toString() : opt;			
+			- const label = typeof opt === 'object' ? (opt.name || opt.code || opt._id.toString()) : opt;
+
+			if val === selectedValue
+				option(value=val selected)= label
+			else
+				option(value=val)= label

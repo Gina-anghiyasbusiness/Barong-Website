@@ -1,0 +1,53 @@
+extends be_base 
+
+
+
+block content 
+
+
+	main.container 
+	
+		h2.admin__page--heading  User Details
+	
+		section.admin__form--box
+		
+			.account__main#accountSettings.content__active
+				.admin-user__heading--box
+					h3.admin__page--heading   Account settings
+				.admin__form--box
+					form.user__form--data.admin__form--update
+						.admin__form--group
+							label.user__form--label(for='user__form--name') Username
+							input#user__form--name(type='text', value=user.name, required, name='name' )
+						.admin__form--group
+							label.user__form--label(for='user__form--email') Email
+							input#user__form--email(type='email', value=user.email,  required , name='email')
+						.admin__form--group
+							label.user__form--label(for='user__form--phone') Phone
+							input#user__form--phone(type='tel', value=user.phone, name='phone')
+						
+						button.btn--submit Save
+							
+				.admin-user__heading--box
+				
+					h3.admin__page--heading  Password settings
+					
+				.admin__form--box
+				
+					form.user__form--password.admin__form--update
+					
+						.admin__form--group
+							label.user__form--label(for='password-current') Current Password
+							input#password-current(type='password', placeholder='••••••••', required, minlength='8')
+							
+						.admin__form--group
+							label.user__form--label(for='password') New Password
+							input#password(type='password',placeholder='••••••••', required, minlength='8')
+							
+						.admin__form--group
+							label.user__form--label(for='password-confirm') Confirm New Password
+							input#password-confirm(type='password',placeholder='••••••••', required, minlength='8')
+							
+						button.user__form--btn-submit Save
+		
+	

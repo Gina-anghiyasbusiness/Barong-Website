@@ -1,0 +1,25 @@
+extends base 
+
+
+
+block content 
+
+
+	main.categories__page.container
+	
+		section.categories__page
+		
+			h2.categories__page.mrgbtm--lg  All Categories
+			
+			.productList
+				each category in categories
+				
+					a(href=`/categories/${category.id}`).categories_box
+				
+						.categories__img-box
+							img(src=`/img/category_imgs/${category.image}`, alt="" , class='categories_img' ,  width='800', height='800')
+							
+						.categories_text-box
+							p #{category.name}
+
+					

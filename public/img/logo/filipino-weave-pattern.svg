@@ -1,0 +1,27 @@
+<svg width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Subtle diagonal weave inspired by Filipino textiles -->
+  <defs>
+    <style>
+      .weave-line {
+        stroke: #8B623C;
+        fill: none;
+        stroke-width: 0.5;
+      }
+    </style>
+  </defs>
+  
+  <!-- Horizontal weave lines -->
+  <path class="weave-line" d="M0,30 Q30,25 60,30 T120,30" opacity="0.4"/>
+  <path class="weave-line" d="M0,60 Q30,55 60,60 T120,60" opacity="0.5"/>
+  <path class="weave-line" d="M0,90 Q30,85 60,90 T120,90" opacity="0.4"/>
+  
+  <!-- Vertical weave lines -->
+  <path class="weave-line" d="M30,0 Q25,30 30,60 T30,120" opacity="0.3"/>
+  <path class="weave-line" d="M60,0 Q55,30 60,60 T60,120" opacity="0.4"/>
+  <path class="weave-line" d="M90,0 Q85,30 90,60 T90,120" opacity="0.3"/>
+  
+  <!-- Small accent dots at intersections -->
+  <circle cx="30" cy="30" r="0.8" fill="#8B623C" opacity="0.3"/>
+  <circle cx="60" cy="60" r="0.8" fill="#8B623C" opacity="0.3"/>
+  <circle cx="90" cy="90" r="0.8" fill="#8B623C" opacity="0.3"/>
+</svg>

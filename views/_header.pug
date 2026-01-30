@@ -1,0 +1,54 @@
+header.main_header
+
+	.header
+	
+		.header__logo--box
+
+			a(href="/") 
+				img(src='/img/logo/default-logo.png', alt='image', class='header__logo' fetchpriority="high")
+		
+		.header__nav--box
+		
+			nav.header__nav 
+				ul.header__nav--list 
+					li.header__nav--item 
+						a(href='/product-list' class='header__nav--link') Products
+					li.header__nav--item 
+						a(href='/static/services' class='header__nav--link') Services
+					//- li.header__nav--item 
+					//- 	a(href='/static/blog' class='header__nav--link') Blog
+					li.header__nav--item 
+						a(href='/static/about' class='header__nav--link') About
+					li.header__nav--item 
+						a(href='/static/contact' class='header__nav--link') Contact
+				
+		.header__user--settings
+		
+			if user
+				.header__user
+							
+					.header__user--icons 
+						a(href=`/my-account/${user.id}`).header__user--link.user__account--link
+							i(data-lucide='user-round')
+							
+						a(href=`/my-account/${user.id}?show=my-account-wishlist`).header__user--link.user__wishlist--link
+							i(data-lucide='star')
+							if user.wishlist.length > 0
+								span.user__wishlist--span #{user.wishlist.length}
+							else 
+								span.user__wishlist 
+							
+						a(href=`/my-account/${user.id}?show=my-account-cart`).header__user--link.user__cart--link 
+							i(data-lucide='shopping-cart')
+							if user.cart.length > 0
+								span.user__cart--span #{user.cart.length}
+							else 
+								span.user__cart 
+						
+					.header__user--button 
+						a(href="/" class='header__login--link logout--btn') Logout
+				
+			else
+				.header__user--login-button 
+					a(href="/login-page" class='header__login--link login--btn') Login/Signup
+				

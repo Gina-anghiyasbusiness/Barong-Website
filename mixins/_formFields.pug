@@ -1,0 +1,28 @@
+
+
+mixin formRowsReadOnly(field,inputType,inputValue)
+	label(for=`${field}` )= field.toUpperCase()
+	input(id=`${field}`, name=`${field}`, type=`${inputType}`, value=`${inputValue || ''}` , disabled )
+		
+
+mixin formRows(field,inputType,inputValue)
+	label(for=`${field}` )= field.toUpperCase()
+	input(id=`${field}`, name=`${field}`, type=`${inputType}`, value=`${inputValue || ''}` )
+	
+		
+mixin variantRow(i, label, sizeValue, inStock)
+	.product__form--variant-row
+		label.size-label= `Size: ${label}`
+		input(type='hidden', id=`variant-size-${i}`, name=`variant-size-${i}`, value=sizeValue)
+		input(
+			id=`variant-inStock-${i}`,
+			name=`variant-inStock-${i}`,
+			type='number',
+			value=inStock,
+			required
+		)
+		
+mixin formRowsLabels(field,inputType,inputValue)
+	.form-group-address--labels
+		label(for=`${field}` id=`${field+3}`)= field.toUpperCase()
+		input(id=`${field}`, class=`${field}` , name=`${field}`, type=`${inputType}`, value=`${inputValue || ''}` )

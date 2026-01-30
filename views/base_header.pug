@@ -1,0 +1,52 @@
+doctype html 
+
+html 
+	head
+		//-- Google Tag Manager (early load)
+		
+		
+		meta(charset='UTF-8')
+		meta(name='viewport' content='width=device-width, initial-scale=1.0')
+		meta(name="description" content=pageDescription)
+		meta(name="keywords" content="Tshirts tees shirts clothing")
+		meta(name="robots" content="index, follow")
+		
+		link(rel="canonical", href=canonicalUrl)
+		
+		//- link(rel='stylesheet', href='/css/template-style.css?v=1.0')
+		//- link(rel='stylesheet', href='/css/specific-style.css?v=1.0')
+		
+		link(rel='stylesheet', href='/css/style.css?v=1.0')
+		
+		
+		
+		//-- Preconnects (speed up external resources)
+		
+		
+		
+		//-- Preloads (critical assets)
+		
+		
+			
+		link(rel='shortcut icon' type='image/png' href=favicon || '/img/favicons/defaultfavicon.png')
+		
+		title= typeof pageTitle !== 'undefined' ? pageTitle : `WebsiteName | ${title}`
+		
+		
+		
+	body
+		// Header
+		include _header
+		
+		
+		// Content
+		block content 
+			h1 Placeholder in Base
+		
+		
+		script(src="https://js.stripe.com/v3/")
+
+		script(defer src='/js/bundle.js')
+		
+
+		

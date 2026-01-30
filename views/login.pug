@@ -1,0 +1,57 @@
+
+extends base_header 
+
+block content 
+
+	.login.container 
+		.login__form--grid 
+			.login__form-heading
+				h1 Login
+			.login__form--box
+				form(action="#", class='login__form')
+					label(for='login-email'  class='login__form--label') Email
+					input#login-email(type="email" name='email' placeholder='Your Email' ,autocomplete="email" , required)
+					label(for='login-password'  class='login__form--label') Password
+					input#login-password(type="password" name='password' placeholder='********' ,autocomplete="current-password"  , required)
+					button(type='submit' class='login__form--submit') Submit
+					
+					a.forgot-password(href=`/reset-password-page`) Forgot Password?
+					
+		.login__form--grid 
+		
+			.login__form-heading
+			
+				h1 Sign Up
+				
+			.login__form--box
+			
+				form(action="#", class='signup__form')
+				
+					.signup__form--group
+					
+						label(for='signup-name'  class='signup__form--label') Name
+						input#signup-name(type="text" name='signup-name' placeholder='Your Email' ,autocomplete="email" , required)
+					
+						label(for='signup-email'  class='signup__form--label') Email
+						input#signup-email(type="email" name='signup-email' placeholder='Your Email' ,autocomplete="email" , required)
+					
+					.signup__form--group
+						
+						label(for='signup-password'  class='signup__form--label') Password
+						input#signup-password(type="password" name='signup-password' placeholder='********'  , required)
+						
+						label(for='signup-passwordConfirm'  class='signup__form--label') Password Confirm
+						input#signup-passwordConfirm(type="password" name='signup-password-confirm' placeholder='********'  , required)
+					
+					.signup__form--group
+					
+						label(for='signup-phone'  class='signup__form--label') Phone
+						input#signup-phone(type="tel" name='signup-phone' placeholder='Your Phone Number')
+					
+					
+					button(type='submit' class='signup__form--submit') Submit
+					
+
+
+
+

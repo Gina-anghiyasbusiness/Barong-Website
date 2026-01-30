@@ -1,0 +1,142 @@
+<svg width="2400" height="300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 300">
+  <defs>
+    <style>
+      .embr { fill: #BCA47D; stroke: #9D8A6B; stroke-width: 0.4; opacity: 0.75; }
+    </style>
+  </defs>
+  
+  <!-- VERTICAL PATTERN - Repeating every 150px across width -->
+  <g id="verticalVine">
+    <!-- Main vertical vine -->
+    <path d="M 30,0 Q 35,50 30,100 Q 25,150 30,200 Q 35,250 30,300" 
+          fill="none" stroke="#9D8A6B" stroke-width="2" opacity="0.7"/>
+    
+    <!-- Flowers going up the vine -->
+    <!-- Flower 1 - bottom -->
+    <ellipse cx="25" cy="280" rx="8" ry="12" class="embr"/>
+    <ellipse cx="35" cy="280" rx="8" ry="12" class="embr"/>
+    <ellipse cx="30" cy="275" rx="7" ry="10" class="embr"/>
+    <ellipse cx="30" cy="285" rx="7" ry="10" class="embr"/>
+    <circle cx="30" cy="280" r="5" fill="#8B7355" opacity="0.8"/>
+    
+    <!-- Leaves 1 -->
+    <ellipse cx="20" cy="275" rx="4" ry="8" transform="rotate(-30 20 275)" class="embr"/>
+    <ellipse cx="40" cy="275" rx="4" ry="8" transform="rotate(30 40 275)" class="embr"/>
+    
+    <!-- Flower 2 -->
+    <ellipse cx="23" cy="240" rx="9" ry="13" class="embr"/>
+    <ellipse cx="37" cy="240" rx="9" ry="13" class="embr"/>
+    <ellipse cx="30" cy="234" rx="8" ry="11" class="embr"/>
+    <ellipse cx="30" cy="246" rx="8" ry="11" class="embr"/>
+    <circle cx="30" cy="240" r="6" fill="#8B7355" opacity="0.8"/>
+    
+    <!-- Leaves 2 -->
+    <ellipse cx="18" cy="235" rx="5" ry="9" transform="rotate(-25 18 235)" class="embr"/>
+    <ellipse cx="42" cy="235" rx="5" ry="9" transform="rotate(25 42 235)" class="embr"/>
+    
+    <!-- Flower 3 -->
+    <ellipse cx="24" cy="200" rx="10" ry="14" class="embr"/>
+    <ellipse cx="36" cy="200" rx="10" ry="14" class="embr"/>
+    <ellipse cx="30" cy="193" rx="9" ry="12" class="embr"/>
+    <ellipse cx="30" cy="207" rx="9" ry="12" class="embr"/>
+    <circle cx="30" cy="200" r="7" fill="#8B7355" opacity="0.8"/>
+    
+    <!-- Leaves 3 -->
+    <ellipse cx="17" cy="195" rx="5" ry="10" transform="rotate(-28 17 195)" class="embr"/>
+    <ellipse cx="43" cy="195" rx="5" ry="10" transform="rotate(28 43 195)" class="embr"/>
+    <ellipse cx="17" cy="205" rx="5" ry="10" transform="rotate(-28 17 205)" class="embr"/>
+    <ellipse cx="43" cy="205" rx="5" ry="10" transform="rotate(28 43 205)" class="embr"/>
+    
+    <!-- Flower 4 - CENTER -->
+    <ellipse cx="23" cy="150" rx="11" ry="15" class="embr"/>
+    <ellipse cx="37" cy="150" rx="11" ry="15" class="embr"/>
+    <ellipse cx="30" cy="142" rx="10" ry="13" class="embr"/>
+    <ellipse cx="30" cy="158" rx="10" ry="13" class="embr"/>
+    <circle cx="30" cy="150" r="8" fill="#8B7355" opacity="0.8"/>
+    
+    <!-- Extra petals center -->
+    <ellipse cx="20" cy="150" rx="8" ry="12" class="embr"/>
+    <ellipse cx="40" cy="150" rx="8" ry="12" class="embr"/>
+    
+    <!-- Leaves 4 -->
+    <ellipse cx="15" cy="145" rx="6" ry="11" transform="rotate(-30 15 145)" class="embr"/>
+    <ellipse cx="45" cy="145" rx="6" ry="11" transform="rotate(30 45 145)" class="embr"/>
+    <ellipse cx="15" cy="155" rx="6" ry="11" transform="rotate(-30 15 155)" class="embr"/>
+    <ellipse cx="45" cy="155" rx="6" ry="11" transform="rotate(30 45 155)" class="embr"/>
+    
+    <!-- Flower 5 -->
+    <ellipse cx="24" cy="100" rx="10" ry="14" class="embr"/>
+    <ellipse cx="36" cy="100" rx="10" ry="14" class="embr"/>
+    <ellipse cx="30" cy="93" rx="9" ry="12" class="embr"/>
+    <ellipse cx="30" cy="107" rx="9" ry="12" class="embr"/>
+    <circle cx="30" cy="100" r="7" fill="#8B7355" opacity="0.8"/>
+    
+    <!-- Leaves 5 -->
+    <ellipse cx="17" cy="95" rx="5" ry="10" transform="rotate(-28 17 95)" class="embr"/>
+    <ellipse cx="43" cy="95" rx="5" ry="10" transform="rotate(28 43 95)" class="embr"/>
+    <ellipse cx="17" cy="105" rx="5" ry="10" transform="rotate(-28 17 105)" class="embr"/>
+    <ellipse cx="43" cy="105" rx="5" ry="10" transform="rotate(28 43 105)" class="embr"/>
+    
+    <!-- Flower 6 -->
+    <ellipse cx="23" cy="60" rx="9" ry="13" class="embr"/>
+    <ellipse cx="37" cy="60" rx="9" ry="13" class="embr"/>
+    <ellipse cx="30" cy="54" rx="8" ry="11" class="embr"/>
+    <ellipse cx="30" cy="66" rx="8" ry="11" class="embr"/>
+    <circle cx="30" cy="60" r="6" fill="#8B7355" opacity="0.8"/>
+    
+    <!-- Leaves 6 -->
+    <ellipse cx="18" cy="55" rx="5" ry="9" transform="rotate(-25 18 55)" class="embr"/>
+    <ellipse cx="42" cy="55" rx="5" ry="9" transform="rotate(25 42 55)" class="embr"/>
+    
+    <!-- Flower 7 - top -->
+    <ellipse cx="25" cy="20" rx="8" ry="12" class="embr"/>
+    <ellipse cx="35" cy="20" rx="8" ry="12" class="embr"/>
+    <ellipse cx="30" cy="15" rx="7" ry="10" class="embr"/>
+    <ellipse cx="30" cy="25" rx="7" ry="10" class="embr"/>
+    <circle cx="30" cy="20" r="5" fill="#8B7355" opacity="0.8"/>
+    
+    <!-- Leaves 7 -->
+    <ellipse cx="20" cy="15" rx="4" ry="8" transform="rotate(-30 20 15)" class="embr"/>
+    <ellipse cx="40" cy="15" rx="4" ry="8" transform="rotate(30 40 15)" class="embr"/>
+    
+    <!-- Small filler flowers -->
+    <circle cx="22" cy="180" r="3" class="embr"/>
+    <circle cx="38" cy="220" r="3" class="embr"/>
+    <circle cx="20" cy="120" r="3" class="embr"/>
+    <circle cx="40" cy="80" r="3" class="embr"/>
+    <circle cx="22" cy="40" r="3" class="embr"/>
+  </g>
+  
+  <!-- Repeat vertical vine pattern across the width -->
+  <use href="#verticalVine" x="0"/>
+  <use href="#verticalVine" x="80"/>
+  <use href="#verticalVine" x="160"/>
+  <use href="#verticalVine" x="240"/>
+  <use href="#verticalVine" x="320"/>
+  <use href="#verticalVine" x="400"/>
+  <use href="#verticalVine" x="480"/>
+  <use href="#verticalVine" x="560"/>
+  <use href="#verticalVine" x="640"/>
+  <use href="#verticalVine" x="720"/>
+  <use href="#verticalVine" x="800"/>
+  <use href="#verticalVine" x="880"/>
+  <use href="#verticalVine" x="960"/>
+  <use href="#verticalVine" x="1040"/>
+  <use href="#verticalVine" x="1120"/>
+  <use href="#verticalVine" x="1200"/>
+  <use href="#verticalVine" x="1280"/>
+  <use href="#verticalVine" x="1360"/>
+  <use href="#verticalVine" x="1440"/>
+  <use href="#verticalVine" x="1520"/>
+  <use href="#verticalVine" x="1600"/>
+  <use href="#verticalVine" x="1680"/>
+  <use href="#verticalVine" x="1760"/>
+  <use href="#verticalVine" x="1840"/>
+  <use href="#verticalVine" x="1920"/>
+  <use href="#verticalVine" x="2000"/>
+  <use href="#verticalVine" x="2080"/>
+  <use href="#verticalVine" x="2160"/>
+  <use href="#verticalVine" x="2240"/>
+  <use href="#verticalVine" x="2320"/>
+  
+</svg>

@@ -1,0 +1,50 @@
+extends be_base 
+
+include ../../mixins/_formFields
+include ../../mixins/_formSelectOptions
+
+block content
+
+	main.container.user--grid 
+	
+		h2.admin__page--heading  Edit User
+	
+		section.admin__form--box 
+
+			form.admin__form--update.user__form--update(data-id=userPage._id , data-role=userPage.role) 
+				.admin__form--group
+					+formRows('name','text',userPage.name)
+				.admin__form--group
+					+formRows('email','text',userPage.email)
+				.admin__form--group
+					+formRows('phone','text',userPage.phone)
+				.admin__form--group
+					+formRows('role','text',userPage.role)
+				.admin__form--buttons
+					button#user__form-submit Update
+					
+			if userPage.addresses.length > 0			
+				h4.admin-userPage--heading Addresses
+				.divider-flex
+					each address,i in userPage.addresses
+						form.admin__form--update.address__form--update(data-id=userPage._id , data-role=userPage.role, data-address-id=address._id)
+							.admin__form--group.admin__form--group-gap
+								.form-group-address
+									+formRowsLabels(`label`,'text',address.label)
+									+formRowsLabels('number','text',address.number)
+									+formRowsLabels('street','text',address.street.toUpperCase())
+									+formRowsLabels('city','text',address.city.toUpperCase())
+									+formRowsLabels('state','text',address.state.toUpperCase())
+									+formRowsLabels('postcode','text',address.postcode)
+									+formRowsLabels('default','text',address.isDefault ? 'true' : 'false')
+									.admin__form--buttons
+										button#user__form-submit Update
+						
+						
+				.admin__form--buttons
+					button#deactivateUser(type='button'  data-user-id=`${userPage._id}`) Deactivate User
+						
+			
+
+
+	

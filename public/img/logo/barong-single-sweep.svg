@@ -1,0 +1,117 @@
+<svg width="1400" height="200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 200">
+  <defs>
+    <style>
+      .embr {
+        fill: #BCA47D;
+        stroke: #9D8A6B;
+        stroke-width: 0.3;
+      }
+    </style>
+  </defs>
+  
+  <!-- Single continuous vine flowing left to right -->
+  <path d="M 20,100 Q 80,95 140,100 Q 200,105 260,100 Q 320,95 380,100 Q 440,105 500,100 Q 560,95 620,100 Q 680,105 740,100 Q 800,95 860,100 Q 920,105 980,100 Q 1040,95 1100,100 Q 1160,105 1220,100 Q 1280,95 1340,100 L 1380,100" 
+        fill="none" stroke="#9D8A6B" stroke-width="2.5" opacity="0.7"/>
+  
+  <!-- LEFT SIDE - Dense floral cluster (0-400) -->
+  
+  <!-- Main rose cluster -->
+  <path class="embr" d="M 60,100 Q 40,85 45,70 Q 50,60 60,58 Q 70,60 75,70 Q 80,85 60,100 Z" opacity="0.75"/>
+  <path class="embr" d="M 60,100 Q 40,115 45,130 Q 50,140 60,142 Q 70,140 75,130 Q 80,115 60,100 Z" opacity="0.75"/>
+  <ellipse cx="50" cy="95" rx="12" ry="16" class="embr" opacity="0.7"/>
+  <ellipse cx="70" cy="95" rx="12" ry="16" class="embr" opacity="0.7"/>
+  <ellipse cx="50" cy="105" rx="12" ry="16" class="embr" opacity="0.7"/>
+  <ellipse cx="70" cy="105" rx="12" ry="16" class="embr" opacity="0.7"/>
+  <circle cx="60" cy="100" r="10" fill="#8B7355" opacity="0.8"/>
+  
+  <!-- Second rose cluster -->
+  <path class="embr" d="M 120,95 Q 105,82 108,68 Q 112,60 120,58 Q 128,60 132,68 Q 135,82 120,95 Z" opacity="0.75"/>
+  <path class="embr" d="M 120,105 Q 105,118 108,132 Q 112,140 120,142 Q 128,140 132,132 Q 135,118 120,105 Z" opacity="0.75"/>
+  <ellipse cx="112" cy="95" rx="11" ry="15" class="embr" opacity="0.7"/>
+  <ellipse cx="128" cy="95" rx="11" ry="15" class="embr" opacity="0.7"/>
+  <ellipse cx="112" cy="105" rx="11" ry="15" class="embr" opacity="0.7"/>
+  <ellipse cx="128" cy="105" rx="11" ry="15" class="embr" opacity="0.7"/>
+  <circle cx="120" cy="100" r="9" fill="#8B7355" opacity="0.8"/>
+  
+  <!-- Third rose cluster -->
+  <path class="embr" d="M 180,97 Q 168,86 170,73 Q 174,65 180,63 Q 186,65 190,73 Q 192,86 180,97 Z" opacity="0.72"/>
+  <path class="embr" d="M 180,103 Q 168,114 170,127 Q 174,135 180,137 Q 186,135 190,127 Q 192,114 180,103 Z" opacity="0.72"/>
+  <ellipse cx="173" cy="97" rx="10" ry="14" class="embr" opacity="0.68"/>
+  <ellipse cx="187" cy="97" rx="10" ry="14" class="embr" opacity="0.68"/>
+  <circle cx="180" cy="100" r="8" fill="#8B7355" opacity="0.75"/>
+  
+  <!-- Dense leaves clustered around flowers -->
+  <ellipse cx="35" cy="85" rx="8" ry="18" transform="rotate(-25 35 85)" class="embr" opacity="0.65"/>
+  <ellipse cx="30" cy="110" rx="8" ry="18" transform="rotate(25 30 110)" class="embr" opacity="0.65"/>
+  <ellipse cx="85" cy="78" rx="8" ry="17" transform="rotate(-20 85 78)" class="embr" opacity="0.65"/>
+  <ellipse cx="90" cy="122" rx="8" ry="17" transform="rotate(20 90 122)" class="embr" opacity="0.65"/>
+  <ellipse cx="145" cy="80" rx="7" ry="16" transform="rotate(-18 145 80)" class="embr" opacity="0.62"/>
+  <ellipse cx="150" cy="120" rx="7" ry="16" transform="rotate(18 150 120)" class="embr" opacity="0.62"/>
+  <ellipse cx="205" cy="82" rx="7" ry="15" transform="rotate(-15 205 82)" class="embr" opacity="0.6"/>
+  <ellipse cx="210" cy="118" rx="7" ry="15" transform="rotate(15 210 118)" class="embr" opacity="0.6"/>
+  
+  <!-- Small filler flowers -->
+  <circle cx="95" cy="100" r="6" class="embr" opacity="0.6"/>
+  <circle cx="155" cy="100" r="6" class="embr" opacity="0.58"/>
+  <circle cx="75" cy="72" r="5" class="embr" opacity="0.58"/>
+  <circle cx="135" cy="128" r="5" class="embr" opacity="0.58"/>
+  
+  <!-- MIDDLE SECTION (400-900) - Transition flowers -->
+  
+  <!-- Large center flower -->
+  <path class="embr" d="M 500,100 Q 485,88 488,75 Q 492,66 500,64 Q 508,66 512,75 Q 515,88 500,100 Z" opacity="0.68"/>
+  <path class="embr" d="M 500,100 Q 485,112 488,125 Q 492,134 500,136 Q 508,134 512,125 Q 515,112 500,100 Z" opacity="0.68"/>
+  <ellipse cx="493" cy="98" rx="9" ry="13" class="embr" opacity="0.65"/>
+  <ellipse cx="507" cy="98" rx="9" ry="13" class="embr" opacity="0.65"/>
+  <circle cx="500" cy="100" r="7" fill="#8B7355" opacity="0.7"/>
+  
+  <!-- Medium flowers along vine -->
+  <ellipse cx="320" cy="100" rx="8" ry="12" class="embr" opacity="0.6"/>
+  <circle cx="320" cy="100" r="5" class="embr" opacity="0.58"/>
+  
+  <ellipse cx="420" cy="100" rx="7" ry="11" class="embr" opacity="0.58"/>
+  <circle cx="420" cy="100" r="4" class="embr" opacity="0.55"/>
+  
+  <ellipse cx="580" cy="100" rx="7" ry="11" class="embr" opacity="0.55"/>
+  <circle cx="580" cy="100" r="4" class="embr" opacity="0.52"/>
+  
+  <ellipse cx="680" cy="100" rx="6" ry="10" class="embr" opacity="0.52"/>
+  <circle cx="680" cy="100" r="3" class="embr" opacity="0.5"/>
+  
+  <!-- Medium leaves -->
+  <ellipse cx="280" cy="88" rx="6" ry="14" transform="rotate(-12 280 88)" class="embr" opacity="0.55"/>
+  <ellipse cx="285" cy="112" rx="6" ry="14" transform="rotate(12 285 112)" class="embr" opacity="0.55"/>
+  <ellipse cx="380" cy="88" rx="6" ry="13" transform="rotate(-10 380 88)" class="embr" opacity="0.52"/>
+  <ellipse cx="385" cy="112" rx="6" ry="13" transform="rotate(10 385 112)" class="embr" opacity="0.52"/>
+  <ellipse cx="470" cy="86" rx="5" ry="12" transform="rotate(-8 470 86)" class="embr" opacity="0.5"/>
+  <ellipse cx="475" cy="114" rx="5" ry="12" transform="rotate(8 475 114)" class="embr" opacity="0.5"/>
+  <ellipse cx="620" cy="88" rx="5" ry="11" transform="rotate(-8 620 88)" class="embr" opacity="0.48"/>
+  <ellipse cx="625" cy="112" rx="5" ry="11" transform="rotate(8 625 112)" class="embr" opacity="0.48"/>
+  
+  <!-- RIGHT SECTION (900-1400) - Sparse leaves tapering -->
+  
+  <ellipse cx="780" cy="95" rx="5" ry="10" transform="rotate(-6 780 95)" class="embr" opacity="0.45"/>
+  <ellipse cx="784" cy="105" rx="5" ry="10" transform="rotate(6 784 105)" class="embr" opacity="0.45"/>
+  
+  <ellipse cx="880" cy="96" rx="4" ry="9" transform="rotate(-5 880 96)" class="embr" opacity="0.42"/>
+  <ellipse cx="883" cy="104" rx="4" ry="9" transform="rotate(5 883 104)" class="embr" opacity="0.42"/>
+  
+  <ellipse cx="980" cy="97" rx="4" ry="8" transform="rotate(-4 980 97)" class="embr" opacity="0.38"/>
+  <ellipse cx="982" cy="103" rx="4" ry="8" transform="rotate(4 982 103)" class="embr" opacity="0.38"/>
+  
+  <ellipse cx="1080" cy="98" rx="3" ry="7" transform="rotate(-3 1080 98)" class="embr" opacity="0.33"/>
+  <ellipse cx="1081" cy="102" rx="3" ry="7" transform="rotate(3 1081 102)" class="embr" opacity="0.33"/>
+  
+  <ellipse cx="1180" cy="99" rx="3" ry="6" transform="rotate(-2 1180 99)" class="embr" opacity="0.28"/>
+  <ellipse cx="1180" cy="101" rx="3" ry="6" transform="rotate(2 1180 101)" class="embr" opacity="0.28"/>
+  
+  <ellipse cx="1280" cy="99" rx="2" ry="5" class="embr" opacity="0.22"/>
+  <ellipse cx="1280" cy="101" rx="2" ry="5" class="embr" opacity="0.22"/>
+  
+  <ellipse cx="1360" cy="100" rx="2" ry="4" class="embr" opacity="0.15"/>
+  
+  <!-- Small buds along sparse section -->
+  <circle cx="830" cy="100" r="3" class="embr" opacity="0.4"/>
+  <circle cx="1030" cy="100" r="2" class="embr" opacity="0.32"/>
+  <circle cx="1230" cy="100" r="2" class="embr" opacity="0.25"/>
+</svg>

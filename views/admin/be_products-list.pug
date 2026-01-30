@@ -1,0 +1,61 @@
+extends be_base 
+
+//---------- All Product Fields are from productBase Model --------//
+
+//- //		Reuse admin routes		// -//
+
+block content 
+
+	main.admin-productList.wide-container 
+	
+		h2.admin__page--heading Product List
+		
+		section.admin__create 
+			.admin__create--box
+			
+				a(href=`/admin/be_product-create` class='admin__create--link') Add New Product 
+				
+				form(action="/admin/be_product-search" method="GET").searchForm-orders 
+					input(type="number" name='productSearch' placeholder='Search By Product No.')
+					button(type='submit')
+						i(data-lucide='search')
+	
+		section.admin-productList--grid
+		
+			.admin-productList__headings 
+				p.admin-productList_head ProdNo
+				p.admin-productList_head Image
+				p.admin-productList_head Name
+				p.admin-productList_head Description
+				p.admin-productList_head Categories
+				p.admin-productList_head Discounts
+				p.admin-productList_head Tags
+				p.admin-productList_head Orginal Price
+				p.admin-productList_head Current Price
+			
+				p.admin-productList_head Edit
+				
+			.admin-product--loop
+				each product in productList 
+					- const discountCode = product.discount ? product.discount.code : "";
+					- const categoryName = product.category ? product.category.name : "";
+					.admin-product 
+						p.admin-product__text #{product.productSku}
+						img.admin-product__img(src='/img/product_imgs/' + product.imageCover , alt='product image')
+						h4.admin-product__heading #{product.name}
+						p.admin-product__text #{product.description}
+						p.admin-product__text #{categoryName}
+						p.admin-product__text #{discountCode}
+						p.admin-product__text #{product.tags}
+						p.admin-product__text #{product.originalPrice}
+						p.admin-product__text #{product.currentPrice}
+					
+				
+						a(href=`/admin/be_product-item/${product.slug}` class='admin_edit--arrow') ➡️
+						
+
+				
+
+			
+					
+				

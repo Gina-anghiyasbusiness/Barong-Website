@@ -1,0 +1,39 @@
+extends be_base 
+
+
+block content 
+
+	main.admin-categoryList.wide-container 
+	
+		h2.admin__page--heading  Category list
+		
+		section.admin__create
+			.admin__create--box
+				a(href="/admin/be_new-category-page" class='admin__create--link') Create New Category
+		
+		section.admin-categoryList--grid
+			.admin-categoryList__headings 
+				p.admin-categoryList_head Image
+				p.admin-categoryList_head Name
+				p.admin-categoryList_head Description
+				p.admin-categoryList_head Discount
+				p.admin-categoryList_head Slug
+				p.admin-categoryList_head Edit
+
+			each category in categoryList 
+			
+				.admin-category
+					- const discountCode = category.discount ? category.discount.code : "";
+					
+					if category && category.image 
+						img(src=`/img/category_imgs/${category.image}`, alt="category image" , class='categoryList_img')
+					else 
+						img(src="/img/category_imgs/default.webp", alt="category image" , class='categoryList_img')
+					h4.admin-category__heading #{category.name}
+					p.admin-category__text #{category.description}
+					p.admin-category__text #{discountCode}
+					p.admin-category__text #{category.slug}
+					a(href=`/admin/be_category-page/${category._id}` class='admin_edit--arrow') ➡️
+		
+
+				

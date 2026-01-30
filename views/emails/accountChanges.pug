@@ -1,0 +1,18 @@
+extends baseEmail 
+
+block content 
+
+	header
+	
+		.orderConfirm_header--img
+		
+			img(src=logoUrl, alt="company-logo")
+	
+	main
+	
+		.email_body
+		
+			p Hi #{firstname},
+			
+			p.order-recieved Your Password was changed recently. If this was you please ignore, else login or reset password.
+			

@@ -1,0 +1,33 @@
+doctype html 
+
+html 
+	head
+		meta(charset='UTF-8')
+		meta(name='viewport' content='width=device-width, initial-scale=1.0')
+		
+				
+		//- link(rel='stylesheet', href='/css/template-style.css?v=1.0')
+		//- link(rel='stylesheet', href='/css/specific-style.css?v=1.0')
+		
+		link(rel='stylesheet', href='/css/style.css?v=1.0')
+		
+		
+		link(rel='shortcut icon' type='image/png' href=favicon || '/img/favicons/defaultfavicon.png')
+		title #{title || 'Website title'}
+		
+	body
+		// Header
+		include be_header
+		
+		
+		// Content
+		block content 
+			h1 Placeholder in Base
+		
+		// Footer
+		//- include be_footer
+		
+		script(src="https://js.stripe.com/v3/")
+		script(src='/js/bundle.js')
+
+		

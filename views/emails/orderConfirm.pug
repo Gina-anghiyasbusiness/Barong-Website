@@ -1,0 +1,21 @@
+extends baseEmail 
+
+block content 
+
+	header
+	
+		.orderConfirm_header--img
+		
+			img(src=logoUrl, alt="company-logo")
+	
+	main
+	
+		.email_body
+		
+			p Hi #{firstname},
+			
+			p.order-recieved We've recieved your order.
+			
+			.email_body-link
+			
+				a(href=`${url}`, target='_blank') Order Details

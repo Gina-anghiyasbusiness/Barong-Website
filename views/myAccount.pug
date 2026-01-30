@@ -1,0 +1,344 @@
+extends base 
+
+
+block content 
+
+	main.wide-container
+	
+		h2.homePage--sub-heading.mrgbtm--lg  My Account Dashboard
+		
+		section.myAccount
+			.myAccount__flex--layout 
+			
+				.myAccount__side-menu
+				
+					nav.myAccount__side-menu--nav  
+					
+						.user__nav#my-account-nav
+						
+							ul.myAccount__side-menu--ul  
+							
+								li.myAccount__side-menu--item  
+									button#my-account-profile.myAccount__side-menu--btn.account-overview--btn Overview
+									
+								li.myAccount__side-menu--item 
+									button#my-account-wishlist.myAccount__side-menu--btn.account-wishlist--btn Wish List
+									
+								li.myAccount__side-menu--item
+									button#my-account-cart.myAccount__side-menu--btn.account-cart--btn Shopping Cart
+									
+								li.myAccount__side-menu--item 
+									button#my-account-orders.myAccount__side-menu--btn.account-orders--btn Order History
+									
+								li.myAccount__side-menu--item
+									button#my-account-addresses.account-address--btn.myAccount__side-menu--btn  Addresses
+									
+									
+								li.myAccount__side-menu--item 
+									button#my-account-reviews.myAccount__side-menu--btn.account-reviews--btn Reviews
+									
+								li.myAccount__side-menu--item 
+									button#my-account-support.myAccount__side-menu--btn.account-support--btn Support
+									
+								li.myAccount__side-menu--item 
+									button#my-account-logout.myAccount__side-menu--btn.logout--btn Logout
+									
+				#my-account-main.myAccount__main-content 
+				
+				
+					.myAccount__main
+					
+						.myAccount__main--overview.content-active
+							
+							.myAccount__main-profile--grid
+						
+								.myAccount__main-profile--box
+														
+									h2.myAccount__main--heading My Profile
+									
+									.myAccount__main--details-container
+									
+										.myAccount__main--details
+										
+											p.myAccount__main--name #{user.name.toUpperCase()}
+											if user.lastLoggedIn 
+												p.myAccount__main--loggedIn Last Logged In: #{user.lastLoggedIn.toISOString().slice(0, 10)}
+										
+										form#main-profile-form(class='myAccount__main--user-form' , data-user=`${user._id}`)
+										
+											.myAccount-form--group
+												label(for="email") Email:
+												input#user-update-email(type="email" , name='email' value=`${user.email}`)
+												
+											.myAccount-form--group
+												label(for="phone") Phone:
+												input#user-update-phone(type="tel" , name='phone' value=`${user.phone || 'No Phone number'}`)
+
+												
+											button.myAccount__form--submit Update Details
+									
+
+			
+								.myAccount__main-address--box
+									h2.heading_sm.mrgbtm--sm Default Address
+									.myAccount__main-address 
+										.myAccount__main-address--row 										
+											p Type: 
+											p #{homeAddress && homeAddress.label ? homeAddress.label.toUpperCase() : 'No Label'}
+										.myAccount__main-address--row 										
+											p Number:
+											p #{homeAddress && homeAddress.number ? homeAddress.number.toUpperCase() : 'No Number'}
+										.myAccount__main-address--row 										
+											p Street:
+											p #{homeAddress && homeAddress.street ? homeAddress.street.toUpperCase() : 'No Street'}
+										.myAccount__main-address--row 										
+											p City: 
+											p #{homeAddress && homeAddress.city ? homeAddress.city.toUpperCase() : 'No City'}
+										.myAccount__main-address--row 										
+											p State: 
+											p #{homeAddress && homeAddress.state ? homeAddress.state.toUpperCase() : 'No State'}
+										.myAccount__main-address--row 										
+											p Postcode: 
+											p #{homeAddress && homeAddress.postcode ? homeAddress.postcode.toUpperCase() : 'No Postcode'}
+										
+								.myAccount__main-password--box
+									h2.heading_sm.mrgbtm--sm Update Password
+									form#main-password-form(class='myAccount__main--user-form' , data-user=`${user._id}`)
+										.myAccount-form--group.myAccount-form--group--column
+											.myAccount-form--group--row
+												label(for="password-current") Current Password
+												input#password-current(type='password', placeholder='••••••••', required, minlength='8')
+											.myAccount-form--group--row
+												label(for="password") New Password
+												input#password(type='password',placeholder='••••••••', required, minlength='8')
+											.myAccount-form--group--row
+												label(for="password-confirm") Confirm Password
+												input#password-confirm(type='password',placeholder='••••••••', required, minlength='8')
+											button.myAccount__form--submit Update Password
+											
+												
+					
+						.myAccount__main--wishlist.content-hidden
+						
+							h2.heading_med.mrgbtm--xlg Wishlist
+							.myAccount__cart--grid
+								each item in wishlist
+									.myAccount__cart--item
+											if item.product
+												.myAccount__cart--img-box
+														img(src=`/img/product_imgs/${item.product.imageCover}`, alt="" , class='myAccount__cart--img' , width='800' , height='800')
+														button#remove-wishlist--item(class='remove-wishlist--item' , data-remove=`${item._id}`, data-user=`${user._id}`)
+															i(data-lucide='x')
+												.myAccount__cart--text-box
+													p.myAccount__cart--name #{item.product.name}
+													p.myAccount__cart--description Description: #{item.product.description}
+													p.myAccount__cart--color Color: #{item.product.color}
+													
+													////-------- Variants -------// 
+													
+													//- if item.variantDetails
+													//- 	p.myAccount__cart--size Size : #{item.variantDetails.size}
+													.productPage__variant-size--flex
+														each variant, i in item.product.variants 
+															if variant.inStock > 0
+																button(class=`product__size--btn variant__size--${i+1}` , data-variant=variant._id) #{variant.size}
+													
+													////-------- -------- -------// 
+													
+													if user		
+														.productPage__quantity
+															label(for=`quantity`)  Quantity:
+															input#add-to-cart-qty.add-to-cart-qty(type="number" name=`quantity` value="1" min="1")
+														p.myAccount__cart--oprice Original Price : #{item.product.originalPrice}
+														p.myAccount__cart--cprice Current Price :$ #{item.discountPrice}
+														
+															//-// QUANTITY NEEDS SORTING FOR BUTTONS
+												.myAccount__cart--item--btns
+													button.productPage__product-btn.wishlist-btns.wishlist-btn--atc(data-product-id=`${item.product.id}`,data-user=user.id , data-product-slug=`${item.product.slug}`) Add to cart
+													
+													button.productPage__product-btn.wishlist-btns.wishlist-btn--bin(data-product-id=`${item.product.id}`,data-user-object=user , data-product-slug=`${item.product.slug}`) Buy now 													
+													
+											else
+												p Product no longer exists										
+		
+			
+						.myAccount__main--cart.content-hidden
+						
+							h2.heading_med.mrgbtm--xlg Shopping Cart						
+								
+							.myAccount__cart--grid
+								each item in cart
+									.myAccount__cart--item
+										if item.product
+											.myAccount__cart--img-box
+												img(src=`/img/product_imgs/${item.product.imageCover}`, alt="" , class='myAccount__cart--img' , width='800' , height='800')
+												button#remove-cart--item(class='remove-cart--item' , data-remove=`${item._id}`, data-user=`${user._id}`)
+													i(data-lucide='x')
+											.myAccount__cart--text-box
+												p.myAccount__cart--name #{item.product.name}
+												p.myAccount__cart--description Description: #{item.product.description}
+												
+												
+												.myAccount__cart--quantity
+													p.myAccount__cart--color Color
+													p.myAccount__cart--color #{item.product.color}
+												
+												////-------- Variants -------// 
+												
+												if item.variantDetails
+													.myAccount__cart--quantity
+														p.myAccount__cart--size Size
+														p.myAccount__cart--size #{item.variantDetails.size}
+												
+												////-------- -------- -------// 
+												
+												.myAccount__cart--quantity
+													p.myAccount__cart--oprice Original Price : 
+													p.myAccount__cart--oprice $#{item.product.originalPrice}
+												
+												.myAccount__cart--quantity
+													p.myAccount__cart--cprice Current Price : 
+													p.myAccount__cart--cprice $#{item.discountPrice }
+													
+												.myAccount__cart--quantity
+													form.update-cart-quantity(data-product-id=`${item.product._id}`, data-cart-id=item._id, data-user=`${user._id}`)
+														label.cart-qty-label(for='cart-quantity') Quantity
+														input.cart-qty-input(type="number", name="quantity", min="1", value=item.quantity required)
+														button(type="submit") Update											
+	
+										else
+											p Product no longer exists
+							.myAccount__cart--checkout
+								if cart.length > 0 
+									a(href="/checkout-page" class='myAccount__checkout--link') Checkout Now!
+								else 
+									p.myAccount__checkout--empty Cart Empty
+					
+
+						.myAccount__main--orders.content-hidden
+						
+							h2.heading_med.mrgbtm--xlg Order History
+							
+							.myAccount__main--orders--headings
+								h3.myAccount-product--head Product Details
+								h3.myAccount-delivery--head  Delivery Details
+								h3.myAccount-order--head  Order Details
+							.myAccount__main--orders--flex
+								each order in orders
+									.myAccount__main--orders-row 
+									
+										.myAccount__main-order-products--box
+										
+											each item in order.product
+												if item.product
+												
+													.myAccount__main--orders-product
+														.myAccount__main--orders-img--box 
+															img(src=`/img/product_imgs/${item.product.imageCover}`, alt="", width="800", height='800')
+														.myAccount__main--orders-text-box
+															p Name: #{item.product.name}
+															p Description: #{item.product.description}
+															p Sex: #{item.product.sex}
+															p Color: #{item.product.color}
+															if item.variantDetails
+																p Size: #{item.variantDetails.size}
+												else
+														.myAccount__main--orders-product
+															p Product not found or deleted 
+														
+										.myAccount__main--orders-address--box 
+											
+											.myAccount__main--orders-address.myAccount__main--orders-address--line-1
+												p Location: #{order.shippingAddress.label}
+												.street-address
+													p #{order.shippingAddress.number}
+													p #{order.shippingAddress.street.toUpperCase()}
+												p #{order.shippingAddress.city.toUpperCase()}
+												p #{order.shippingAddress.state.toUpperCase()}
+												p #{order.shippingAddress.postcode}
+										
+										.myAccount__main--orders-order 
+										
+											.myAccount__main--orders-order-text
+											
+												- const formatted = new Date(order.createdAt).toLocaleDateString('en-GB')
+												
+												p Order Number: #{order.orderNum}
+												p Status: #{order.status}
+												p Total: $#{order.totalAmount.toFixed(2)}
+												p Payment Method: #{order.paymentMethod}
+												p Date of Order: #{formatted }
+												
+										.myAccount__main--orders-link
+											a(href=`/user-order-number/${order.orderNum}`) See Order Details
+									
+								
+								
+								
+									
+							
+						.myAccount__main--addresses.content-hidden
+						
+							h2.heading_med.mrgbtm--xlg Addresses	
+							
+							.myAccount__main--adressess-box 
+							
+								each addr in user.addresses
+								
+									.myAccount__main--adressess-text 	
+										.myAccount__main--adressess-name 																			
+											p.myAccount__address-label #{addr.label}
+										.myAccount__address-line-1
+											p  #{addr.number} &nbsp
+											p  #{addr.street}
+										p #{addr.city.toUpperCase()}
+										p #{addr.state.toUpperCase()}
+										p #{addr.postcode}
+										
+										.myAccount__address-btns 
+											if addr.isDefault
+												a(href=`/address-form--user/${addr.id}`) Edit 
+												p.myAccount__address-default Default Address
+											else 
+												a(href=`/address-form--user/${addr.id}`) Edit 
+												button#remove-address-btn(data-address=`${addr.id}` , data-user=`${user.id}`,class='remove-address-btns') Remove 
+							
+							.myAccount__address-add 
+								if user.addresses.length < 3
+									a(href=`/address-form--user`) Add Address 		
+								else 
+									p Address Allocation Full	
+													
+							
+						.myAccount__main--reviews.content-hidden
+						
+							h2.heading_med.mrgbtm--xlg Reviews
+							
+							.main_reviews-grid 
+								each review in reviews 
+									.main_reviews-row.main_reviews-row--headings
+										.main_reviews-img--box
+											p Image/link
+										p Product Name
+										p Description
+										p Rating
+										p Comments
+										
+									.main_reviews-row 
+										.main_reviews-img--box
+											a(href=`/product/${review.product.slug}`) 
+												img(src=`/img/product_imgs/${review.product.imageCover}`, alt="", width="800", height='800')
+										p #{review.product.name}
+										p #{review.product.description}
+										p #{review.rating}
+										p #{review.comment}
+										
+							
+							
+							
+							
+						
+						.myAccount__main--support.content-hidden
+						
+							h2.heading_med.mrgbtm--xlg Support	
+					

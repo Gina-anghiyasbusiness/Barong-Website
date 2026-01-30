@@ -1,0 +1,237 @@
+<svg width="2400" height="400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 400">
+  <defs>
+    <style>
+      .embr { fill: #BCA47D; stroke: #9D8A6B; stroke-width: 0.3; }
+      .shadow { fill: #8B7355; opacity: 0.3; }
+    </style>
+  </defs>
+  
+  <!-- VERTICAL EMBROIDERY STRIP - One complete pattern -->
+  <g id="embroideryStrip">
+    <!-- Main vine - slightly curved -->
+    <path d="M 40,0 Q 45,50 40,100 Q 35,150 40,200 Q 45,250 40,300 Q 35,350 40,400" 
+          fill="none" stroke="#9D8A6B" stroke-width="2.5" opacity="0.7"/>
+    
+    <!-- LARGE ROSE CLUSTER 1 (bottom) -->
+    <!-- Main rose -->
+    <ellipse cx="32" cy="370" rx="16" ry="20" class="embr" opacity="0.75"/>
+    <ellipse cx="48" cy="370" rx="16" ry="20" class="embr" opacity="0.75"/>
+    <ellipse cx="40" cy="360" rx="14" ry="18" class="embr" opacity="0.73"/>
+    <ellipse cx="40" cy="380" rx="14" ry="18" class="embr" opacity="0.73"/>
+    <ellipse cx="25" cy="370" rx="12" ry="16" class="embr" opacity="0.7"/>
+    <ellipse cx="55" cy="370" rx="12" ry="16" class="embr" opacity="0.7"/>
+    <circle cx="40" cy="370" r="10" fill="#8B7355" opacity="0.8"/>
+    <!-- Shadow/depth -->
+    <ellipse cx="40" cy="375" rx="12" ry="8" class="shadow"/>
+    
+    <!-- Side roses in cluster -->
+    <ellipse cx="18" cy="365" rx="10" ry="13" class="embr" opacity="0.68"/>
+    <ellipse cx="14" cy="365" rx="7" ry="10" class="embr" opacity="0.65"/>
+    <ellipse cx="22" cy="365" rx="7" ry="10" class="embr" opacity="0.65"/>
+    <circle cx="18" cy="365" r="6" fill="#8B7355" opacity="0.75"/>
+    
+    <ellipse cx="62" cy="365" rx="10" ry="13" class="embr" opacity="0.68"/>
+    <ellipse cx="58" cy="365" rx="7" ry="10" class="embr" opacity="0.65"/>
+    <ellipse cx="66" cy="365" rx="7" ry="10" class="embr" opacity="0.65"/>
+    <circle cx="62" cy="365" r="6" fill="#8B7355" opacity="0.75"/>
+    
+    <!-- Surrounding leaves -->
+    <ellipse cx="10" cy="360" rx="8" ry="18" transform="rotate(-35 10 360)" class="embr" opacity="0.65"/>
+    <ellipse cx="70" cy="360" rx="8" ry="18" transform="rotate(35 70 360)" class="embr" opacity="0.65"/>
+    <ellipse cx="12" cy="380" rx="7" ry="16" transform="rotate(-30 12 380)" class="embr" opacity="0.62"/>
+    <ellipse cx="68" cy="380" rx="7" ry="16" transform="rotate(30 68 380)" class="embr" opacity="0.62"/>
+    
+    <!-- Small filler flowers -->
+    <circle cx="28" cy="355" r="4" class="embr" opacity="0.6"/>
+    <circle cx="52" cy="355" r="4" class="embr" opacity="0.6"/>
+    <circle cx="25" cy="385" r="4" class="embr" opacity="0.6"/>
+    <circle cx="55" cy="385" r="4" class="embr" opacity="0.6"/>
+    
+    <!-- LARGE ROSE CLUSTER 2 -->
+    <ellipse cx="33" cy="300" rx="15" ry="19" class="embr" opacity="0.74"/>
+    <ellipse cx="47" cy="300" rx="15" ry="19" class="embr" opacity="0.74"/>
+    <ellipse cx="40" cy="290" rx="13" ry="17" class="embr" opacity="0.72"/>
+    <ellipse cx="40" cy="310" rx="13" ry="17" class="embr" opacity="0.72"/>
+    <ellipse cx="26" cy="300" rx="11" ry="15" class="embr" opacity="0.69"/>
+    <ellipse cx="54" cy="300" rx="11" ry="15" class="embr" opacity="0.69"/>
+    <circle cx="40" cy="300" r="9" fill="#8B7355" opacity="0.78"/>
+    <ellipse cx="40" cy="305" rx="11" ry="7" class="shadow"/>
+    
+    <ellipse cx="19" cy="295" rx="9" ry="12" class="embr" opacity="0.67"/>
+    <ellipse cx="15" cy="295" rx="6" ry="9" class="embr" opacity="0.64"/>
+    <ellipse cx="23" cy="295" rx="6" ry="9" class="embr" opacity="0.64"/>
+    <circle cx="19" cy="295" r="5" fill="#8B7355" opacity="0.73"/>
+    
+    <ellipse cx="61" cy="295" rx="9" ry="12" class="embr" opacity="0.67"/>
+    <ellipse cx="57" cy="295" rx="6" ry="9" class="embr" opacity="0.64"/>
+    <ellipse cx="65" cy="295" rx="6" ry="9" class="embr" opacity="0.64"/>
+    <circle cx="61" cy="295" r="5" fill="#8B7355" opacity="0.73"/>
+    
+    <ellipse cx="11" cy="290" rx="7" ry="17" transform="rotate(-33 11 290)" class="embr" opacity="0.64"/>
+    <ellipse cx="69" cy="290" rx="7" ry="17" transform="rotate(33 69 290)" class="embr" opacity="0.64"/>
+    <ellipse cx="13" cy="310" rx="7" ry="15" transform="rotate(-28 13 310)" class="embr" opacity="0.61"/>
+    <ellipse cx="67" cy="310" rx="7" ry="15" transform="rotate(28 67 310)" class="embr" opacity="0.61"/>
+    
+    <circle cx="29" cy="285" r="4" class="embr" opacity="0.59"/>
+    <circle cx="51" cy="285" r="4" class="embr" opacity="0.59"/>
+    <circle cx="26" cy="315" r="4" class="embr" opacity="0.59"/>
+    <circle cx="54" cy="315" r="4" class="embr" opacity="0.59"/>
+    
+    <!-- MEDIUM ROSE CLUSTER 3 -->
+    <ellipse cx="34" cy="230" rx="13" ry="17" class="embr" opacity="0.72"/>
+    <ellipse cx="46" cy="230" rx="13" ry="17" class="embr" opacity="0.72"/>
+    <ellipse cx="40" cy="221" rx="11" ry="15" class="embr" opacity="0.7"/>
+    <ellipse cx="40" cy="239" rx="11" ry="15" class="embr" opacity="0.7"/>
+    <ellipse cx="28" cy="230" rx="10" ry="13" class="embr" opacity="0.67"/>
+    <ellipse cx="52" cy="230" rx="10" ry="13" class="embr" opacity="0.67"/>
+    <circle cx="40" cy="230" r="8" fill="#8B7355" opacity="0.76"/>
+    <ellipse cx="40" cy="234" rx="9" ry="6" class="shadow"/>
+    
+    <ellipse cx="21" cy="226" rx="8" ry="11" class="embr" opacity="0.65"/>
+    <ellipse cx="17" cy="226" rx="5" ry="8" class="embr" opacity="0.62"/>
+    <ellipse cx="25" cy="226" rx="5" ry="8" class="embr" opacity="0.62"/>
+    <circle cx="21" cy="226" r="4" fill="#8B7355" opacity="0.71"/>
+    
+    <ellipse cx="59" cy="226" rx="8" ry="11" class="embr" opacity="0.65"/>
+    <ellipse cx="55" cy="226" rx="5" ry="8" class="embr" opacity="0.62"/>
+    <ellipse cx="63" cy="226" rx="5" ry="8" class="embr" opacity="0.62"/>
+    <circle cx="59" cy="226" r="4" fill="#8B7355" opacity="0.71"/>
+    
+    <ellipse cx="14" cy="222" rx="6" ry="15" transform="rotate(-31 14 222)" class="embr" opacity="0.62"/>
+    <ellipse cx="66" cy="222" rx="6" ry="15" transform="rotate(31 66 222)" class="embr" opacity="0.62"/>
+    <ellipse cx="16" cy="238" rx="6" ry="13" transform="rotate(-26 16 238)" class="embr" opacity="0.59"/>
+    <ellipse cx="64" cy="238" rx="6" ry="13" transform="rotate(26 64 238)" class="embr" opacity="0.59"/>
+    
+    <circle cx="30" cy="217" r="3" class="embr" opacity="0.57"/>
+    <circle cx="50" cy="217" r="3" class="embr" opacity="0.57"/>
+    <circle cx="28" cy="243" r="3" class="embr" opacity="0.57"/>
+    <circle cx="52" cy="243" r="3" class="embr" opacity="0.57"/>
+    
+    <!-- LARGE CENTER ROSE CLUSTER 4 (most prominent) -->
+    <ellipse cx="31" cy="160" rx="17" ry="21" class="embr" opacity="0.76"/>
+    <ellipse cx="49" cy="160" rx="17" ry="21" class="embr" opacity="0.76"/>
+    <ellipse cx="40" cy="149" rx="15" ry="19" class="embr" opacity="0.74"/>
+    <ellipse cx="40" cy="171" rx="15" ry="19" class="embr" opacity="0.74"/>
+    <ellipse cx="24" cy="160" rx="13" ry="17" class="embr" opacity="0.71"/>
+    <ellipse cx="56" cy="160" rx="13" ry="17" class="embr" opacity="0.71"/>
+    <ellipse cx="40" cy="153" rx="11" ry="15" class="embr" opacity="0.68"/>
+    <ellipse cx="40" cy="167" rx="11" ry="15" class="embr" opacity="0.68"/>
+    <circle cx="40" cy="160" r="11" fill="#8B7355" opacity="0.8"/>
+    <ellipse cx="40" cy="166" rx="13" ry="9" class="shadow"/>
+    
+    <ellipse cx="17" cy="154" rx="11" ry="14" class="embr" opacity="0.69"/>
+    <ellipse cx="13" cy="154" rx="8" ry="11" class="embr" opacity="0.66"/>
+    <ellipse cx="21" cy="154" rx="8" ry="11" class="embr" opacity="0.66"/>
+    <circle cx="17" cy="154" r="7" fill="#8B7355" opacity="0.76"/>
+    
+    <ellipse cx="63" cy="154" rx="11" ry="14" class="embr" opacity="0.69"/>
+    <ellipse cx="59" cy="154" rx="8" ry="11" class="embr" opacity="0.66"/>
+    <ellipse cx="67" cy="154" rx="8" ry="11" class="embr" opacity="0.66"/>
+    <circle cx="63" cy="154" r="7" fill="#8B7355" opacity="0.76"/>
+    
+    <ellipse cx="17" cy="166" rx="11" ry="14" class="embr" opacity="0.69"/>
+    <ellipse cx="13" cy="166" rx="8" ry="11" class="embr" opacity="0.66"/>
+    <ellipse cx="21" cy="166" rx="8" ry="11" class="embr" opacity="0.66"/>
+    <circle cx="17" cy="166" r="7" fill="#8B7355" opacity="0.76"/>
+    
+    <ellipse cx="63" cy="166" rx="11" ry="14" class="embr" opacity="0.69"/>
+    <ellipse cx="59" cy="166" rx="8" ry="11" class="embr" opacity="0.66"/>
+    <ellipse cx="67" cy="166" rx="8" ry="11" class="embr" opacity="0.66"/>
+    <circle cx="63" cy="166" r="7" fill="#8B7355" opacity="0.76"/>
+    
+    <ellipse cx="8" cy="148" rx="9" ry="19" transform="rotate(-36 8 148)" class="embr" opacity="0.66"/>
+    <ellipse cx="72" cy="148" rx="9" ry="19" transform="rotate(36 72 148)" class="embr" opacity="0.66"/>
+    <ellipse cx="8" cy="172" rx="9" ry="19" transform="rotate(-36 8 172)" class="embr" opacity="0.66"/>
+    <ellipse cx="72" cy="172" rx="9" ry="19" transform="rotate(36 72 172)" class="embr" opacity="0.66"/>
+    
+    <circle cx="27" cy="143" r="5" class="embr" opacity="0.62"/>
+    <circle cx="53" cy="143" r="5" class="embr" opacity="0.62"/>
+    <circle cx="27" cy="177" r="5" class="embr" opacity="0.62"/>
+    <circle cx="53" cy="177" r="5" class="embr" opacity="0.62"/>
+    <circle cx="10" cy="160" r="4" class="embr" opacity="0.6"/>
+    <circle cx="70" cy="160" r="4" class="embr" opacity="0.6"/>
+    
+    <!-- MEDIUM ROSE CLUSTER 5 -->
+    <ellipse cx="34" cy="90" rx="13" ry="17" class="embr" opacity="0.72"/>
+    <ellipse cx="46" cy="90" rx="13" ry="17" class="embr" opacity="0.72"/>
+    <ellipse cx="40" cy="81" rx="11" ry="15" class="embr" opacity="0.7"/>
+    <ellipse cx="40" cy="99" rx="11" ry="15" class="embr" opacity="0.7"/>
+    <ellipse cx="28" cy="90" rx="10" ry="13" class="embr" opacity="0.67"/>
+    <ellipse cx="52" cy="90" rx="10" ry="13" class="embr" opacity="0.67"/>
+    <circle cx="40" cy="90" r="8" fill="#8B7355" opacity="0.76"/>
+    <ellipse cx="40" cy="94" rx="9" ry="6" class="shadow"/>
+    
+    <ellipse cx="21" cy="86" rx="8" ry="11" class="embr" opacity="0.65"/>
+    <ellipse cx="17" cy="86" rx="5" ry="8" class="embr" opacity="0.62"/>
+    <ellipse cx="25" cy="86" rx="5" ry="8" class="embr" opacity="0.62"/>
+    <circle cx="21" cy="86" r="4" fill="#8B7355" opacity="0.71"/>
+    
+    <ellipse cx="59" cy="86" rx="8" ry="11" class="embr" opacity="0.65"/>
+    <ellipse cx="55" cy="86" rx="5" ry="8" class="embr" opacity="0.62"/>
+    <ellipse cx="63" cy="86" rx="5" ry="8" class="embr" opacity="0.62"/>
+    <circle cx="59" cy="86" r="4" fill="#8B7355" opacity="0.71"/>
+    
+    <ellipse cx="14" cy="82" rx="6" ry="15" transform="rotate(-31 14 82)" class="embr" opacity="0.62"/>
+    <ellipse cx="66" cy="82" rx="6" ry="15" transform="rotate(31 66 82)" class="embr" opacity="0.62"/>
+    <ellipse cx="16" cy="98" rx="6" ry="13" transform="rotate(-26 16 98)" class="embr" opacity="0.59"/>
+    <ellipse cx="64" cy="98" rx="6" ry="13" transform="rotate(26 64 98)" class="embr" opacity="0.59"/>
+    
+    <circle cx="30" cy="77" r="3" class="embr" opacity="0.57"/>
+    <circle cx="50" cy="77" r="3" class="embr" opacity="0.57"/>
+    <circle cx="28" cy="103" r="3" class="embr" opacity="0.57"/>
+    <circle cx="52" cy="103" r="3" class="embr" opacity="0.57"/>
+    
+    <!-- SMALL ROSE CLUSTER 6 (top) -->
+    <ellipse cx="35" cy="30" rx="11" ry="14" class="embr" opacity="0.7"/>
+    <ellipse cx="45" cy="30" rx="11" ry="14" class="embr" opacity="0.7"/>
+    <ellipse cx="40" cy="23" rx="9" ry="12" class="embr" opacity="0.68"/>
+    <ellipse cx="40" cy="37" rx="9" ry="12" class="embr" opacity="0.68"/>
+    <ellipse cx="30" cy="30" rx="8" ry="11" class="embr" opacity="0.65"/>
+    <ellipse cx="50" cy="30" rx="8" ry="11" class="embr" opacity="0.65"/>
+    <circle cx="40" cy="30" r="6" fill="#8B7355" opacity="0.74"/>
+    <ellipse cx="40" cy="33" rx="7" ry="5" class="shadow"/>
+    
+    <ellipse cx="24" cy="27" rx="6" ry="9" class="embr" opacity="0.63"/>
+    <ellipse cx="20" cy="27" rx="4" ry="6" class="embr" opacity="0.6"/>
+    <circle cx="24" cy="27" r="3" fill="#8B7355" opacity="0.69"/>
+    
+    <ellipse cx="56" cy="27" rx="6" ry="9" class="embr" opacity="0.63"/>
+    <ellipse cx="60" cy="27" rx="4" ry="6" class="embr" opacity="0.6"/>
+    <circle cx="56" cy="27" r="3" fill="#8B7355" opacity="0.69"/>
+    
+    <ellipse cx="18" cy="24" rx="5" ry="12" transform="rotate(-29 18 24)" class="embr" opacity="0.6"/>
+    <ellipse cx="62" cy="24" rx="5" ry="12" transform="rotate(29 62 24)" class="embr" opacity="0.6"/>
+    <ellipse cx="20" cy="36" rx="5" ry="10" transform="rotate(-24 20 36)" class="embr" opacity="0.57"/>
+    <ellipse cx="60" cy="36" rx="5" ry="10" transform="rotate(24 60 36)" class="embr" opacity="0.57"/>
+    
+    <circle cx="32" cy="20" r="2" class="embr" opacity="0.55"/>
+    <circle cx="48" cy="20" r="2" class="embr" opacity="0.55"/>
+  </g>
+  
+  <!-- Repeat the embroidery strip across width -->
+  <use href="#embroideryStrip" x="0"/>
+  <use href="#embroideryStrip" x="100"/>
+  <use href="#embroideryStrip" x="200"/>
+  <use href="#embroideryStrip" x="300"/>
+  <use href="#embroideryStrip" x="400"/>
+  <use href="#embroideryStrip" x="500"/>
+  <use href="#embroideryStrip" x="600"/>
+  <use href="#embroideryStrip" x="700"/>
+  <use href="#embroideryStrip" x="800"/>
+  <use href="#embroideryStrip" x="900"/>
+  <use href="#embroideryStrip" x="1000"/>
+  <use href="#embroideryStrip" x="1100"/>
+  <use href="#embroideryStrip" x="1200"/>
+  <use href="#embroideryStrip" x="1300"/>
+  <use href="#embroideryStrip" x="1400"/>
+  <use href="#embroideryStrip" x="1500"/>
+  <use href="#embroideryStrip" x="1600"/>
+  <use href="#embroideryStrip" x="1700"/>
+  <use href="#embroideryStrip" x="1800"/>
+  <use href="#embroideryStrip" x="1900"/>
+  <use href="#embroideryStrip" x="2000"/>
+  <use href="#embroideryStrip" x="2100"/>
+  <use href="#embroideryStrip" x="2200"/>
+  <use href="#embroideryStrip" x="2300"/>
+  
+</svg>

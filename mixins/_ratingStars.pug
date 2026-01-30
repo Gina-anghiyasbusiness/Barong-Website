@@ -1,0 +1,6 @@
+
+
+mixin ratingStar(review)
+	each star in [1,2,3,4,5,6,7,8,9,10]
+		i(data-lucide='star' , class=`rating_star--${review.rating >= star ? 'active' : 'inactive'}`)
+		

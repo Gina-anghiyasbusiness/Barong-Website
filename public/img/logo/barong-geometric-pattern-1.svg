@@ -1,0 +1,156 @@
+<svg width="2400" height="180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 180">
+  <defs>
+    <style>
+      .geo { fill: #BCA47D; stroke: #9D8A6B; stroke-width: 0.5; opacity: 0.7; }
+    </style>
+  </defs>
+  
+  <!-- TOP BORDER - Small diamonds/crosses repeating -->
+  <g id="topPattern">
+    <!-- Diamond cross pattern -->
+    <path class="geo" d="M 10,15 L 15,10 L 20,15 L 15,20 Z"/>
+    <path class="geo" d="M 5,15 L 10,10 L 10,20 Z"/>
+    <path class="geo" d="M 20,10 L 25,15 L 20,20 Z"/>
+    <circle cx="15" cy="15" r="2" class="geo"/>
+    
+    <path class="geo" d="M 35,15 L 40,10 L 45,15 L 40,20 Z"/>
+    <path class="geo" d="M 30,15 L 35,10 L 35,20 Z"/>
+    <path class="geo" d="M 45,10 L 50,15 L 45,20 Z"/>
+    <circle cx="40" cy="15" r="2" class="geo"/>
+    
+    <path class="geo" d="M 60,15 L 65,10 L 70,15 L 65,20 Z"/>
+    <path class="geo" d="M 55,15 L 60,10 L 60,20 Z"/>
+    <path class="geo" d="M 70,10 L 75,15 L 70,20 Z"/>
+    <circle cx="65" cy="15" r="2" class="geo"/>
+  </g>
+  
+  <!-- Repeat top pattern across width -->
+  <use href="#topPattern" x="0"/>
+  <use href="#topPattern" x="80"/>
+  <use href="#topPattern" x="160"/>
+  <use href="#topPattern" x="240"/>
+  <use href="#topPattern" x="320"/>
+  <use href="#topPattern" x="400"/>
+  <use href="#topPattern" x="480"/>
+  <use href="#topPattern" x="560"/>
+  <use href="#topPattern" x="640"/>
+  <use href="#topPattern" x="720"/>
+  <use href="#topPattern" x="800"/>
+  <use href="#topPattern" x="880"/>
+  <use href="#topPattern" x="960"/>
+  <use href="#topPattern" x="1040"/>
+  <use href="#topPattern" x="1120"/>
+  <use href="#topPattern" x="1200"/>
+  <use href="#topPattern" x="1280"/>
+  <use href="#topPattern" x="1360"/>
+  <use href="#topPattern" x="1440"/>
+  <use href="#topPattern" x="1520"/>
+  <use href="#topPattern" x="1600"/>
+  <use href="#topPattern" x="1680"/>
+  <use href="#topPattern" x="1760"/>
+  <use href="#topPattern" x="1840"/>
+  <use href="#topPattern" x="1920"/>
+  <use href="#topPattern" x="2000"/>
+  <use href="#topPattern" x="2080"/>
+  <use href="#topPattern" x="2160"/>
+  <use href="#topPattern" x="2240"/>
+  <use href="#topPattern" x="2320"/>
+  
+  <!-- MIDDLE BORDER - Large diamonds with inner detail -->
+  <g id="middlePattern">
+    <!-- Large diamond -->
+    <path class="geo" d="M 40,90 L 60,70 L 80,90 L 60,110 Z"/>
+    <!-- Inner diamond -->
+    <path class="geo" d="M 50,90 L 60,80 L 70,90 L 60,100 Z"/>
+    <!-- Cross lines -->
+    <line x1="40" y1="90" x2="80" y2="90" class="geo" stroke-width="1"/>
+    <line x1="60" y1="70" x2="60" y2="110" class="geo" stroke-width="1"/>
+    <!-- Corner details -->
+    <circle cx="50" cy="80" r="2" class="geo"/>
+    <circle cx="70" cy="80" r="2" class="geo"/>
+    <circle cx="50" cy="100" r="2" class="geo"/>
+    <circle cx="70" cy="100" r="2" class="geo"/>
+    <!-- Center -->
+    <circle cx="60" cy="90" r="3" class="geo"/>
+    
+    <!-- Connecting small diamonds -->
+    <path class="geo" d="M 15,90 L 20,85 L 25,90 L 20,95 Z"/>
+    <circle cx="20" cy="90" r="1.5" class="geo"/>
+    
+    <path class="geo" d="M 95,90 L 100,85 L 105,90 L 100,95 Z"/>
+    <circle cx="100" cy="90" r="1.5" class="geo"/>
+  </g>
+  
+  <!-- Repeat middle pattern -->
+  <use href="#middlePattern" x="0"/>
+  <use href="#middlePattern" x="120"/>
+  <use href="#middlePattern" x="240"/>
+  <use href="#middlePattern" x="360"/>
+  <use href="#middlePattern" x="480"/>
+  <use href="#middlePattern" x="600"/>
+  <use href="#middlePattern" x="720"/>
+  <use href="#middlePattern" x="840"/>
+  <use href="#middlePattern" x="960"/>
+  <use href="#middlePattern" x="1080"/>
+  <use href="#middlePattern" x="1200"/>
+  <use href="#middlePattern" x="1320"/>
+  <use href="#middlePattern" x="1440"/>
+  <use href="#middlePattern" x="1560"/>
+  <use href="#middlePattern" x="1680"/>
+  <use href="#middlePattern" x="1800"/>
+  <use href="#middlePattern" x="1920"/>
+  <use href="#middlePattern" x="2040"/>
+  <use href="#middlePattern" x="2160"/>
+  <use href="#middlePattern" x="2280"/>
+  
+  <!-- BOTTOM BORDER - Same as top -->
+  <g id="bottomPattern">
+    <path class="geo" d="M 10,165 L 15,160 L 20,165 L 15,170 Z"/>
+    <path class="geo" d="M 5,165 L 10,160 L 10,170 Z"/>
+    <path class="geo" d="M 20,160 L 25,165 L 20,170 Z"/>
+    <circle cx="15" cy="165" r="2" class="geo"/>
+    
+    <path class="geo" d="M 35,165 L 40,160 L 45,165 L 40,170 Z"/>
+    <path class="geo" d="M 30,165 L 35,160 L 35,170 Z"/>
+    <path class="geo" d="M 45,160 L 50,165 L 45,170 Z"/>
+    <circle cx="40" cy="165" r="2" class="geo"/>
+    
+    <path class="geo" d="M 60,165 L 65,160 L 70,165 L 65,170 Z"/>
+    <path class="geo" d="M 55,165 L 60,160 L 60,170 Z"/>
+    <path class="geo" d="M 70,160 L 75,165 L 70,170 Z"/>
+    <circle cx="65" cy="165" r="2" class="geo"/>
+  </g>
+  
+  <!-- Repeat bottom pattern -->
+  <use href="#bottomPattern" x="0"/>
+  <use href="#bottomPattern" x="80"/>
+  <use href="#bottomPattern" x="160"/>
+  <use href="#bottomPattern" x="240"/>
+  <use href="#bottomPattern" x="320"/>
+  <use href="#bottomPattern" x="400"/>
+  <use href="#bottomPattern" x="480"/>
+  <use href="#bottomPattern" x="560"/>
+  <use href="#bottomPattern" x="640"/>
+  <use href="#bottomPattern" x="720"/>
+  <use href="#bottomPattern" x="800"/>
+  <use href="#bottomPattern" x="880"/>
+  <use href="#bottomPattern" x="960"/>
+  <use href="#bottomPattern" x="1040"/>
+  <use href="#bottomPattern" x="1120"/>
+  <use href="#bottomPattern" x="1200"/>
+  <use href="#bottomPattern" x="1280"/>
+  <use href="#bottomPattern" x="1360"/>
+  <use href="#bottomPattern" x="1440"/>
+  <use href="#bottomPattern" x="1520"/>
+  <use href="#bottomPattern" x="1600"/>
+  <use href="#bottomPattern" x="1680"/>
+  <use href="#bottomPattern" x="1760"/>
+  <use href="#bottomPattern" x="1840"/>
+  <use href="#bottomPattern" x="1920"/>
+  <use href="#bottomPattern" x="2000"/>
+  <use href="#bottomPattern" x="2080"/>
+  <use href="#bottomPattern" x="2160"/>
+  <use href="#bottomPattern" x="2240"/>
+  <use href="#bottomPattern" x="2320"/>
+  
+</svg>

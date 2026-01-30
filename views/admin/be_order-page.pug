@@ -1,0 +1,174 @@
+//- extends be_base 
+
+
+//- block content 
+
+
+//- 	main.admin-orderList.wide-container 
+	
+//- 		h2.admin__page--heading Order No: #{order.orderNum}
+		
+//- 		section.admin-order--page 
+//- 			form#admin-order-form.admin-order--form-update(action=`/admin/be_order-page/${order.orderNum}` method='GET' , data-updateshipping=shippingAddress , data-ordernum=order.orderNum)
+//- 				.admin-order-form--full
+//- 					.admin-top-left
+//- 						label(for="admin-order-status") Order Status:
+//- 						select#admin-order-status(name="admin-order-status" ) 
+//- 							option(value="Pending"  selected=order.status === 'Pending') Pending
+//- 							option(value="Paid" selected=order.status === 'Paid') Paid
+//- 							option(value="Shipped" selected=order.status === 'Shipped') Shipped
+//- 							option(value="Deleiverd" selected=order.status === 'Delivered') Delivered
+//- 							option(value="Cancelled" selected=order.status === 'Cancelled') Cancelled
+							
+//- 					.admin-top-right
+//- 						label(for="admin-transaction-status") Transaction Status:
+//- 						select#admin-transaction-status(name='admin-transaction-status')
+//- 							option(value="Pending"  selected=order.transaction.status === 'Pending') Pending
+//- 							option(value="Completed" selected=order.transaction.status === 'Completed') Completed
+//- 							option(value="Failed" selected=order.transaction.status === 'Failed') Failed
+//- 							option(value="Refunded" selected=order.transaction.status === 'Refunded') Refunded
+//- 				.admin-order-left
+//- 					.admin-order-form--row 
+//- 						h2 Customer Details
+//- 					.admin-order-form--row 
+//- 						label(for="order-customer-name") Name:
+//- 						input#order-customer-name(type="text" name='order-customer-name'  value=`${order.user.name}`, disabled)
+//- 					.admin-order-form--row 
+//- 						label(for="order-customer-email") Email:
+//- 						input#order-customer-email(type="email" name='order-customer-email' value=`${order.user.email}`, disabled)
+//- 					.admin-order-form--row 
+//- 						label(for="order-customer-phone") Phone:
+//- 						input#order-customer-phone(type="tel" name='order-customer-phone'  value=`${order.user.phone}`, disabled)
+					
+//- 					.admin-order-form--row 
+//- 						.admin-order-address--box
+//- 							label(for="shipaddress" class='shipping-address-label')  Delivery Address
+//- 							p *Set Delievry Address before Order/Transaction Updates
+//- 						.address-textarea--select
+//- 							if order.status == 'Paid' || order.status == 'Pending'
+//- 								select#shipaddress(name="shipaddress" value=`${shippingAddress.label}`) 
+							
+//- 									option(value="Home" selected=shippingAddress.label ==='Home') Home 
+//- 									option(value="Work" selected=shippingAddress.label ==='Work') Work
+//- 									option(value="Other" selected=shippingAddress.label ==='Other') Other
+//- 							textarea#shipping-address(name="shipping-address" rows='5' disabled) #{renderedAddress || 'No Address Available'}
+//- 				.admin-order-right
+//- 					.admin-order-form--row 
+//- 						h2 Order Details
+//- 					.admin-order-form--row.admin-order-form--align--label 
+//- 						label(for="admin-order-product") Products:
+//- 						.admin-order-product-flex
+//- 							each item in order.product
+//- 								input#admin-order-product(type="text" name='admin-order-product' value=`${item.quantity} x ${item.product.name}`, disabled)
+//- 					.admin-order-form--row 
+//- 						- const formatted = new Date(order.createdAt).toLocaleDateString('en-GB');
+//- 						label(for="admin-order-created") Order Created:
+//- 						input#admin-order-totalPrice(type="text", name='admin-order-created' , value=formatted disabled)
+//- 					.admin-order-form--row 
+//- 						label(for="admin-order-totalPrice") Total Amount:
+//- 						input#admin-order-totalPrice(type="number", name='admin-order-totalPrice', value=`${order.totalAmount}` disabled)
+//- 					.admin-order-form--row 
+//- 						label(for="admin-order-method") Payment Method:
+//- 						input#admin-order-method(type="text", name='admin-order-method', value=`${order.paymentMethod}` disabled)
+//- 					.admin-order-form--row
+//- 						- const formattedPaidAt = new Date(order.transaction.paidAt).toLocaleDateString('en-GB'); 
+//- 						label(for="admin-transaction-pay-date") Payment Date: 
+//- 						input#admin-transaction-pay-date(type="text" name='admin-transaction-pay-date' value=`${formattedPaidAt || 'No Payment Date'}` disabled)
+//- 					.admin-order-form--row
+//- 						- const formattedUpdated = new Date(order.transaction. updatedAt).toLocaleDateString('en-GB'); 
+//- 						label(for="admin-transaction-pay-updated") Transaction Updated: 
+//- 						input#admin-transaction-pay-updated(type="text" name='admin-transaction-pay-updated' value=`${formattedUpdated || 'No Update Date'}` disabled)
+
+						
+//- 				.admin-order-form--submit
+//- 					.submit-message 
+//- 						p Please Finalise changes by submitting
+//- 					.btn-changes
+//- 						button.admin-orders-submit-btn(type='submit') Submit Changes
+extends be_base 
+
+
+block content 
+
+
+	main.admin-orderList.wide-container 
+	
+		h2.admin__page--heading Order No: #{order.orderNum}
+		
+		section.admin-order--page 
+			form#admin-order-form.admin-order--form-update(action=`/admin/be_order-page/${order.orderNum}` method='GET' , data-updateshipping=shippingAddress , data-ordernum=order.orderNum)
+				.admin-order-form--full
+					.admin-top-left
+						label(for="admin-order-status") Order Status:
+						select#admin-order-status(name="admin-order-status" ) 
+							option(value="Pending"  selected=order.status === 'Pending') Pending
+							option(value="Paid" selected=order.status === 'Paid') Paid
+							option(value="Shipped" selected=order.status === 'Shipped') Shipped
+							option(value="Deleiverd" selected=order.status === 'Delivered') Delivered
+							option(value="Cancelled" selected=order.status === 'Cancelled') Cancelled
+							
+					.admin-top-right
+						label(for="admin-transaction-status") Transaction Status:
+						select#admin-transaction-status(name='admin-transaction-status')
+							option(value="Pending"  selected=order.transaction.status === 'Pending') Pending
+							option(value="Completed" selected=order.transaction.status === 'Completed') Completed
+							option(value="Failed" selected=order.transaction.status === 'Failed') Failed
+							option(value="Refunded" selected=order.transaction.status === 'Refunded') Refunded
+				.admin-order-left
+					.admin-order-form--row 
+						h2 Customer Details
+					.admin-order-form--row 
+						label(for="order-customer-name") Name:
+						input#order-customer-name(type="text" name='order-customer-name'   value=order.user ? order.user.name : order.guestName , disabled)
+					.admin-order-form--row 
+						label(for="order-customer-email") Email:
+						input#order-customer-email(type="email" name='order-customer-email' value=order.user ? order.user.email : order.guestEmail, disabled)
+					.admin-order-form--row 
+						label(for="order-customer-phone") Phone:
+						input#order-customer-phone(type="tel" name='order-customer-phone'  value=order.user ? order.user.phone : order.guestPhone, disabled)
+					
+					.admin-order-form--row 
+						.admin-order-address--box
+							label(for="shipaddress" class='shipping-address-label')  Delivery Address
+							p *Set Delievry Address before Order/Transaction Updates
+						.address-textarea--select
+							if order.status == 'Paid' || order.status == 'Pending'
+								select#shipaddress(name="shipaddress" value=`${shippingAddress.label}`) 
+							
+									option(value="Home" selected=shippingAddress.label ==='Home') Home 
+									option(value="Work" selected=shippingAddress.label ==='Work') Work
+									option(value="Other" selected=shippingAddress.label ==='Other') Other
+							textarea#shipping-address(name="shipping-address" rows='5' disabled) #{renderedAddress || 'No Address Available'}
+				.admin-order-right
+					.admin-order-form--row 
+						h2 Order Details
+					.admin-order-form--row.admin-order-form--align--label 
+						label(for="admin-order-product") Products:
+						.admin-order-product-flex
+							each item in order.product
+								input#admin-order-product(type="text" name='admin-order-product' value=`${item.quantity} x ${item.product.name}`, disabled)
+					.admin-order-form--row 
+						- const formatted = new Date(order.createdAt).toLocaleDateString('en-GB');
+						label(for="admin-order-created") Order Created:
+						input#admin-order-totalPrice(type="text", name='admin-order-created' , value=formatted disabled)
+					.admin-order-form--row 
+						label(for="admin-order-totalPrice") Total Amount:
+						input#admin-order-totalPrice(type="number", name='admin-order-totalPrice', value=`${order.totalAmount}` disabled)
+					.admin-order-form--row 
+						label(for="admin-order-method") Payment Method:
+						input#admin-order-method(type="text", name='admin-order-method', value=`${order.paymentMethod}` disabled)
+					.admin-order-form--row
+						- const formattedPaidAt = new Date(order.transaction.paidAt).toLocaleDateString('en-GB'); 
+						label(for="admin-transaction-pay-date") Payment Date: 
+						input#admin-transaction-pay-date(type="text" name='admin-transaction-pay-date' value=`${formattedPaidAt || 'No Payment Date'}` disabled)
+					.admin-order-form--row
+						- const formattedUpdated = new Date(order.transaction. updatedAt).toLocaleDateString('en-GB'); 
+						label(for="admin-transaction-pay-updated") Transaction Updated: 
+						input#admin-transaction-pay-updated(type="text" name='admin-transaction-pay-updated' value=`${formattedUpdated || 'No Update Date'}` disabled)
+
+						
+				.admin-order-form--submit
+					.submit-message 
+						p Please Finalise changes by submitting
+					.btn-changes
+						button.admin-orders-submit-btn(type='submit') Submit Changes

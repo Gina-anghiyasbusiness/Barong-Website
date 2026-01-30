@@ -1,0 +1,42 @@
+extends be_base
+
+
+
+block content 
+
+	main.admin-orderList.wide-container 
+	
+		h2.admin__page--heading.mrgbtm--lg Discount List
+		section.admin__create 
+			.admin__create--box
+			
+				a(href=`/admin/be_discount-create` class='admin__create--link') Add New Discount 
+				
+		section.admin-discountList
+			.admin-discountList--grid
+				h3.admin-productList_head Code
+				h3.admin-productList_head Percent
+				h3.admin-productList_head Amount
+				h3.admin-productList_head Start
+				h3.admin-productList_head End
+				h3.admin-productList_head Created
+				h3.admin-productList_head Updated
+				h3.admin-productList_head Active
+				h3.admin-productList_head Edit
+			.admin-discountList--grid
+				each discount in discounts 
+					- const created = new Date(discount.createdAt).toLocaleDateString('en-GB');
+					- const start = new Date(discount.startDate).toLocaleDateString('en-GB');
+					- const end = new Date(discount.endDate).toLocaleDateString('en-GB');
+					- const updated = new Date(discount.updatedAt).toLocaleDateString('en-GB');
+					p.admin-productList_head #{discount.code}
+					p.admin-productList_head #{discount.percentage || "N/A"}
+					p.admin-productList_head #{discount.amount || "N/A"}
+					p.admin-productList_head #{start}
+					p.admin-productList_head #{end}
+					p.admin-productList_head #{created}
+					p.admin-productList_head #{updated}
+					p.admin-productList_head #{discount.active}
+								
+					a(href=`/admin/be_discount-update/${discount._id}` class='admin_edit--arrow') ➡️
+						
