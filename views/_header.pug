@@ -11,12 +11,18 @@ header.main_header
 		
 			nav.header__nav 
 				ul.header__nav--list 
-					li.header__nav--item 
-						a(href='/product-list' class='header__nav--link') Products
-					li.header__nav--item 
-						a(href='/static/services' class='header__nav--link') Services
-					//- li.header__nav--item 
-					//- 	a(href='/static/blog' class='header__nav--link') Blog
+					li.header__nav--item.dropdown 
+						a(href='/barong-list' class='header__nav--link--dropdown') Shop
+						.dropdown-menu
+							a(href="/barong-list") Barongs 
+							a(href="/shoe-list") Shoes 
+							a(href="/accessories-list") Accessories 
+					li.header__nav--item.dropdown  
+						a(href='/static/services' class='header__nav--link--dropdown') Services
+						.dropdown-menu
+							a(href="#") Customization 
+							a(href="#") Made to measure 
+							a(href="#") Rentals 
 					li.header__nav--item 
 						a(href='/static/about' class='header__nav--link') About
 					li.header__nav--item 

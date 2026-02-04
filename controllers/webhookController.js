@@ -67,6 +67,8 @@ exports.handleStripeWebhook = async (req, res) => {
 
 
 
+
+
 	/// ✅ Check which type of event was received		///
 
 
@@ -85,7 +87,9 @@ exports.handleStripeWebhook = async (req, res) => {
 
 			/// Cart			
 
-			cart = JSON.parse(session.metadata.cart);
+			cart = session.metadata?.cart ? JSON.parse(session.metadata.cart) : null;
+
+
 
 		} else {
 
@@ -97,7 +101,12 @@ exports.handleStripeWebhook = async (req, res) => {
 		}
 
 
+
+		if (!session.metadata?.address) return res.status(400).send('Missing metadata.address');
 		shippingAddress = JSON.parse(session.metadata.address);
+
+
+
 
 
 

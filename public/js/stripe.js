@@ -3,7 +3,7 @@ import axios from 'axios';
 import { showAlert } from './alert';
 
 
-const stripe = Stripe('pk_test_51QcESvI6jYGG65H8RbhtPmBE7YWbyCk7yixi8czswxoys4iXtvNmA4IAwM2OyNKEa26OzvB0K3agHmLslnb8xqjh00vtcFOYGX');
+const stripe = Stripe('pk_test_51Sv7UbJGnb8O9t51PR8Y22riJBvEZBsuSnRnXqlNYCEYfNbWLr7FOs80Q2iG4dwxbvas5YnfAdjmj1EkAUizCXpo00gQwXLWxA');
 
 
 

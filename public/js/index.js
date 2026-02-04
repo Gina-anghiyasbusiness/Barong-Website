@@ -10,7 +10,9 @@ import { updateOrders } from './backEndOrders';
 
 import { createDiscountDB, updateDiscountDB } from './discount';
 
-import { updateProductDB, createProductDB, discontinueProduct } from './products';
+import { updateProductDB, createProductDB, discontinueProduct } from './barongs';
+import { createShoesDB, updateShoeDB, discontinueShoes } from './shoes';
+import { createAccessoriesDB, updateAccessoriesDB, discontinueAccs } from './accessories';
 
 import { createCategoryDB, updateCategoryDB, deactivateCategoryDB } from './category';
 
@@ -88,7 +90,6 @@ if (logoutBtn) {
 		e.preventDefault();
 
 		logout();
-
 	})
 }
 
@@ -101,7 +102,6 @@ if (logoutAccountBtn) {
 		e.preventDefault();
 
 		logout();
-
 	})
 }
 
@@ -140,7 +140,6 @@ if (resetPasswordForm) {
 		const email = document.getElementById('reset-password-email').value;
 
 		resetEmailPasswordUser(email);
-
 	})
 }
 
@@ -157,7 +156,6 @@ if (setNewPasswordForm) {
 
 			password: document.getElementById('set-new-password').value,
 			passwordConfirm: document.getElementById('confirm-new-password-email').value
-
 		}
 
 		const token = window.location.pathname.split('/')[2];
@@ -969,20 +967,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+///			 Size guide button			///
+
+
+
+const sizeGuideBtn = document.querySelector('.size-guide--btn');
+const sizeGuideBox = document.querySelector('.productPage__variant-size-guide--box')
+
+
+if (sizeGuideBtn) {
+
+	sizeGuideBtn.addEventListener('click', function (e) {
+
+		e.preventDefault();
+
+		if (sizeGuideBox) {
+
+			sizeGuideBox.classList.toggle('size_guide--active')
+		}
+		else { return }
+	})
+}
 
 
 
 
 
-
-
-
-///---------------------------- BACKEND -----------------------------///
-
+///------------------------------- ------- -------------------------------///
+///------------------------------- BACKEND -------------------------------///
+///------------------------------- ------- -------------------------------///
 
 
 /// 				BACKEND STUFF				 ///
-
 
 
 /// Users     
@@ -1001,13 +1017,26 @@ const productFormCreate = document.querySelector('.product__form--create');
 const discontinueBtn = document.getElementById('discontinue-btn');
 
 
+/// Shoes  
+
+const shoeFormCreate = document.querySelector('.shoe__form--create');
+
+
+
+
+
+/// Accessories  
+
+
+
+
+
+
 
 /// Update User Data
 
 const updateDataForm = document.querySelector('.user__form--data');
 const updatePasswordForm = document.querySelector('.user__form--password');
-
-
 
 
 
@@ -1212,6 +1241,12 @@ if (updatePasswordForm) {
 
 
 
+
+/// ----------	 Barongs 	------------//
+
+
+
+
 if (productFormCreate) {
 
 	productFormCreate.addEventListener('submit', e => {
@@ -1271,12 +1306,9 @@ if (productFormCreate) {
 
 		form.append('variants', JSON.stringify(variants));
 
-
 		//---------------------- ------- -----------------------//
 
-
 		createProductDB(form);
-
 	});
 }
 
@@ -1327,7 +1359,6 @@ if (productForm) {
 			}
 		}
 
-
 		//---------------------- Variants -----------------------//
 
 
@@ -1344,15 +1375,11 @@ if (productForm) {
 			}
 		}
 
-
 		//---------------------- ------- -----------------------//
 
-
 		updateProductDB(form, id, slug);
-
 	});
 }
-
 
 
 
@@ -1370,6 +1397,303 @@ if (discontinueBtn) {
 	})
 }
 
+
+
+
+
+/// ----------- Shoes ------------- ///
+
+
+
+
+if (shoeFormCreate) {
+
+	shoeFormCreate.addEventListener('submit', e => {
+
+		e.preventDefault();
+
+		const form = new FormData();
+
+		form.append('name', document.getElementById('name').value);
+		form.append('description', document.getElementById('description').value);
+		form.append('originalPrice', document.getElementById('original-price').value);
+		form.append('category', document.getElementById('category').value);
+		form.append('sex', document.getElementById('sex').value);
+		form.append('color', document.getElementById('color').value);
+		form.append('style', document.getElementById('style').value);
+
+
+		/// ✅ Image Cover
+
+
+		const cover = document.getElementById('shoe-image-cover');
+
+		if (cover && cover.files[0]) {
+
+			form.append('imageCover', cover.files[0]);
+		}
+
+
+		/// ✅ Image Array (no event listener!)
+
+		const extrasInput = document.getElementById('shoe-image-array');
+
+		if (extrasInput && extrasInput.files.length > 0) {
+
+			for (let i = 0; i < extrasInput.files.length; i++) {
+				form.append('imageUrls', extrasInput.files[i]);
+			}
+		}
+
+
+		//---------------------- Variants -----------------------//
+
+
+		const variants = [];
+
+		const sizeFields = document.querySelectorAll('[name^="variant-size-"]');
+		const stockFields = document.querySelectorAll('[name^="variant-inStock-"]');
+
+		for (let i = 0; i < sizeFields.length; i++) {
+			const size = sizeFields[i].value;
+			const inStock = parseInt(stockFields[i].value, 10) || 0;
+
+			if (size) {
+				variants.push({ size, inStock });
+			}
+		}
+
+		form.append('variants', JSON.stringify(variants));
+
+		//---------------------- ------- -----------------------//
+
+		createShoesDB(form);
+
+	});
+}
+
+
+
+
+
+/// Update shoes		
+
+
+const shoeForm = document.querySelector('.shoe__form');
+
+
+if (shoeForm) {
+
+	shoeForm.addEventListener('submit', e => {
+
+		e.preventDefault();
+
+		const id = shoeForm.dataset.id;
+		const slug = shoeForm.dataset.slug;
+
+		const form = new FormData();
+
+		form.append('name', document.getElementById('name').value);
+		form.append('description', document.getElementById('description').value);
+		form.append('originalPrice', document.getElementById('original-price').value);
+		form.append('currentPrice', document.getElementById('current-price').value);
+		form.append('tags', document.getElementById('tags').value);
+		form.append('discount', document.getElementById('discount').value);
+		form.append('category', document.getElementById('category').value);
+		form.append('sex', document.getElementById('sex').value);
+		form.append('color', document.getElementById('color').value);
+		form.append('style', document.getElementById('style').value);
+
+
+		/// ✅ Image Cover
+
+		const cover = document.getElementById('shoe-image-cover');
+
+		if (cover && cover.files[0]) {
+
+			form.append('imageCover', cover.files[0]);
+		}
+
+
+		/// ✅ Image Array (no event listener!)
+
+		const extrasInput = document.getElementById('shoe-image-array');
+
+		if (extrasInput && extrasInput.files.length > 0) {
+
+			for (let i = 0; i < extrasInput.files.length; i++) {
+				form.append('imageUrls', extrasInput.files[i]);
+			}
+		}
+
+		//---------------------- Variants -----------------------//
+
+
+		const sizeFields = document.querySelectorAll('[name^="variant-size-"]');
+		const stockFields = document.querySelectorAll('[name^="variant-inStock-"]');
+
+		for (let i = 0; i < sizeFields.length; i++) {
+			const size = sizeFields[i].value;
+			const inStock = parseInt(stockFields[i].value, 10) || 0;
+
+			if (size) {
+				form.append(`variants[${i}][size]`, size);
+				form.append(`variants[${i}][inStock]`, inStock);
+			}
+		}
+
+		//---------------------- ------- -----------------------//
+
+
+		updateShoeDB(form, id, slug);
+	});
+}
+
+
+
+/// discontinue  
+
+const discontinueShoesBtn = document.getElementById('discontinue-shoes-btn');
+
+if (discontinueShoesBtn) {
+
+	discontinueShoesBtn.addEventListener('click', e => {
+
+		e.preventDefault();
+
+		const productId = e.currentTarget.dataset.productId;
+
+		if (confirm('Are you sure you want to discontinue this Product? This action is hard to undo.')) {
+			discontinueShoes(productId);
+		}
+	})
+}
+
+
+
+/// ----------- Accessories ------------- ///
+
+
+const accsFormCreate = document.querySelector('.accs__form--create');
+
+if (accsFormCreate) {
+
+	accsFormCreate.addEventListener('submit', e => {
+
+		e.preventDefault();
+
+		const form = new FormData();
+
+		form.append('name', document.getElementById('name').value);
+		form.append('description', document.getElementById('description').value);
+		form.append('originalPrice', document.getElementById('original-price').value);
+		form.append('category', document.getElementById('category').value);
+		form.append('color', document.getElementById('color').value);
+
+
+
+		/// ✅ Image Cover
+
+
+		const cover = document.getElementById('accs-image-cover');
+
+		if (cover && cover.files[0]) {
+
+			form.append('imageCover', cover.files[0]);
+		}
+
+
+		/// ✅ Image Array (no event listener!)
+
+		const extrasInput = document.getElementById('accs-image-array');
+
+		if (extrasInput && extrasInput.files.length > 0) {
+
+			for (let i = 0; i < extrasInput.files.length; i++) {
+				form.append('imageUrls', extrasInput.files[i]);
+			}
+		}
+
+		createAccessoriesDB(form);
+	});
+}
+
+
+
+
+/// Update Accessory		
+
+
+const accsForm = document.querySelector('.accs__form');
+
+
+if (accsForm) {
+
+	accsForm.addEventListener('submit', e => {
+
+		e.preventDefault();
+
+		const id = accsForm.dataset.id;
+		const slug = accsForm.dataset.slug;
+
+		const form = new FormData();
+
+		form.append('name', document.getElementById('name').value);
+		form.append('description', document.getElementById('description').value);
+		form.append('originalPrice', document.getElementById('original-price').value);
+		form.append('currentPrice', document.getElementById('current-price').value);
+		form.append('tags', document.getElementById('tags').value);
+		form.append('discount', document.getElementById('discount').value);
+		form.append('category', document.getElementById('category').value);
+		form.append('color', document.getElementById('color').value);
+
+
+
+		/// ✅ Image Cover
+
+		const cover = document.getElementById('accs-image-cover');
+
+		if (cover && cover.files[0]) {
+
+			form.append('imageCover', cover.files[0]);
+		}
+
+
+		/// ✅ Image Array (no event listener!)
+
+		const extrasInput = document.getElementById('accs-image-array');
+
+		if (extrasInput && extrasInput.files.length > 0) {
+
+			for (let i = 0; i < extrasInput.files.length; i++) {
+				form.append('imageUrls', extrasInput.files[i]);
+			}
+		}
+
+		updateAccessoriesDB(form, id, slug);
+	});
+}
+
+
+
+/// Discontinue Accessory
+
+const discontinueAccsBtn = document.getElementById('discontinue-accs-btn');
+
+
+if (discontinueAccsBtn) {
+
+	discontinueAccsBtn.addEventListener('click', e => {
+
+		e.preventDefault();
+
+		const productId = e.currentTarget.dataset.productId;
+
+		if (confirm('Are you sure you want to discontinue this Product? This action is hard to undo.')) {
+			discontinueAccs(productId);
+		}
+	})
+}
 
 
 

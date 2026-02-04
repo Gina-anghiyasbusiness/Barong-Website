@@ -31,11 +31,11 @@ block content
 			
 				each product in products
 					.productList__product 	
-						a(href=`/product/${product.slug}` class='productList__page--link') 
+						a(href=`/barong/${product.slug}` class='productList__page--link') 
 							- const category = 	product.category ? product.category.name : "";
 							.productList-box--img 
 								
-								img(src=`/img/product_imgs/${product.imageCover}`, alt='image',width="400",height="400", class='productList__img' fetchpriority="high")
+								img(src=`/img/product_imgs/${product.imageCover}`, alt='image',width="800",height="450", class='productList__img' fetchpriority="high")
 							.productList-box
 								.productList-box--heading
 									h4 #{product.name}
@@ -109,7 +109,7 @@ block content
 					h2.homePage--sub-heading.sub-heading-light  Complete the Look
 					p Carefully selected shoes and accessories to pair with Filipino formalwear
 					.homePage__shoes-link--box
-						a(href="#" class='homePage__shoes-link') View Shoe Collection 
+						a(href="/shoe-list" class='homePage__shoes-link') View Shoe Collection 
 				.homePage-shoe-collection-image-box
 					.homePage-shoe-collection-image.shoes-1
 						img(src="/img/product_imgs/shoes/shoes-1.png", class='shoe_collection-shoe ' alt="")
@@ -126,7 +126,7 @@ block content
 				p Get in touch to discuss tailoring, measurements, and availability.
 					
 					.hero__cta-box
-						a(href="/static/services" class='homePage__hero-cta homePage_contact-cta') Enquire Now
+						a(href="/static/contact" class='homePage__hero-cta homePage_contact-cta') Enquire Now
 			
 					
 		

@@ -1,0 +1,65 @@
+extends be_base 
+
+include ../../mixins/_formFields
+include ../../mixins/_formSelectOptions
+
+
+block content 
+
+	main.container.two-col-grid.product--grid 
+	
+		section.product__images 
+		
+			.product__imageCover
+			
+				img(src=`/img/product_imgs/${product.imageCover}`, class='product__img--cover' alt="")
+			
+			.product__imagesArray
+				each image in product.imageUrls
+					img(src=`/img/product_imgs/${image}`, class='product__img--array' alt="")
+	
+
+		section.product__item 
+		
+			h2.product__item--heading #{product.name}
+		
+			
+			form.accs__form(data-id=product._id , data-slug=product.slug) 
+				.product__form--group
+					+formRowsReadOnly('SKU','number',product.productSku)
+				.product__form--group
+					+formRows('name','text',product.name)
+				.product__form--group
+					+formRows('description','text',product.description)
+				.product__form--group
+					+formRowsReadOnly('original-price','number',product.originalPrice)
+				.product__form--group
+					+formRows('current-price','number',product.currentPrice)
+				.product__form--group
+					+formSelect('color', ['black', 'white', 'red', 'blue', 'green', 'yellow', 'pink', 'purple', 'orange', 'grey', 'brown'], product.color)
+				.product__form--group
+					+formRows('tags','text',product.tags)
+				.product__form--group
+					+formSelectCodeNone('category', categories, product.category ?  product.category._id.toString() : '')
+				.product__form--group
+					+formSelectCodeNone('discount', discounts, product.discount ? product.discount._id.toString() : '')
+					
+					
+				.product__form--grid-select
+					.product__form--img-box
+						label.product__form--img-label(for='product-image-cover') Upload Main Image (Cover):
+						input#accs-image-cover(type='file', name='imageCover', accept='image/*')
+
+					//- 🌟 Additional Images Upload
+					
+					.product__form--img-box
+						label.product__form--img-label(for='product-image-array') Upload Additional Images: 
+						input#accs-image-array(type='file', name='imageUrls', accept='image/*', multiple)
+						p.product__form--img-p (Use CTRL and Click for multiple images)
+
+										
+						
+						
+				.product__form--btn-box
+					button#discontinue-accs-btn(type='button',  data-product-id=`${product._id}` )  Discontinue Product	
+					button.product__form--btn Update

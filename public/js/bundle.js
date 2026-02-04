@@ -10518,12 +10518,12 @@
     }
   };
 
-  // public/js/products.js
+  // public/js/barongs.js
   var createProductDB = async (form) => {
     try {
       const result = await axios_default({
         method: "POST",
-        url: `/api/v1/admin/products/`,
+        url: `/api/v1/admin/barongs/`,
         data: form,
         headers: {
           "Content-Type": "multipart/form-data"
@@ -10532,7 +10532,7 @@
       if (result.data.status === "success") {
         showAlert("success", "Product Created successfully!!");
         window.setTimeout(() => {
-          location.assign("/admin/be_products-list");
+          location.assign("/admin/be_barongs-list");
         }, 2500);
       }
     } catch (err) {
@@ -10543,7 +10543,7 @@
     try {
       const result = await axios_default({
         method: "PATCH",
-        url: `/api/v1/admin/products/${id}`,
+        url: `/api/v1/admin/barongs/${id}`,
         data,
         headers: {
           "Content-Type": "multipart/form-data"
@@ -10553,7 +10553,7 @@
         showAlert("success", "Product Updated successfully!!");
         window.setTimeout(
           () => {
-            location.assign(`/admin/be_product-item/${slug}`);
+            location.assign(`/admin/be_barongs-list`);
           },
           2500
         );
@@ -10566,12 +10566,134 @@
     try {
       const result = await axios_default({
         method: "PATCH",
-        url: `/api/v1/admin/products/discontinued/${id}`
+        url: `/api/v1/admin/barongs/discontinued/${id}`
       });
       if (result.data.status === "success") {
         showAlert("success", `Product Successfully Discontinued!!`);
         window.setTimeout(() => {
-          location.assign("/admin/be_products-list");
+          location.assign("/admin/be_barongss-list");
+        }, 1e3);
+      }
+    } catch (err) {
+      showAlert("error", err.response.data.message);
+    }
+  };
+
+  // public/js/shoes.js
+  var createShoesDB = async (form) => {
+    try {
+      const result = await axios_default({
+        method: "POST",
+        url: `/api/v1/admin/shoes/`,
+        data: form,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+      if (result.data.status === "success") {
+        showAlert("success", "Product Created successfully!!");
+        window.setTimeout(() => {
+          location.assign("/admin/be_shoes-list");
+        }, 2500);
+      }
+    } catch (err) {
+      showAlert("error", err.response.data.message);
+    }
+  };
+  var updateShoeDB = async (data, id, slug) => {
+    try {
+      const result = await axios_default({
+        method: "PATCH",
+        url: `/api/v1/admin/shoes/${id}`,
+        data,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+      if (result.data.status === "success") {
+        showAlert("success", "Product Updated successfully!!");
+        window.setTimeout(
+          () => {
+            location.assign(`/admin/be_shoes-list`);
+          },
+          2500
+        );
+      }
+    } catch (err) {
+      showAlert("error", err.response.data.message);
+    }
+  };
+  var discontinueShoes = async (id) => {
+    try {
+      const result = await axios_default({
+        method: "PATCH",
+        url: `/api/v1/admin/shoes/discontinued/${id}`
+      });
+      if (result.data.status === "success") {
+        showAlert("success", `Product Successfully Discontinued!!`);
+        window.setTimeout(() => {
+          location.assign("/admin/be_shoes-list");
+        }, 1e3);
+      }
+    } catch (err) {
+      showAlert("error", err.response.data.message);
+    }
+  };
+
+  // public/js/accessories.js
+  var createAccessoriesDB = async (form) => {
+    try {
+      const result = await axios_default({
+        method: "POST",
+        url: `/api/v1/admin/accessories/`,
+        data: form,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+      if (result.data.status === "success") {
+        showAlert("success", "Accessory Created successfully!!");
+        window.setTimeout(() => {
+          location.assign("/admin/be_accessories-list");
+        }, 2500);
+      }
+    } catch (err) {
+      showAlert("error", err.response.data.message);
+    }
+  };
+  var updateAccessoriesDB = async (data, id, slug) => {
+    try {
+      const result = await axios_default({
+        method: "PATCH",
+        url: `/api/v1/admin/accessories/${id}`,
+        data,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+      if (result.data.status === "success") {
+        showAlert("success", "Accessory Updated successfully!!");
+        window.setTimeout(
+          () => {
+            location.assign(`/admin/be_accessories-list`);
+          },
+          2500
+        );
+      }
+    } catch (err) {
+      showAlert("error", err.response.data.message);
+    }
+  };
+  var discontinueAccs = async (id) => {
+    try {
+      const result = await axios_default({
+        method: "PATCH",
+        url: `/api/v1/admin/accessories/discontinued/${id}`
+      });
+      if (result.data.status === "success") {
+        showAlert("success", `Product Successfully Discontinued!!`);
+        window.setTimeout(() => {
+          location.assign("/admin/be_accessories-list");
         }, 1e3);
       }
     } catch (err) {
@@ -10796,7 +10918,7 @@
   };
 
   // public/js/stripe.js
-  var stripe = Stripe("pk_test_51QcESvI6jYGG65H8RbhtPmBE7YWbyCk7yixi8czswxoys4iXtvNmA4IAwM2OyNKEa26OzvB0K3agHmLslnb8xqjh00vtcFOYGX");
+  var stripe = Stripe("pk_test_51Sv7UbJGnb8O9t51PR8Y22riJBvEZBsuSnRnXqlNYCEYfNbWLr7FOs80Q2iG4dwxbvas5YnfAdjmj1EkAUizCXpo00gQwXLWxA");
   var buyCart = async () => {
     try {
       const session = await axios_default(`/api/v1/orders/checkout-session`);
@@ -28570,12 +28692,25 @@
       sortForm.submit();
     });
   });
+  var sizeGuideBtn = document.querySelector(".size-guide--btn");
+  var sizeGuideBox = document.querySelector(".productPage__variant-size-guide--box");
+  if (sizeGuideBtn) {
+    sizeGuideBtn.addEventListener("click", function(e) {
+      e.preventDefault();
+      if (sizeGuideBox) {
+        sizeGuideBox.classList.toggle("size_guide--active");
+      } else {
+        return;
+      }
+    });
+  }
   var createUser = document.querySelector(".user__form--create");
   var updateUser = document.querySelector(".user__form--update");
   var deactivateUser = document.getElementById("deactivateUser");
   var productForm = document.querySelector(".product__form");
   var productFormCreate = document.querySelector(".product__form--create");
   var discontinueBtn = document.getElementById("discontinue-btn");
+  var shoeFormCreate = document.querySelector(".shoe__form--create");
   var updateDataForm = document.querySelector(".user__form--data");
   var updatePasswordForm = document.querySelector(".user__form--password");
   var createCategory = document.querySelector(".category__form--create");
@@ -28743,6 +28878,152 @@
       const productId = e.currentTarget.dataset.productId;
       if (confirm("Are you sure you want to discontinue this Product? This action is hard to undo.")) {
         discontinueProduct(productId);
+      }
+    });
+  }
+  if (shoeFormCreate) {
+    shoeFormCreate.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const form = new FormData();
+      form.append("name", document.getElementById("name").value);
+      form.append("description", document.getElementById("description").value);
+      form.append("originalPrice", document.getElementById("original-price").value);
+      form.append("category", document.getElementById("category").value);
+      form.append("sex", document.getElementById("sex").value);
+      form.append("color", document.getElementById("color").value);
+      form.append("style", document.getElementById("style").value);
+      const cover = document.getElementById("shoe-image-cover");
+      if (cover && cover.files[0]) {
+        form.append("imageCover", cover.files[0]);
+      }
+      const extrasInput = document.getElementById("shoe-image-array");
+      if (extrasInput && extrasInput.files.length > 0) {
+        for (let i = 0; i < extrasInput.files.length; i++) {
+          form.append("imageUrls", extrasInput.files[i]);
+        }
+      }
+      const variants = [];
+      const sizeFields = document.querySelectorAll('[name^="variant-size-"]');
+      const stockFields = document.querySelectorAll('[name^="variant-inStock-"]');
+      for (let i = 0; i < sizeFields.length; i++) {
+        const size = sizeFields[i].value;
+        const inStock = parseInt(stockFields[i].value, 10) || 0;
+        if (size) {
+          variants.push({ size, inStock });
+        }
+      }
+      form.append("variants", JSON.stringify(variants));
+      createShoesDB(form);
+    });
+  }
+  var shoeForm = document.querySelector(".shoe__form");
+  if (shoeForm) {
+    shoeForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const id = shoeForm.dataset.id;
+      const slug = shoeForm.dataset.slug;
+      const form = new FormData();
+      form.append("name", document.getElementById("name").value);
+      form.append("description", document.getElementById("description").value);
+      form.append("originalPrice", document.getElementById("original-price").value);
+      form.append("currentPrice", document.getElementById("current-price").value);
+      form.append("tags", document.getElementById("tags").value);
+      form.append("discount", document.getElementById("discount").value);
+      form.append("category", document.getElementById("category").value);
+      form.append("sex", document.getElementById("sex").value);
+      form.append("color", document.getElementById("color").value);
+      form.append("style", document.getElementById("style").value);
+      const cover = document.getElementById("shoe-image-cover");
+      if (cover && cover.files[0]) {
+        form.append("imageCover", cover.files[0]);
+      }
+      const extrasInput = document.getElementById("shoe-image-array");
+      if (extrasInput && extrasInput.files.length > 0) {
+        for (let i = 0; i < extrasInput.files.length; i++) {
+          form.append("imageUrls", extrasInput.files[i]);
+        }
+      }
+      const sizeFields = document.querySelectorAll('[name^="variant-size-"]');
+      const stockFields = document.querySelectorAll('[name^="variant-inStock-"]');
+      for (let i = 0; i < sizeFields.length; i++) {
+        const size = sizeFields[i].value;
+        const inStock = parseInt(stockFields[i].value, 10) || 0;
+        if (size) {
+          form.append(`variants[${i}][size]`, size);
+          form.append(`variants[${i}][inStock]`, inStock);
+        }
+      }
+      updateShoeDB(form, id, slug);
+    });
+  }
+  var discontinueShoesBtn = document.getElementById("discontinue-shoes-btn");
+  if (discontinueShoesBtn) {
+    discontinueShoesBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const productId = e.currentTarget.dataset.productId;
+      if (confirm("Are you sure you want to discontinue this Product? This action is hard to undo.")) {
+        discontinueShoes(productId);
+      }
+    });
+  }
+  var accsFormCreate = document.querySelector(".accs__form--create");
+  if (accsFormCreate) {
+    accsFormCreate.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const form = new FormData();
+      form.append("name", document.getElementById("name").value);
+      form.append("description", document.getElementById("description").value);
+      form.append("originalPrice", document.getElementById("original-price").value);
+      form.append("category", document.getElementById("category").value);
+      form.append("color", document.getElementById("color").value);
+      const cover = document.getElementById("accs-image-cover");
+      if (cover && cover.files[0]) {
+        form.append("imageCover", cover.files[0]);
+      }
+      const extrasInput = document.getElementById("accs-image-array");
+      if (extrasInput && extrasInput.files.length > 0) {
+        for (let i = 0; i < extrasInput.files.length; i++) {
+          form.append("imageUrls", extrasInput.files[i]);
+        }
+      }
+      createAccessoriesDB(form);
+    });
+  }
+  var accsForm = document.querySelector(".accs__form");
+  if (accsForm) {
+    accsForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const id = accsForm.dataset.id;
+      const slug = accsForm.dataset.slug;
+      const form = new FormData();
+      form.append("name", document.getElementById("name").value);
+      form.append("description", document.getElementById("description").value);
+      form.append("originalPrice", document.getElementById("original-price").value);
+      form.append("currentPrice", document.getElementById("current-price").value);
+      form.append("tags", document.getElementById("tags").value);
+      form.append("discount", document.getElementById("discount").value);
+      form.append("category", document.getElementById("category").value);
+      form.append("color", document.getElementById("color").value);
+      const cover = document.getElementById("accs-image-cover");
+      if (cover && cover.files[0]) {
+        form.append("imageCover", cover.files[0]);
+      }
+      const extrasInput = document.getElementById("accs-image-array");
+      if (extrasInput && extrasInput.files.length > 0) {
+        for (let i = 0; i < extrasInput.files.length; i++) {
+          form.append("imageUrls", extrasInput.files[i]);
+        }
+      }
+      updateAccessoriesDB(form, id, slug);
+    });
+  }
+  var discontinueAccsBtn = document.getElementById("discontinue-accs-btn");
+  if (discontinueAccsBtn) {
+    discontinueAccsBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const productId = e.currentTarget.dataset.productId;
+      if (confirm("Are you sure you want to discontinue this Product? This action is hard to undo.")) {
+        discontinueAccs(productId);
       }
     });
   }

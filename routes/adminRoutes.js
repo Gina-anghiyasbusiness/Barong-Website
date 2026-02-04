@@ -19,16 +19,20 @@ router.use(authController.restrictTo('admin', 'owner', 'supervisor'));
 
 //---------- Product Routes ------------//
 
-router.route('/products')
+
+///	 Barongs 	
+
+
+router.route('/barongs')
 	.get(productController.getAllProducts)
 	.post(
 		productController.uploadProductImages,
 		productController.resizeProductImages,
-		productController.createProduct);
+		productController.createBarong);
 
 
 
-router.route('/products/:id')
+router.route('/barongs/:id')
 	.get(productController.getProduct)
 	.patch(
 		productController.uploadProductImages,
@@ -40,6 +44,57 @@ router.route('/products/:id')
 
 
 
+///	 Shoes 	
+
+
+router.route('/shoes')
+	.get(productController.getAllProducts)
+	.post(
+		productController.uploadProductImages,
+		productController.resizeOtherImages,
+		productController.createShoes);
+
+
+
+router.route('/shoes/:id')
+	.get(productController.getProduct)
+	.patch(
+		productController.uploadProductImages,
+		productController.resizeOtherImages,
+		productController.updateShoe)
+	.delete(
+		authController.restrictTo('supervisor', 'owner'),
+		productController.deleteShoe);
+
+
+
+///	 Accessories 	
+
+
+router.route('/accessories')
+	.get(productController.getAllProducts)
+	.post(
+		productController.uploadProductImages,
+		productController.resizeOtherImages,
+		productController.createAccessories);
+
+
+router.route('/accessories/:id')
+	.get(productController.getProduct)
+	.patch(
+		productController.uploadProductImages,
+		productController.resizeOtherImages,
+		productController.updateAccessory)
+	.delete(
+		authController.restrictTo('supervisor', 'owner'),
+		productController.deleteAccs);
+
+
+
+
+
+//---------- Product Routes - NON admin ------------//
+
 
 //// Restrict Routes for admin users
 
@@ -47,8 +102,16 @@ router.route('/products/:id')
 router.use(authController.restrictTo('supervisor', 'owner'));
 
 
-router.route('/products/discontinued/:id')
+router.route('/barongs/discontinued/:id')
 	.patch(productController.discontinueProduct);
+
+
+router.route('/shoes/discontinued/:id')
+	.patch(productController.discontinueShoes);
+
+
+router.route('/accessories/discontinued/:id')
+	.patch(productController.discontinueAccs);
 
 
 

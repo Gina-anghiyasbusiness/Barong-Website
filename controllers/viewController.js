@@ -8,9 +8,9 @@ const missingDiscountCheck = require('../utilities/missingDiscountCheck');
 const missingDiscountCheckLoop = require('../utilities/missingDiscountCheckLoop');
 
 
-
-
 const SpecProd = require('./../models/specProdModel');
+const Shoe = require('./../models/shoeModel');
+const Accessory = require('../models/accessoryModel');
 const User = require('./../models/userModel');
 const Category = require('./../models/categoryModel');
 const Order = require('./../models/orderModel');
@@ -20,13 +20,6 @@ const Discount = require('./../models/discountModel');
 const GuestAddress = require('../models/guestAddressModel');
 
 const { description } = require('../models/productBaseModel');
-
-
-
-
-
-
-
 
 
 
@@ -106,7 +99,8 @@ exports.getHomePage = catchAsync(async (req, res, next) => {
 
 
 
-//------------------- Product List Page ------------------------//
+
+//------------------- Shop Pages ------------------------//
 
 
 ///			Re-usable variant function -	for forms		///
@@ -124,19 +118,19 @@ const formVariants = async (variant, desiredOrder = null) => {
 	if (!desiredOrder) return Arr;
 
 	return desiredOrder.filter(v => Arr.includes(v));
-
 }
 
 
 
 
 
-exports.getProductListPage = catchAsync(async (req, res, next) => {
+//----------------- Barong List Page --------------------//
 
+
+exports.getBarongListPage = catchAsync(async (req, res, next) => {
 
 
 	///			 Sort Results			///
-
 
 	const parameterFilter = {
 
@@ -148,9 +142,7 @@ exports.getProductListPage = catchAsync(async (req, res, next) => {
 	}
 
 	const selectedOption = req.query.productSort || 'newest';
-
 	const sortOption = parameterFilter[req.query.productSort] || { createdAt: -1 };
-
 
 
 	///			Display Sizes in dropdown			///
@@ -161,15 +153,11 @@ exports.getProductListPage = catchAsync(async (req, res, next) => {
 	const sizeList = await formVariants('size', desiredSizeOrder);
 
 
-
 	///			 Filter By Size			///
 
 	const size = req.query.productSize;
 
-	console.log('SIZE FILTER:', size, '| Query:', req.query);
-
 	let productlist;
-
 
 	if (!size) {
 
@@ -178,18 +166,13 @@ exports.getProductListPage = catchAsync(async (req, res, next) => {
 	} else productlist = await SpecProd.find({ 'variants': { $elemMatch: { size: size, inStock: { $gt: 0 } } } }).sort(sortOption).populate('category');
 
 
-
-
 	await Promise.all(productlist.map(async product => {
 
 		await missingDiscountCheck(product);
 
 	}));
 
-
-
-
-	res.status(200).render('product-list-page', {
+	res.status(200).render('barong-list-page', {
 		pageTitle: 'Product List',
 		pageDescription: 'Home Page for your website',
 		canonicalUrl: `${process.env.CANONICAL_URL}`,
@@ -204,11 +187,11 @@ exports.getProductListPage = catchAsync(async (req, res, next) => {
 
 
 
-//---------------------- Product Page ----------------------------//
+//------------------ Barong Page -----------------------//
 
 
 
-exports.getProductPage = catchAsync(async (req, res, next) => {
+exports.getBarongPage = catchAsync(async (req, res, next) => {
 
 	const product = await SpecProd.findOne({ slug: req.params.slug }).populate({
 		path: 'reviews',
@@ -219,9 +202,7 @@ exports.getProductPage = catchAsync(async (req, res, next) => {
 
 	///			Discount Price			///
 
-
 	await missingDiscountCheck(product);
-
 
 
 	///			Reviewed			///
@@ -238,11 +219,9 @@ exports.getProductPage = catchAsync(async (req, res, next) => {
 	}
 
 
-
 	///			Purchased			///
 
 	let hasPurchased = false;
-
 
 	if (req.user) {
 
@@ -262,13 +241,11 @@ exports.getProductPage = catchAsync(async (req, res, next) => {
 		}
 	}
 
-
-
-
 	if (!product) return next(new AppError('No product Found', 404));
 
-	res.status(200).render('product-page', {
+	console.log(product)
 
+	res.status(200).render('barong-page', {
 
 		pageTitle: `${product.name} | Template Website`,
 		pageDescription: 'Product Page for your website',
@@ -278,6 +255,282 @@ exports.getProductPage = catchAsync(async (req, res, next) => {
 		hasPurchased
 	});
 })
+
+
+
+
+//------------------ Shoe list  Page -----------------------//
+
+
+
+exports.getShoeListPage = catchAsync(async (req, res, next) => {
+
+
+	///			 Sort Results			///
+
+	const parameterFilter = {
+
+		newest: { createdAt: -1 },
+		lowest: { currentPrice: 1 },
+		highest: { currentPrice: -1 },
+		alphabet: { name: 1 },
+
+	}
+
+	const selectedOption = req.query.productSort || 'newest';
+	const sortOption = parameterFilter[req.query.productSort] || { createdAt: -1 };
+
+
+	///			Display Sizes in dropdown			///
+
+
+	const desiredSizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '6', '8', '10', '12', '14', '16', '18'];
+
+	const sizeList = await formVariants('size', desiredSizeOrder);
+
+
+	///			 Filter By Size			///
+
+	const size = req.query.productSize;
+
+	let productlist;
+
+	if (!size) {
+
+		productlist = await Shoe.find().sort(sortOption).populate('category');
+
+	} else productlist = await Shoe.find({ 'variants': { $elemMatch: { size: size, inStock: { $gt: 0 } } } }).sort(sortOption).populate('category');
+
+
+	await Promise.all(productlist.map(async product => {
+
+		await missingDiscountCheck(product);
+
+	}));
+
+	res.status(200).render('shoe-list-page', {
+		pageTitle: 'Shoe List',
+		pageDescription: 'List os Shoes',
+		canonicalUrl: `${process.env.CANONICAL_URL}shoe-list`,
+		productlist,
+		sizeList,
+		selectedOption,
+		selectedSize: size || ''  // ← add this
+	});
+})
+
+
+
+//------------------ Shoe Page -----------------------//
+
+
+
+exports.getShoePage = catchAsync(async (req, res, next) => {
+
+	const product = await Shoe.findOne({ slug: req.params.slug }).populate({
+		path: 'reviews',
+		select: 'user rating comment'
+	}).populate('category');
+
+
+
+	///			Discount Price			///
+
+	await missingDiscountCheck(product);
+
+
+	///			Reviewed			///
+
+	let hasReviewed = false;
+
+
+	if (req.user && product.reviews.length) {
+
+		hasReviewed = product.reviews.some(
+
+			rev => rev.user._id.toString() === req.user._id.toString()
+		);
+	}
+
+
+	///			Purchased			///
+
+	let hasPurchased = false;
+
+	if (req.user) {
+
+		const orders = await Order.find({ user: req.user.id });
+		const productId = product._id.toString();
+
+		if (!productId || !orders) {
+
+			return;
+
+		} else {
+
+			hasPurchased = orders.some(order => order.product.some(prod => {
+
+				return prod.product?._id?.toString() === productId;
+			}))
+		}
+	}
+
+	if (!product) return next(new AppError('No product Found', 404));
+
+	res.status(200).render('shoe-page', {
+
+		pageTitle: `${product.name} | Template Website`,
+		pageDescription: 'Product Page for your website',
+		canonicalUrl: `${process.env.CANONICAL_URL}product-page/${product.slug}`,
+		product,
+		hasReviewed,
+		hasPurchased
+	});
+})
+
+
+
+
+
+//------------------ Accessories list  Page -----------------------//
+
+
+
+exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
+
+
+	///			 Sort Results			///
+
+	const parameterFilter = {
+
+		newest: { createdAt: -1 },
+		lowest: { currentPrice: 1 },
+		highest: { currentPrice: -1 },
+		alphabet: { name: 1 },
+
+	}
+
+	const selectedOption = req.query.productSort || 'newest';
+	const sortOption = parameterFilter[req.query.productSort] || { createdAt: -1 };
+
+
+	///			Display Sizes in dropdown			///
+
+
+	const desiredSizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '6', '8', '10', '12', '14', '16', '18'];
+
+	const sizeList = await formVariants('size', desiredSizeOrder);
+
+
+	///			 Filter By Size			///
+
+	const size = req.query.productSize;
+
+	let productlist;
+
+	if (!size) {
+
+		productlist = await Accessory.find().sort(sortOption).populate('category');
+
+	} else productlist = await Accessory.find({ 'variants': { $elemMatch: { size: size, inStock: { $gt: 0 } } } }).sort(sortOption).populate('category');
+
+
+	await Promise.all(productlist.map(async product => {
+
+		await missingDiscountCheck(product);
+
+	}));
+
+	res.status(200).render('accessories-list-page', {
+		pageTitle: 'Accessories List',
+		pageDescription: 'List of Shoes',
+		canonicalUrl: `${process.env.CANONICAL_URL}accessories-list`,
+		productlist,
+		sizeList,
+		selectedOption,
+		selectedSize: size || ''  // ← add this
+	});
+})
+
+
+
+
+
+
+exports.getAccessoryPage = catchAsync(async (req, res, next) => {
+
+	const product = await Accessory.findOne({ slug: req.params.slug }).populate({
+		path: 'reviews',
+		select: 'user rating comment'
+	}).populate('category');
+
+
+
+	///			Discount Price			///
+
+	await missingDiscountCheck(product);
+
+
+	///			Reviewed			///
+
+	let hasReviewed = false;
+
+
+	if (req.user && product.reviews.length) {
+
+		hasReviewed = product.reviews.some(
+
+			rev => rev.user._id.toString() === req.user._id.toString()
+		);
+	}
+
+
+	///			Purchased			///
+
+	let hasPurchased = false;
+
+	if (req.user) {
+
+		const orders = await Order.find({ user: req.user.id });
+		const productId = product._id.toString();
+
+		if (!productId || !orders) {
+
+			return;
+
+		} else {
+
+			hasPurchased = orders.some(order => order.product.some(prod => {
+
+				return prod.product?._id?.toString() === productId;
+			}))
+		}
+	}
+
+	if (!product) return next(new AppError('No product Found', 404));
+
+	res.status(200).render('accessories-page', {
+
+		pageTitle: `${product.name} | Template Website`,
+		pageDescription: 'Product Page for your website',
+		canonicalUrl: `${process.env.CANONICAL_URL}product-page/${product.slug}`,
+		product,
+		hasReviewed,
+		hasPurchased
+	});
+})
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -303,8 +556,6 @@ exports.getCategoriesPage = catchAsync(async (req, res, next) => {
 		categories
 	});
 })
-
-
 
 
 
@@ -338,8 +589,8 @@ exports.getFrontEndCategoryPage = catchAsync(async (req, res, next) => {
 })
 
 
-//--------------------- Services Page --------------------------//
 
+//--------------------- Services Page --------------------------//
 
 
 
@@ -356,9 +607,7 @@ exports.getServicesPage = (req, res) => {
 
 
 
-
 //--------------------- Blog Page --------------------------//
-
 
 
 
@@ -378,7 +627,6 @@ exports.getBlogPage = (req, res) => {
 
 
 
-
 exports.getAboutPage = (req, res) => {
 
 	res.status(200).render('about', {
@@ -392,7 +640,6 @@ exports.getAboutPage = (req, res) => {
 
 
 //--------------------- Contact Page --------------------------//
-
 
 
 
@@ -1104,10 +1351,25 @@ exports.getMyDetails = catchAsync(async (req, res) => {
 
 
 
-/// 	Product Pages 	///
+// ------------- 	Product Pages 	-------------	///
 
 
-exports.getProductList = catchAsync(async (req, res) => {
+
+
+///		Barongs		
+
+
+exports.getProductsDashboard = catchAsync(async (req, res) => {
+
+	res.status(200).render('admin/be_products-dashboard', {
+
+		title: 'Admin-Products-Dashboard',
+	})
+})
+
+
+
+exports.getBarongsList = catchAsync(async (req, res) => {
 
 	const productList = await SpecProd.find()
 		.populate('discount')
@@ -1117,35 +1379,27 @@ exports.getProductList = catchAsync(async (req, res) => {
 		})
 		.sort({ createdAt: -1 });
 
-
-
-
-	res.status(200).render('admin/be_products-list', {
-
-		title: 'Admin-Products',
+	res.status(200).render('admin/be_barongs-list', {
+		title: 'Admin-Barong-Products',
 		productList
 	})
 })
 
 
 
-
-
-exports.getProduct = catchAsync(async (req, res) => {
-
+exports.getBarong = catchAsync(async (req, res) => {
 
 	const product = await SpecProd.findOne({ slug: req.params.slug }).populate(
 		{
 			path: 'category',
 			select: 'name'
 		}
-
 	);
 
 	const categories = await Category.find().select('name');
 	const discounts = await Discount.find().select('code');
 
-	res.status(200).render('admin/be_product', {
+	res.status(200).render('admin/be_barong', {
 
 		title: `Admin-${product.name}`,
 		product,
@@ -1156,8 +1410,26 @@ exports.getProduct = catchAsync(async (req, res) => {
 
 
 
+exports.createBarongPage = catchAsync(async (req, res) => {
 
-exports.getProductSearch = catchAsync(async (req, res) => {
+	const categories = await Category.find().select('name');
+	const discounts = await Discount.find().select('code');
+
+	const product = {};
+
+	res.status(200).render('admin/be_barong-create', {
+
+		title: 'Admin- Create Product',
+		product,
+		categories,
+		discounts
+	})
+})
+
+
+
+
+exports.getBarongSearch = catchAsync(async (req, res) => {
 
 	const productSku = req.query.productSearch;
 
@@ -1171,9 +1443,9 @@ exports.getProductSearch = catchAsync(async (req, res) => {
 	const discounts = await Discount.find().select('code');
 
 
-	res.status(200).render('admin/be_product', {
+	res.status(200).render('admin/be_barong', {
 
-		title: `Admin-Product`,
+		title: `Admin-Barong`,
 		product,
 		categories,
 		discounts
@@ -1182,24 +1454,135 @@ exports.getProductSearch = catchAsync(async (req, res) => {
 
 
 
+///		Shoes	
 
-exports.createProductPage = catchAsync(async (req, res) => {
+
+exports.getShoesList = catchAsync(async (req, res) => {
+
+	const productList = await Shoe.find()
+		.populate('discount')
+		.populate({
+			path: 'category',
+			select: 'name'
+		})
+		.sort({ createdAt: -1 });
+
+
+	res.status(200).render('admin/be_shoes-list', {
+
+		title: 'Admin-Shoe-Products',
+		productList
+	})
+})
+
+
+
+exports.getShoe = catchAsync(async (req, res) => {
+
+	const product = await Shoe.findOne({ slug: req.params.slug }).populate(
+		{
+			path: 'category',
+			select: 'name'
+		}
+	);
 
 	const categories = await Category.find().select('name');
 	const discounts = await Discount.find().select('code');
 
+	res.status(200).render('admin/be_shoe', {
 
-	const product = {};
-
-	res.status(200).render('admin/be_product-create', {
-
-		title: 'Admin- Create Product',
+		title: `Admin-${product.name}`,
 		product,
 		categories,
 		discounts
 	})
 })
 
+
+
+
+
+
+exports.createShoesPage = catchAsync(async (req, res) => {
+
+	const categories = await Category.find().select('name');
+	// const discounts = await Discount.find().select('code');
+
+	const product = {};
+
+	res.status(200).render('admin/be_shoes-create', {
+
+		title: 'Admin- Create Shoes',
+		product,
+		categories,
+		// discounts
+	})
+})
+
+
+
+
+///		Accessories	
+
+
+exports.getAccessoriesList = catchAsync(async (req, res) => {
+
+	const productList = await Accessory.find()
+		.populate('discount')
+		.populate({
+			path: 'category',
+			select: 'name'
+		})
+		.sort({ createdAt: -1 });
+
+
+	res.status(200).render('admin/be_accessories-list', {
+		title: 'Admin-Accessories-Products',
+		productList
+
+	})
+})
+
+
+
+exports.getAccessory = catchAsync(async (req, res) => {
+
+	const product = await Accessory.findOne({ slug: req.params.slug }).populate(
+		{
+			path: 'category',
+			select: 'name'
+		}
+	);
+
+	const categories = await Category.find().select('name');
+	const discounts = await Discount.find().select('code');
+
+	res.status(200).render('admin/be_accessory', {
+
+		title: `Admin-${product.name}`,
+		product,
+		categories,
+		discounts
+	})
+})
+
+
+
+exports.createAccessoriesPage = catchAsync(async (req, res) => {
+
+	const categories = await Category.find().select('name');
+	// const discounts = await Discount.find().select('code');
+
+	const product = {};
+
+	res.status(200).render('admin/be_accessories-create', {
+
+		title: 'Admin- Create Accessories',
+		product,
+		categories,
+		// discounts
+	})
+})
 
 
 

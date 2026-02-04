@@ -50,10 +50,10 @@ router.use('/:productId/shopping', shoppingRouter);
 
 router.route('/')
 	.get(productController.getAllProducts)
-	.post(
-		authController.protectRoute,
-		authController.restrictTo('supervisor', 'owner'),
-		productController.createProduct);
+// .post(
+// 	authController.protectRoute,
+// 	authController.restrictTo('supervisor', 'owner'),
+// 	productController.createBarong);
 
 
 

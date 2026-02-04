@@ -10,9 +10,7 @@ const viewController = require('./../controllers/viewController.js');
 //----------------  CLIENT ROUTES (FRONTEND-----------------///
 
 
-
 /// IS LOGGED IN CHECK ON ALL ROUTES
-
 
 
 router.use(authController.isLoggedIn);
@@ -32,11 +30,30 @@ router.get('/set-new-password-page/:token', viewController.setNewPasswordPage);
 
 
 
-/// Product Pages
+///		 Product Pages			
 
-router.get('/product-list', viewController.getProductListPage);
 
-router.get('/product/:slug', viewController.getProductPage);
+/// Barongs
+
+router.get('/barong-list', viewController.getBarongListPage);
+
+router.get('/barong/:slug', viewController.getBarongPage);
+
+
+
+/// Shoes
+
+router.get('/shoe-list', viewController.getShoeListPage);
+
+router.get('/shoe/:slug', viewController.getShoePage);
+
+
+
+/// Accessories
+
+router.get('/accessories-list', viewController.getAccessoryListPage);
+
+router.get('/accessories/:slug', viewController.getAccessoryPage);
 
 
 
@@ -195,8 +212,6 @@ router.get('/admin/be_home', viewController.adminPage);
 
 
 
-
-
 //------------- 	Render Pages	 ------------//
 
 
@@ -218,24 +233,61 @@ router.get('/admin/be_user-search', viewController.getUserSearch);
 
 
 
+// ------------ 	Products	----------- ///
 
-/// 	Products	 ///
 
-
-router.get('/admin/be_products-list', viewController.getProductList);
-
-router.get('/admin/be_product-item/:slug', viewController.getProduct);
-
-router.get('/admin/be_product-create', viewController.createProductPage);
-
-router.get('/admin/be_product-search', viewController.getProductSearch);
+router.get('/admin/be_products-dashboard', viewController.getProductsDashboard)
 
 
 
+/// Barongs	
+
+router.get('/admin/be_barongs-list', viewController.getBarongsList);
+
+router.get('/admin/be_barong-item/:slug', viewController.getBarong);
+
+router.get('/admin/be_barong-create', viewController.createBarongPage);
+
+router.get('/admin/be_barong-search', viewController.getBarongSearch);
 
 
 
-///	 Categories	 ///
+/// Shoes	
+
+
+router.get('/admin/be_shoes-list', viewController.getShoesList);
+
+router.get('/admin/be_shoe-item/:slug', viewController.getShoe);
+
+router.get('/admin/be_shoes-create', viewController.createShoesPage);
+
+
+
+
+/// Accessories	
+
+
+router.get('/admin/be_accessories-list', viewController.getAccessoriesList);
+
+router.get('/admin/be_accessories-item/:slug', viewController.getAccessory);
+
+router.get('/admin/be_accessories-create', viewController.createAccessoriesPage);
+
+
+
+
+
+
+
+
+// ------------ ----------	----------- ///
+
+
+
+
+
+// ------------ 	Categories	----------- ///
+
 
 
 router.get('/admin/be_category-list', viewController.getCategoryList);
@@ -248,7 +300,7 @@ router.get('/admin/be_category-page/:id', viewController.getCategoryPage);
 
 
 
-///		 Orders		 ///
+// ------------ 	Orders	----------- ///
 
 
 router.get('/admin/be_order-list', viewController.getOrderList);
@@ -260,7 +312,7 @@ router.get('/admin/be_order-search', viewController.getOrderSearch);
 
 
 
-///		 Transactions		 ///
+// ------------ 	Transactions	----------- ///
 
 
 router.get('/admin/be_transaction-list', viewController.getTransactionList);
@@ -270,9 +322,7 @@ router.get('/admin/be_transaction-search', viewController.getTransactionSearch);
 
 
 
-///		 Dsicounts		 ///
-
-
+// ------------ 	Discounts	----------- ///
 
 
 router.get('/admin/be_discount-list', viewController.getDiscountList);

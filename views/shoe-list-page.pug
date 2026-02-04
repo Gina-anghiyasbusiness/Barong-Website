@@ -1,0 +1,32 @@
+extends base 
+
+
+block content 
+
+	main.homePage__main.container
+	
+		section.homePage-productList
+			.productList--heading-box
+				h2.homePage--sub-heading.mrgbtm--lg  All Shoes
+				
+			.productList_filter-sort--box 
+			
+			
+			.productList 		
+			
+				each product in productlist
+					.productList__product 	
+						a(href=`/shoe/${product.slug}` class='productList__page--link') 
+							- const category = 	product.category ? product.category.name : "";
+							.productList-box--img 
+								
+								img(src=`/img/product_imgs/${product.imageCover}`, alt='image',width="800",height="800", class='shoeListPage__img' fetchpriority="high")
+							.productList-box
+								.productList-box--heading
+									h4 #{product.name}
+								.productList__group--box.muted-text
+									if product.discountPrice && product.discountPrice < product.originalPrice
+										p.price--old $#{product.originalPrice}
+										p.price--new $#{product.discountPrice}
+									else 
+										p.price--single $#{product.originalPrice}

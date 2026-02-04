@@ -1,25 +1,20 @@
 extends be_base 
 
-//---------- All Product Fields are from productBase Model --------//
-
-//- //		Reuse admin routes		// -//
-
 block content 
 
 	main.admin-productList.wide-container 
 	
-		h2.admin__page--heading Product List
-		
+		h2.admin__page--heading Accessories List
 		section.admin__create 
 			.admin__create--box
 			
-				a(href=`/admin/be_product-create` class='admin__create--link') Add New Product 
+				a(href=`/admin/be_accessories-create` class='admin__create--link') Add New Accessory 
 				
-				form(action="/admin/be_product-search" method="GET").searchForm-orders 
-					input(type="number" name='productSearch' placeholder='Search By Product No.')
+				form(action="/admin/be_accessories-search" method="GET").searchForm-orders 
+					input(type="number" name='productSearch' placeholder='Search Accessory Product No.')
 					button(type='submit')
 						i(data-lucide='search')
-	
+						
 		section.admin-productList--grid
 		
 			.admin-productList__headings 
@@ -51,11 +46,5 @@ block content
 						p.admin-product__text #{product.currentPrice}
 					
 				
-						a(href=`/admin/be_product-item/${product.slug}` class='admin_edit--arrow') ➡️
-						
-
-				
-
-			
-					
-				
+						a(href=`/admin/be_accessories-item/${product.slug}` class='admin_edit--arrow') ➡️
+							

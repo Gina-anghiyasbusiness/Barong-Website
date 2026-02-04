@@ -1,0 +1,38 @@
+extends be_base
+
+include ../../mixins/_formFields
+include ../../mixins/_formSelectOptions
+
+block content
+
+	main.container
+	
+		section.product__item 		
+
+			h2.admin__page--heading Add New Accessories
+			
+			form.accs__form--create(method="POST" enctype="multipart/form-data")
+				.product__form--group
+					+formRows('name','text','')
+				.product__form--group
+					+formRows('description','text','')
+				.product__form--group
+					+formRows('original-price','text','')
+				.product__form--group
+					+formSelectCodeNone('category', categories, null)
+					+formSelect('color', ['black', 'white', 'red', 'blue', 'green', 'yellow', 'pink', 'purple', 'orange', 'grey', 'brown'], null)
+
+
+				
+				//-- Image Upload Section (Cover + Multiple Images) --//
+				
+				.product__form--img-box-new
+					label.product__form--img-label(for='accs-image-cover') Upload Main Image (Cover):
+					input#accs-image-cover(type='file', name='imageCover', accept='image/*')
+
+				.product__form--img-box-new
+					label.product__form--img-label Upload Additional Images:
+					input#accs-image-array(type="file", accept="image/*", name="images", multiple)
+					
+
+				button.product__form--btn(type="submit") Confirm

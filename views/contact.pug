@@ -1,11 +1,74 @@
 extends base 
 
-
-
 block content
 
 	main.container
 	
-		.contactPage--headings.mrgbtm--lg 
-
-			h2.contactPage--sub-heading Contact
+		section.contactPage
+		
+			.contactPage__cards--box 
+			
+				a.contactPage__card.contactPage__card--link(href="tel:+61417273787")
+					.contactPage__card-icon
+						img(src="/img/icons/phone.svg", alt="")
+					.contactPage__card-heading
+						h4 Call/SMS
+					.contactPage__card-details
+						p +61-417273787						
+					
+				a.contactPage__card.contactPage__card--link( href="mailto:nyck_knox@yahoo.com?subject=Enquiry%20from%20Ang%20Hiyas&body=Hi%20Nyck%2C%0A%0AI'm%20enquiring%20about%3A%0A%0A")
+					.contactPage__card-icon
+						img(src="/img/icons/envelope.svg", alt="")
+					.contactPage__card-heading
+						h4 Email
+					.contactPage__card-details
+						p nyck_knox@yahoo.com
+					
+				a.contactPage__card.contactPage__card--link( href="https://www.google.com/maps/search/?api=1&query=Brisbane%2C%20Queensland" target="_blank" rel="noopener")
+				
+					.contactPage__card-icon
+						img(src="/img/icons/map-pin.svg", alt="")
+					.contactPage__card-heading
+						h4 Service Area
+					.contactPage__card-details
+						p Brisbane, Queensland
+						
+				.contactPage__card
+					.contactPage__card-icon
+						img(src="/img/icons/clock.svg", alt="")
+					.contactPage__card-heading
+						h4 Hours / Appointments
+					.contactPage__card-details
+						p Mon–Fri • 9–5 (AEST)						
+					
+			
+			section.contactPage__form-section 
+					
+				.contactPage__form
+				
+					.contactPage__form-heading
+						h2 Send an Enquiry
+						p Services, custom barongs, rentals, and shoes.
+					
+					
+					form(action="" class='contactPage__form-box') 
+						.contactPage__form-row 
+							label(for="name") Name
+							input(type="text" name='name' id='name')
+						.contactPage__form-row 
+							label(for="email") Email
+							input(type="text" name='email' id='email')
+						.contactPage__form-row 
+							label(for="enquiryType") Enquiry Type
+							select(name="enquiryType" id='enquiryType') 
+								option(value="servicesEnquiry") Services Enquiry
+								option(value="salesEnquiry") Sales Enquiry
+								option(value="customBarong") Custom Barong
+								option(value="barongRentals") Barong rentals
+								option(value="shoes") Shoes
+								option(value="general") General
+							
+						.contactPage__form-row 
+							label(for="email"  class='enquiry-label') Enquiry
+							textarea(name="enquiry" rows='6', cols="42", placeholder='Enter your Enquiry here')
+					button(type='submit' class='submit_form--button') Submit Enquiry

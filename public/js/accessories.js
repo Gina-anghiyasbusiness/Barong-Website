@@ -4,15 +4,14 @@ import { showAlert } from './alert';
 
 
 
-
-export const createProductDB = async form => {
+export const createAccessoriesDB = async form => {
 
 	try {
 
 		const result = await axios({
 
 			method: 'POST',
-			url: `/api/v1/admin/products/`,
+			url: `/api/v1/admin/accessories/`,
 			data: form,
 			headers: {
 				'Content-Type': 'multipart/form-data'
@@ -21,11 +20,11 @@ export const createProductDB = async form => {
 
 		if (result.data.status === 'success') {
 
-			showAlert('success', 'Product Created successfully!!');
+			showAlert('success', 'Accessory Created successfully!!');
 
 			window.setTimeout(() => {
 
-				location.assign('/admin/be_products-list');
+				location.assign('/admin/be_accessories-list');
 
 			}, 2500);
 		}
@@ -39,14 +38,14 @@ export const createProductDB = async form => {
 
 
 
-export const updateProductDB = async (data, id, slug) => {
+export const updateAccessoriesDB = async (data, id, slug) => {
 
 	try {
 
 		const result = await axios({
 
 			method: "PATCH",
-			url: `/api/v1/admin/products/${id}`,
+			url: `/api/v1/admin/accessories/${id}`,
 			data,
 			headers: {
 				'Content-Type': 'multipart/form-data'
@@ -55,11 +54,11 @@ export const updateProductDB = async (data, id, slug) => {
 
 		if (result.data.status === 'success') {
 
-			showAlert('success', 'Product Updated successfully!!');
+			showAlert('success', 'Accessory Updated successfully!!');
 
 			window.setTimeout(() => {
 
-				location.assign(`/admin/be_product-item/${slug}`)
+				location.assign(`/admin/be_accessories-list`)
 
 			}, 2500
 			)
@@ -73,14 +72,14 @@ export const updateProductDB = async (data, id, slug) => {
 
 
 
-export const discontinueProduct = async (id) => {
+export const discontinueAccs = async (id) => {
 
 	try {
 
 		const result = await axios({
 
 			method: "PATCH",
-			url: `/api/v1/admin/products/discontinued/${id}`
+			url: `/api/v1/admin/accessories/discontinued/${id}`
 		})
 
 		if (result.data.status === 'success') {
@@ -89,7 +88,7 @@ export const discontinueProduct = async (id) => {
 
 			window.setTimeout(() => {
 
-				location.assign('/admin/be_products-list')
+				location.assign('/admin/be_accessories-list')
 
 			}, 1000)
 		}
@@ -99,4 +98,5 @@ export const discontinueProduct = async (id) => {
 		showAlert('error', err.response.data.message);
 	}
 }
+
 
