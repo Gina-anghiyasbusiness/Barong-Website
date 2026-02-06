@@ -25,12 +25,12 @@ block content
 				
 			.login__form--box
 			
-				form(action="#", class='signup__form')
+				form(action="#", class='signup__form' autocomplete="off")
 				
 					.signup__form--group
 					
 						label(for='signup-name'  class='signup__form--label') Name
-						input#signup-name(type="text" name='signup-name' placeholder='Your Email' ,autocomplete="email" , required)
+						input#signup-name(type="text" name='signup-name' placeholder='Your Name' autocomplete="name" required)
 					
 						label(for='signup-email'  class='signup__form--label') Email
 						input#signup-email(type="email" name='signup-email' placeholder='Your Email' ,autocomplete="email" , required)
@@ -38,7 +38,7 @@ block content
 					.signup__form--group
 						
 						label(for='signup-password'  class='signup__form--label') Password
-						input#signup-password(type="password" name='signup-password' placeholder='********'  , required)
+						input#signup-password(type="password"  autocomplete="new-password"  name='signup-password' placeholder='********'  , required)
 						
 						label(for='signup-passwordConfirm'  class='signup__form--label') Password Confirm
 						input#signup-passwordConfirm(type="password" name='signup-password-confirm' placeholder='********'  , required)
@@ -49,7 +49,8 @@ block content
 						input#signup-phone(type="tel" name='signup-phone' placeholder='Your Phone Number')
 					
 					
-					button(type='submit' class='signup__form--submit') Submit
+					.signup__form--group-submit
+						button(type='submit' class='signup__form--submit') Submit
 					
 
 
