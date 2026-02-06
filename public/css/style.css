@@ -3219,10 +3219,32 @@ h2.productPage__reviews--heading{
 /* //				Main Account Page 					// */
 
 
+.myAccount__page-heading{
+	
+	padding: 4.8rem 0 2.8rem;
+
+}
+.myAccount__page-heading h2{	
+	
+	font-size: var(--text-xxlg);
+  font-weight: 600;
+
+}
+
+.myAccount{
+	
+	 padding: 4.8rem 0 8rem;
+}
 
 .myAccount__flex--layout {		
 
-	display: flex;			
+	display: grid;
+	grid-template-columns: 25rem 1fr;	
+	gap: 6.4rem;	
+	
+	
+	
+	  align-items: start;
 }
 
 
@@ -3232,60 +3254,54 @@ h2.productPage__reviews--heading{
 
 .myAccount__side-menu {
 	
-	flex:0 0 25%;		
-	background-color:var(--color-bg);	
+	background-color: var(--color-bg);
+  border: 1px solid rgba(201, 155, 40, 0.18);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+  padding: 2.4rem;
 }
 
 
 
-.myAccount__side-menu {	
-	
-	display: grid;	
-	justify-content: center;	
-	
-	padding: 3rem 0;
-}
 
-
-
-ul.myAccount__side-menu--ul {
-	
-	list-style: none;
-	
-	display: flex;
-	flex-direction: column;	
-	gap: 3.2rem;		
+ul.myAccount__side-menu--ul{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
 
 
 .myAccount__side-menu--btn{
-	
-	border: none;
-	background-color:inherit;
-	color:  var(--color-text);
-	padding: .5rem .75rem;
-	
-	cursor: pointer;
-	
-	font-size: var(--text-xlg);
-	font-weight: 600;	
-	
+  width: 100%;
+  text-align: left;
+  padding: 1.2rem 1.2rem;
+  border-radius: 10px;
+
+  background: transparent;
+  border: 1px solid transparent;
+
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-text-muted-dk);
+  cursor: pointer;
 }
 
-
-
+.myAccount__side-menu--btn:hover{
+  background: rgba(201, 155, 40, 0.10);
+}
 
 /* //		Main Content // */
 
 
 .myAccount__main-content {		
 	
-	flex:1;
+	flex:1;	
+	display: grid;	
 	
-	display: grid;
-	
-	background-color: var(--color-secondary);		
 }
 
 
@@ -3293,10 +3309,9 @@ ul.myAccount__side-menu--ul {
 	
 	display: grid;
 	gap: 4rem;
+
 	
-	min-height: 61vh;
-	
-	padding:4rem 6rem;		
+	padding: 0 4rem ;		
 }
 
 
@@ -3304,35 +3319,54 @@ ul.myAccount__side-menu--ul {
 	
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	grid-template-rows: 1fr 1fr;
-	column-gap: 8rem;
-	row-gap: 4rem;	
+  gap: 4rem;
+  align-items: start;
 }
-
-
 
 .myAccount__main-profile--box{
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+/* Bottom row */
+.myAccount__main-address--box{
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.myAccount__main-password--box{
+  grid-column: 2;
+  grid-row: 2;
+}
+.myAccount__main-profile--box,
+.myAccount__main-address--box,
+.myAccount__main-password--box{
+  background-color:var(--color-bg);;
+  border: 1px solid rgba(201, 155, 40, 0.18);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+  padding: 1.8rem;
 	
-	grid-row: 1/3;	
 }
 
 
-.myAccount__main-profile--box,	
-.myAccount__main-password--box,	
-.myAccount__main-address--box{	
-	
-	padding: 2.8rem;
-	box-shadow: var(--shadow-lg);	
-	border-radius: 8px;	
-	background-color: var(--color-surface-layer);	
+.myAccount__main--heading,
+.myAccount__main-address--box h2,
+.myAccount__main-password--box h2{
+  margin-bottom: 1.6rem;
+	padding-bottom: .4rem;
+  /* border-bottom: 1px solid rgba(201, 155, 40, 0.2); */
+  border-bottom: 1px solid rgba(56, 75, 48, 0.1);
 }
 
 
 .myAccount__main--details-container{	
 
 	display: flex;
-	flex-direction: column;
-	gap: 2rem;	
+	align-items: center;
+
+	
+	gap: 6.4rem;	
 }
 
 
@@ -3340,7 +3374,7 @@ ul.myAccount__side-menu--ul {
 .myAccount__main--heading{	
 	
 	font-size: var(--text-lg);
-	margin-bottom: var(--mrg-lg);
+
 }
 
 
@@ -3362,16 +3396,40 @@ form.myAccount__main--user-form{
 	
 	display: flex;
 	flex-direction: column;
-	gap: 2.8rem;
+	width: 100%;
+
 }
 
 
 .myAccount-form--group{
-	
-	display: flex;
-	justify-content: space-between;
+	display: grid;
+  grid-template-columns: 6rem 1fr;
+
+  align-items: center;
+  margin-bottom: 1.6rem;
 }
 
+.myAccount-form--group label{
+	
+	font-size: var(--text-body);
+}
+
+
+.myAccount-form--group-btn	{
+	
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.myAccount-form--group.myAccount-form--group--column{
+	
+  display: flex;
+  flex-direction: column;
+ 	gap: .25rem;
+  margin: 0;          /* kills extra spacing */
+  padding: 0;
+}
 
 .form__address-flex{
 	
@@ -3381,60 +3439,79 @@ form.myAccount__main--user-form{
 }
 
 
-form.myAccount__main--user-form label{
-	
-	align-self: flex-start;	
+
+
+.myAccount-form--group--row label{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.myAccount__main--user-form input{
+	width: 100%;
+	font-size: var(--text-body);
+  box-sizing: border-box;
+  height: 3.2rem;
+  padding: 0 1rem;
+
+  background: #fff;
+  color: var(--color-text);
+  border: 1px solid rgba(31, 61, 43, 0.22);
+  border-radius: 10px;
+  outline: none;
 }
 
 
-form.myAccount__main--user-form label,
-form.myAccount__main--user-form input{
-	
-		font-size: var(--text-body);
+.myAccount__main--user-form input:focus{
+  border-color: #1F3D2B;
+  box-shadow: 0 0 0 3px rgba(31, 61, 43, 0.16);
 }
 
 
 
 button.myAccount__form--submit{
-	
-	width: 35%;
-	align-self: center;	
-	background-color: var(--color-dk-bg);
-	color: var(--color-text-white)
-}
+  background: var(--color-primary);
+  color: #1B1B1B;
+  border: 1px solid rgba(0,0,0,0.14);
 
+  height: 3.2rem;
+  padding: 0 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
 
 
 .myAccount-form--group--column{
 	
 	flex-direction: column;
-	gap: 1.2rem;
+
 	margin-top: var(--mrg-nrm);
 }
 
 
 
 .myAccount-form--group--row{
-	
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+  display: grid;
+  grid-template-columns: 130px 1fr; /* was 170px */
+  gap: 1.2rem;
+  align-items: center;
+  margin-bottom: 1.4rem;
 }
-
 	
 .myAccount__main-address{
 	
 	display: flex;
 	flex-direction: column;
-	gap: .75rem;		
+	
 }
 
-.myAccount__main-address--row {
-	
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+.myAccount__main-address--row{
+  display: grid;
+  grid-template-columns: 120px max-content; /* instead of 1fr */
+  gap: 1.2rem;
+  padding: 0.6rem 0;
+  justify-content: start; /* stops stretching */
 }
+
 
 
 .myAccount__main-address p{

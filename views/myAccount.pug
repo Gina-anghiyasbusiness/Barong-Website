@@ -3,12 +3,14 @@ extends base
 
 block content 
 
-	main.wide-container
+	main.container
 	
-		h2.homePage--sub-heading.mrgbtm--lg  My Account Dashboard
+		.myAccount__page-heading
+	
+			h2.homePage--sub-heading My Account Dashboard
 		
 		section.myAccount
-			.myAccount__flex--layout 
+			.myAccount__flex--layout
 			
 				.myAccount__side-menu
 				
@@ -73,9 +75,8 @@ block content
 											.myAccount-form--group
 												label(for="phone") Phone:
 												input#user-update-phone(type="tel" , name='phone' value=`${user.phone || 'No Phone number'}`)
-
-												
-											button.myAccount__form--submit Update Details
+											.myAccount-form--group-btn
+												button.myAccount__form--submit Update Details
 									
 
 			
