@@ -1,79 +1,177 @@
-extends base 
+//- extends base 
 
-block content 
+//- block content 
 
 
-	main.sm-container
+//- 	main.sm-container
 	
-		section.order_page 
+//- 		section.order_page 
 			
-			h2.order_page--heading Order Number: #{order.orderNum}
+//- 			h2.order_page--heading Order Number: #{order.orderNum}
 			
-			.order_page--main-grid
+//- 			.order_page--main-grid
 		
-				.order_page-left
+//- 				.order_page-left
 				
-					.order_page--user-details-box
+//- 					.order_page--user-details-box
 					
-						h3.order_page-box--heading  Your details
+//- 						h3.order_page-box--heading  Your details
 						
-						.order_page--user-details
-							p.order_page--user-p Name: #{order.user.name.toUpperCase()}
-							p.order_page--user-p Email: #{order.user.email}
-							p.order_page--user-p Phone: #{order.user.phone}
-							.order_page--user-address
-								.order_page--user-address-heading
-									p.order_page--user-p Shipping Address:
+//- 						.order_page--user-details
+//- 							p.order_page--user-p Name: #{order.user.name.toUpperCase()}
+//- 							p.order_page--user-p Email: #{order.user.email}
+//- 							p.order_page--user-p Phone: #{order.user.phone}
+//- 							.order_page--user-address
+//- 								.order_page--user-address-heading
+//- 									p.order_page--user-p Shipping Address:
+//- 								.order_page--user-address-details
+//- 									p.order_page--user-p #{order.shippingAddress.label.toUpperCase()}
+//- 									p.order_page--user-p #{order.shippingAddress.number}
+//- 									p.order_page--user-p #{order.shippingAddress.street}
+//- 									p.order_page--user-p #{order.shippingAddress.city}
+//- 									p.order_page--user-p #{order.shippingAddress.state}
+//- 									p.order_page--user-p #{order.shippingAddress.postcode}				
+					
+//- 				.order_page-right
+				
+//- 					.order_page--user-details-box
+					
+//- 					h3.order_page-box--heading  Order details
+						
+//- 					.order_page--order-details
+//- 						- const orderDate = new Date(order.createdAt).toLocaleDateString('en-GB')
+//- 						- const lastUpdated = new Date(order.updatedAt).toLocaleDateString('en-GB')
+//- 						- const transStatus = transaction ? transaction.status : "No Paypal status"
+
+						
+//- 						p.order_page--user-p Order Amount: #{order.totalAmount}
+//- 						p.order_page--user-p Order Status: #{order.status}
+//- 						p.order_page--user-p Payment Method: #{order.paymentMethod}
+//- 						p.order_page--user-p Date of Order: #{orderDate}
+//- 						p.order_page--user-p Last Updated: #{lastUpdated}
+//- 						p.order_page--user-p Transaction Status: #{transStatus}
+//- 						.order_page--order-products
+//- 							p.order_page--user-p-products Products:
+//- 							.order__page--order-headings 
+//- 								h3.order__page--order-head Image
+//- 								h3.order__page--order-head Name
+//- 								h3.order__page--order-head Qty
+//- 								h3.order__page--order-head Price
+							
+//- 							.order__page--order-details 
+//- 								each product in products
+								
+//- 									-const productImage = product.product && product.product.imageCover ? product.product.imageCover : "No Image"
+									
+//- 									-const productName = product.product && product.product.name ? product.product.name : "No Product Name"
+									
+//- 									-const qty = product && product.quantity ? product.quantity : "No Quantity Available"
+									
+//- 									-const price = product && product.priceAtPurchase ? product.priceAtPurchase : "No Price Available"
+									
+//- 									-const slug = product && product.product && product.product.slug ?  product.product.slug : "No Slug Available"
+									
+//- 									a(href=`/product/${slug}`) 
+//- 										img(src=`/img/product_imgs/${productImage}`, alt="" , width='800' , height='800' , class='order-image')
+//- 									p.order_page--user-p  #{productName}
+//- 									p.order_page--user-p  #{qty}
+//- 									p.order_page--user-p  #{price}
+
+extends base
+
+block content
+	main.sm-container
+		section.order_page
+			h2.order_page--heading Order Number: #{order.orderNum}
+
+			.order_page--main-grid
+				.order_page-left
+					.order_page--user-details-box.order_page--card
+						h3.order_page-box--heading Your details
+
+						.order_page--user-details.order_page--rows
+							.order_page--row
+								span.order_page--label Name
+								span.order_page--value #{order.user.name.toUpperCase()}
+
+							.order_page--row
+								span.order_page--label Email
+								span.order_page--value #{order.user.email}
+
+							.order_page--row
+								span.order_page--label Phone
+								span.order_page--value #{order.user.phone || '—'}
+
+							.order_page--user-address.order_page--block
+								p.order_page--block-heading Shipping Address
+
 								.order_page--user-address-details
 									p.order_page--user-p #{order.shippingAddress.label.toUpperCase()}
 									p.order_page--user-p #{order.shippingAddress.number}
 									p.order_page--user-p #{order.shippingAddress.street}
 									p.order_page--user-p #{order.shippingAddress.city}
 									p.order_page--user-p #{order.shippingAddress.state}
-									p.order_page--user-p #{order.shippingAddress.postcode}				
-					
+									p.order_page--user-p #{order.shippingAddress.postcode}
+
 				.order_page-right
-				
-					.order_page--user-details-box
-					
-					h3.order_page-box--heading  Order details
-						
-					.order_page--order-details
+					.order_page--user-details-box.order_page--card
+						h3.order_page-box--heading Order details
+
 						- const orderDate = new Date(order.createdAt).toLocaleDateString('en-GB')
 						- const lastUpdated = new Date(order.updatedAt).toLocaleDateString('en-GB')
-						- const transStatus = transaction ? transaction.status : "No Paypal status"
+						- const transStatus = transaction ? transaction.status : '—'
 
-						
-						p.order_page--user-p Order Amount: #{order.totalAmount}
-						p.order_page--user-p Order Status: #{order.status}
-						p.order_page--user-p Payment Method: #{order.paymentMethod}
-						p.order_page--user-p Date of Order: #{orderDate}
-						p.order_page--user-p Last Updated: #{lastUpdated}
-						p.order_page--user-p Transaction Status: #{transStatus}
-						.order_page--order-products
-							p.order_page--user-p-products Products:
-							.order__page--order-headings 
-								h3.order__page--order-head Image
-								h3.order__page--order-head Name
-								h3.order__page--order-head Qty
-								h3.order__page--order-head Price
-							
-							.order__page--order-details 
-								each product in products
-								
-									-const productImage = product.product && product.product.imageCover ? product.product.imageCover : "No Image"
-									
-									-const productName = product.product && product.product.name ? product.product.name : "No Product Name"
-									
-									-const qty = product && product.quantity ? product.quantity : "No Quantity Available"
-									
-									-const price = product && product.priceAtPurchase ? product.priceAtPurchase : "No Price Available"
-									
-									-const slug = product && product.product && product.product.slug ?  product.product.slug : "No Slug Available"
-									
-									a(href=`/product/${slug}`) 
-										img(src=`/img/product_imgs/${productImage}`, alt="" , width='800' , height='800' , class='order-image')
-									p.order_page--user-p  #{productName}
-									p.order_page--user-p  #{qty}
-									p.order_page--user-p  #{price}
-									
+						.order_page--order-details.order_page--rows
+							.order_page--row
+								span.order_page--label Order Amount
+								span.order_page--value $#{order.totalAmount}
+
+							.order_page--row
+								span.order_page--label Status
+								span.order_page--value #{order.status}
+
+							.order_page--row
+								span.order_page--label Payment Method
+								span.order_page--value #{order.paymentMethod}
+
+							.order_page--row
+								span.order_page--label Date of Order
+								span.order_page--value #{orderDate}
+
+							.order_page--row
+								span.order_page--label Last Updated
+								span.order_page--value #{lastUpdated}
+
+							.order_page--row
+								span.order_page--label Transaction Status
+								span.order_page--value #{transStatus}
+
+					.order_page--products-box.order_page--card.order_page--card-full
+						h3.order_page-box--heading Products
+
+						.order__page--order-headings
+							h3.order__page--order-head Image
+							h3.order__page--order-head Name
+							h3.order__page--order-head Qty
+							h3.order__page--order-head Price
+
+						.order__page--order-details
+							each product in products
+								-const productImage = product.product && product.product.imageCover ? product.product.imageCover : ''
+								-const productName = product.product && product.product.name ? product.product.name : 'Product unavailable'
+								-const qty = product && product.quantity ? product.quantity : '—'
+								-const price = product && product.priceAtPurchase ? product.priceAtPurchase : '—'
+								-const slug = product && product.product && product.product.slug ? product.product.slug : ''
+
+								.order__page--cell
+									if slug
+										a(href=`/barong/${slug}`)
+											.order__page--imgWrap
+												img(src=`/img/product_imgs/${productImage}`, alt="" width="800" height="800" class="order-image")
+									else
+										.order__page--imgWrap
+											img(src=`/img/product_imgs/${productImage}`, alt="" width="800" height="800" class="order-image")
+
+								p.order_page--user-p #{productName}
+								p.order_page--user-p #{qty}
+								p.order_page--user-p $#{price}

@@ -667,9 +667,7 @@ exports.getAccountPage = catchAsync(async (req, res, next) => {
 		.populate('wishlist.product')
 		.populate('addresses');
 
-
 	//------------- Variants --------------//
-
 
 	const enrichWithVariants = (list) => {
 
@@ -685,11 +683,6 @@ exports.getAccountPage = catchAsync(async (req, res, next) => {
 
 	enrichWithVariants(user.cart);
 	enrichWithVariants(user.wishlist);
-
-
-
-
-
 
 	//------------- ------- --------------//
 
@@ -712,9 +705,7 @@ exports.getAccountPage = catchAsync(async (req, res, next) => {
 		.sort({ createdAt: -1 });
 
 
-
 	// ------------- Variants --------------//
-
 
 	orders.forEach(order => {
 
@@ -735,37 +726,26 @@ exports.getAccountPage = catchAsync(async (req, res, next) => {
 		});
 	});
 
-
-
-
 	// ------------- -------- --------------//
-
 
 	/// render reviews
 
-
 	const reviews = await Review.find({ user: req.user.id })
 		.populate('product');
-
 
 	const updatePrice = async (productBase) => {
 
 		await Promise.all(productBase.map(async item => {
 
-
 			const productDoc = await SpecProd.findById(item.product.id).populate('category');
-
 
 			await missingDiscountCheckLoop(productDoc, item);
 
 		}))
 	};
 
-
 	if (user.cart) await updatePrice(user.cart);
 	if (user.wishlist) await updatePrice(user.wishlist);
-
-
 
 	res.status(200).render('myAccount', {
 

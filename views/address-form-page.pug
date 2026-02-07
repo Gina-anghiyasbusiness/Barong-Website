@@ -1,62 +1,165 @@
-extends base 
+//- extends base 
 
 
+
+//- include ../mixins/_formFields
+
+
+//- block content
+
+//- 	main.container.user--grid 
+
+//- 		h2.admin__page--heading   User Address
+		
+
+//- 		section.admin__form--box 
+		
+//- 			- const hasAddressId = selectedAddress && selectedAddress.id
+			
+//- 			form.admin__form--update.user__address--update(
+//- 				data-address-id=hasAddressId ? selectedAddress.id : undefined,
+//- 				data-user=`${user._id}`)
+			
+//- 				.admin__form--group.user--address-update
+//- 					label(for="type") ADDRESS TYPE:
+//- 					select(name="type" id='type' , value=selectedAddress.label) 
+//- 						option(value="Home", selected=selectedAddress.label === 'Home') Home 
+//- 						option(value="Work", selected=selectedAddress.label === 'Work') Work
+//- 						option(value="Other", selected=selectedAddress.label === 'Other') Other
+
+//- 				.admin__form--group
+//- 					+formRows('number','number', selectedAddress.number)
+//- 				.admin__form--group
+//- 					+formRows('street','text', selectedAddress.street)
+//- 				.admin__form--group
+//- 					+formRows('city','text', selectedAddress.city)
+//- 				.admin__form--group
+//- 					+formRows('state','text', selectedAddress.state)
+//- 				.admin__form--group
+//- 					+formRows('postcode','text', selectedAddress.postcode)
+//- 				.admin__form--group
+//- 					p.address-form-default Default Address:
+//- 					label(for="isDefault-true") True
+//- 					input(
+//- 					  type="radio"
+//- 					  id="isDefault-true"
+//- 					  name="isDefault"
+//- 					  value='true'
+//- 					  checked=(selectedAddress && selectedAddress.isDefault === true)
+//- 					)
+//- 					label(for="isDefault-false") False
+//- 					input(
+//- 					  type="radio"
+//- 					  id="isDefault-false"
+//- 					  name="isDefault"
+//- 					  value='false'
+//- 					  checked=(selectedAddress && selectedAddress.isDefault === false)
+//- 					)
+//- 				.address__form--button--box
+//- 					if hasAddressId 
+//- 						button#user-address-submit(class='address__form--button') Update Address
+//- 					else 
+//- 						button#user-address-submit(class='address__form--button') Add New Address
+
+extends base
 
 include ../mixins/_formFields
 
-
 block content
 
-	main.container.user--grid 
+	main.container
 
-		h2.admin__page--heading   User Address
-		
+		section.addressForm
 
-		section.admin__form--box 
-		
-			- const hasAddressId = selectedAddress && selectedAddress.id
-			
-			form.admin__form--update.user__address--update(
-				data-address-id=hasAddressId ? selectedAddress.id : undefined,
-				data-user=`${user._id}`)
-			
-				.admin__form--group.user--address-update
-					label(for="type") ADDRESS TYPE:
-					select(name="type" id='type' , value=selectedAddress.label) 
-						option(value="Home", selected=selectedAddress.label === 'Home') Home 
-						option(value="Work", selected=selectedAddress.label === 'Work') Work
-						option(value="Other", selected=selectedAddress.label === 'Other') Other
+			.addressForm__header
+				h1.addressForm__title User Address
+				p.addressForm__sub Add or update a saved shipping address.
 
-				.admin__form--group
-					+formRows('number','number', selectedAddress.number)
-				.admin__form--group
-					+formRows('street','text', selectedAddress.street)
-				.admin__form--group
-					+formRows('city','text', selectedAddress.city)
-				.admin__form--group
-					+formRows('state','text', selectedAddress.state)
-				.admin__form--group
-					+formRows('postcode','text', selectedAddress.postcode)
-				.admin__form--group
-					p.address-form-default Default Address:
-					label(for="isDefault-true") True
-					input(
-					  type="radio"
-					  id="isDefault-true"
-					  name="isDefault"
-					  value='true'
-					  checked=(selectedAddress && selectedAddress.isDefault === true)
-					)
-					label(for="isDefault-false") False
-					input(
-					  type="radio"
-					  id="isDefault-false"
-					  name="isDefault"
-					  value='false'
-					  checked=(selectedAddress && selectedAddress.isDefault === false)
-					)
-				.address__form--button--box
-					if hasAddressId 
-						button#user-address-submit(class='address__form--button') Update Address
-					else 
-						button#user-address-submit(class='address__form--button') Add New Address
+			.addressForm__card
+
+				- const hasAddressId = selectedAddress && selectedAddress.id
+
+				form.addressForm__form(
+					data-address-id=hasAddressId ? selectedAddress.id : undefined,
+					data-user=`${user._id}`
+				)
+
+					.addressForm__grid
+
+						.addressForm__group
+							label.addressForm__label(for="type") Address type
+							select.addressForm__select(name="type" id="type")
+								option(value="Home", selected=selectedAddress.label === 'Home') Home
+								option(value="Work", selected=selectedAddress.label === 'Work') Work
+								option(value="Other", selected=selectedAddress.label === 'Other') Other
+
+						.addressForm__group
+							label.addressForm__label(for="number") Number
+							input.addressForm__input(
+								type="text"
+								id="number"
+								name="number"
+								value=selectedAddress.number || ''
+								placeholder="e.g. 4"
+								autocomplete="address-line1"
+							)
+
+						.addressForm__group.addressForm__group--full
+							label.addressForm__label(for="street") Street
+							input.addressForm__input(
+								type="text"
+								id="street"
+								name="street"
+								value=selectedAddress.street || ''
+								placeholder="e.g. Shailers Cct"
+								autocomplete="address-line1"
+							)
+
+						.addressForm__group
+							label.addressForm__label(for="city") City
+							input.addressForm__input(
+								type="text"
+								id="city"
+								name="city"
+								value=selectedAddress.city || ''
+								placeholder="e.g. Bundaberg"
+								autocomplete="address-level2"
+							)
+
+						.addressForm__group
+							label.addressForm__label(for="state") State
+							input.addressForm__input(
+								type="text"
+								id="state"
+								name="state"
+								value=selectedAddress.state || ''
+								placeholder="e.g. QLD"
+								autocomplete="address-level1"
+							)
+
+						.addressForm__group
+							label.addressForm__label(for="postcode") Postcode
+							input.addressForm__input(
+								type="text"
+								id="postcode"
+								name="postcode"
+								value=selectedAddress.postcode || ''
+								placeholder="e.g. 4670"
+								autocomplete="postal-code"
+							)
+
+						.addressForm__group.addressForm__group--full
+							p.addressForm__label Default address
+							.addressForm__radioRow
+								label.addressForm__radio
+									input(type="radio" name="isDefault" value="true" checked=(selectedAddress && selectedAddress.isDefault === true))
+									span Yes
+								label.addressForm__radio
+									input(type="radio" name="isDefault" value="false" checked=(selectedAddress && selectedAddress.isDefault === false))
+									span No
+
+					.addressForm__actions
+						if hasAddressId
+							button.btn.btn--primary#user-address-submit(type="submit") Update address
+						else
+							button.btn.btn--primary#user-address-submit(type="submit") Add address
