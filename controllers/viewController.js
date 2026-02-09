@@ -58,7 +58,6 @@ exports.setNewPasswordPage = (req, res) => {
 
 	const token = req.params.token;
 
-	console.log(token);
 
 	res.status(200).render('set-new-password', {
 
@@ -243,7 +242,7 @@ exports.getBarongPage = catchAsync(async (req, res, next) => {
 
 	if (!product) return next(new AppError('No product Found', 404));
 
-	console.log(product)
+
 
 	res.status(200).render('barong-page', {
 
@@ -1057,8 +1056,6 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 
 	const productId = req.params.productId;
 	const productVariant = req.params.variant;
-
-	console.log(productVariant);
 
 
 	const product = await SpecProd.findById(productId).populate('category');
@@ -1892,16 +1889,12 @@ exports.getTransactionSearch = catchAsync(async (req, res, next) => {
 
 	const transaction = await Transaction.findById(order.transaction);
 
-	console.log(transaction);
-
 
 	res.status(200).render('admin/be_transaction', {
 
 		title: `Admin-Transaction list`,
 		transaction
-
 	})
-
 })
 
 
