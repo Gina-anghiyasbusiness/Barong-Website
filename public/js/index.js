@@ -504,6 +504,8 @@ document.querySelectorAll('.product__size--btn')
 ////------------------------- ---------------- ----------------------////
 
 
+
+
 ///								Buy It Now								///
 
 
@@ -639,7 +641,6 @@ if (addToCartBtnId) {
 
 const addToCartBtn = document.querySelectorAll('.wishlist-btn--atc');
 
-
 if (addToCartBtn) {
 
 	addToCartBtn.forEach(btn =>
@@ -651,14 +652,8 @@ if (addToCartBtn) {
 			const id = btn.dataset.productId;
 			const slug = btn.dataset.productSlug;
 
-			// const qty = parseInt(document.getElementById('add-to-cart-qty').value) || 1;
-
-			/// This will get the quantity input for THIS product only
-
 			const qtyInput = btn.closest('.myAccount__cart--item').querySelector('.add-to-cart-qty');
-
 			const qty = parseInt(qtyInput?.value) || 1;
-
 
 			////----- 	Variants ------////
 
@@ -668,9 +663,9 @@ if (addToCartBtn) {
 				return;
 			}
 
-			addProductToUser(id, selectedVariant, slug, 'cart', qty);
-
 			////-------- ------- -------////
+
+			addProductToUser(id, selectedVariant, slug, 'cart', qty);
 		})
 	)
 }
@@ -740,7 +735,6 @@ if (addToWishlistBtn) {
 
 		const id = addToWishlistBtn.dataset.productId;
 		const slug = addToWishlistBtn.dataset.productSlug;
-
 
 
 		////----- 	Variants ------////
@@ -922,19 +916,12 @@ document.addEventListener('DOMContentLoaded', () => {
 /// select user role
 
 
-
-
-
-
 document.addEventListener('DOMContentLoaded', () => {
 
 	const sortOption = document.getElementById('productSort');
 	const sortForm = document.getElementById('form-product-sort');
 
-
-
 	if (sortOption) sortOption.addEventListener('change', () => {
-
 
 		sortForm.submit();
 	});

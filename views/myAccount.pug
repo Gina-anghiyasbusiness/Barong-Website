@@ -127,8 +127,9 @@ block content
 								each item in wishlist
 									.myAccount__cart--item
 											if item.product
+												- const productUrl = item.productType === 'shoe' ? 'shoe' : item.productType === 'accessory' ? 'accessory' : 'barong'
 												.myAccount__cart--img-box
-													a(href=`/barong/${item.product.slug}`) 
+													a(href=`/${productUrl}/${item.product.slug}`)
 														img(src=`/img/product_imgs/${item.product.imageCover}`, alt="" , class='myAccount__cart--img' , width='450' , height='800')
 
 												.myAccount__cart--text-box
@@ -141,9 +142,10 @@ block content
 													////-------- Variants -------// 
 													
 													.productPage__variant-size--flex.wishlist-btn
-														each variant, i in item.product.variants 
-															if variant.inStock > 0
-																button(class=`product__size--btn variant__size--${i+1}` , data-variant=variant._id) #{variant.size}
+														if item.product.variants && item.product.variants.length
+															each variant, i in item.product.variants
+																if variant.inStock > 0
+																	button(class=`product__size--btn variant__size--${i+1}` , data-variant=variant._id) #{variant.size}
 													
 													////-------- -------- -------// 
 													
@@ -157,6 +159,7 @@ block content
 																p.myAccount__cart--cprice $#{item.discountPrice}
 														
 															//-// QUANTITY NEEDS SORTING FOR BUTTONS
+															
 													.myAccount__cart--item--btns
 														button.productPage__product-btn.wishlist-btns.wishlist-btn--atc(data-product-id=`${item.product.id}`,data-user=user.id , data-product-slug=`${item.product.slug}`) Add to cart
 														
@@ -174,8 +177,9 @@ block content
 								each item in cart
 									.myAccount__cart--item
 											if item.product
+												- const productUrl = item.productType === 'shoe' ? 'shoe' : item.productType === 'accessory' ? 'accessory' : 'barong'
 												.myAccount__cart--img-box
-													a(href=`/barong/${item.product.slug}`) 
+													a(href=`/${productUrl}/${item.product.slug}`)
 														img(src=`/img/product_imgs/${item.product.imageCover}`, alt="" , class='myAccount__cart--img' , width='450' , height='800')
 
 												.myAccount__cart--text-box
@@ -188,10 +192,11 @@ block content
 													////-------- Variants -------// 
 													
 													.productPage__variant-size--flex.wishlist-btn
-														each variant, i in item.product.variants
-															- const isSelected = item.variant && variant._id.toString() === item.variant.toString();
-															if variant.inStock > 0
-																button(class=`product__size--btn variant__size--${i+1} ${isSelected ? 'is-selected' : ''}` data-variant=variant._id) #{variant.size}
+														if item.product.variants && item.product.variants.length
+															each variant, i in item.product.variants
+																- const isSelected = item.variant && variant._id.toString() === item.variant.toString();
+																if variant.inStock > 0
+																	button(class=`product__size--btn variant__size--${i+1} ${isSelected ? 'is-selected' : ''}` data-variant=variant._id) #{variant.size}
 																
 
 													

@@ -191,7 +191,7 @@ export const addProductToUser = async (id, selectedVariant, slug, type, quantity
 
 			window.setTimeout(() => {
 
-				location.assign(`/barong/${slug}`);
+				location.assign(`/my-account/${id}`);
 
 			}, 2500);
 		}

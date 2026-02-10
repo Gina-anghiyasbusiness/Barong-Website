@@ -124,13 +124,19 @@ const userSchema = new mongoose.Schema({
 		{
 			product: {
 				type: mongoose.Schema.Types.ObjectId,
-				ref: 'SpecProd',
+				refPath: 'wishlist.productModel',
 				required: true
+			},
+
+			productModel: {
+				type: String,
+				required: true,
+				enum: ['SpecProd', 'Shoe', 'Accessory']
 			},
 
 			variant: {
 				type: mongoose.Schema.Types.ObjectId,
-				ref: 'SpecProd',
+				refPath: 'wishlist.productModel',
 				required: true
 			},
 
@@ -152,12 +158,17 @@ const userSchema = new mongoose.Schema({
 			product: {
 
 				type: mongoose.Schema.Types.ObjectId,
-				ref: 'SpecProd',
+				refPath: 'cart.productModel',
 				required: true
+			},
+			productModel: {
+				type: String,
+				required: true,
+				enum: ['SpecProd', 'Shoe', 'Accessory']
 			},
 
 			variant: {
-				ref: 'SpecProd',
+				refPath: 'cart.productModel',
 				type: mongoose.Schema.Types.ObjectId,
 				required: true
 			},

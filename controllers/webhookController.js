@@ -3,6 +3,8 @@ const Transaction = require('../models/transactionModel');
 const User = require('../models/userModel');
 const Counter = require('../models/counterModel');
 const SpecProd = require('../models/specProdModel');
+const Accessory = require('../models/accessoryModel');
+const Shoe = require('../models/shoeModel');
 const Discount = require('../models/discountModel');
 const GuestAddress = require('../models/guestAddressModel');
 
@@ -13,9 +15,22 @@ const categoryDiscountPrice = require('../utilities/categoryDiscountOnPurchase')
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+
+
 const updateStockLevels = async (productId, variantId, qty) => {
 
-	const product = await SpecProd.findById(productId);
+	let product = await SpecProd.findById(productId);
+
+	if (!product) {
+		product = await Shoe.findById(productId);
+	}
+	if (!product) {
+		product = await Accessory.findById(productId);
+	}
+	if (!product) {
+		throw new Error('Product not found');
+	}
+
 	const variant = product.variants.id(variantId);
 
 	if (!variant) throw new Error('Variant not found');
@@ -74,9 +89,7 @@ exports.handleStripeWebhook = async (req, res) => {
 
 	if (event.type === 'checkout.session.completed') {
 
-
 		const session = event.data.object;
-
 
 		/// ✅ Extract session data
 
@@ -88,8 +101,6 @@ exports.handleStripeWebhook = async (req, res) => {
 			/// Cart			
 
 			cart = session.metadata?.cart ? JSON.parse(session.metadata.cart) : null;
-
-
 
 		} else {
 
@@ -142,46 +153,53 @@ exports.handleStripeWebhook = async (req, res) => {
 
 		if (cart) {
 
-			const orderProducts = await Promise.all(cart.map(async item => {
+			const orderProducts = await Promise.all(
 
-				const productDoc = await SpecProd.findById(item.productId).populate('category');
+				cart.map(async item => {
+
+					let productDoc = await SpecProd.findById(item.productId).populate('category');
+
+					if (!productDoc) {
+						productDoc = await Shoe.findById(item.productId).populate('category');
+					}
+
+					if (!productDoc) {
+						productDoc = await Accessory.findById(item.productId).populate('category');
+					}
+
+					if (!productDoc) {
+						console.error('❌ Product not found:', item.productId);
+						return null;
+					}
 
 
-				if (!productDoc) {
+					if (!productDoc.category && !productDoc.discount) {
 
-					console.error('❌ Product not found:', product);
+						price = productDoc.currentPrice;
 
-					return res.status(404).send('Product not found');
-				}
+					} else if (!productDoc.category || productDoc.discount) {
 
+						price = await priceAtPurchaseDiscount(productDoc);
 
-				if (!productDoc.category && !productDoc.discount) {
+					} else if (!productDoc.category.discount) {
 
-					price = productDoc.currentPrice;
+						price = productDoc.currentPrice;
 
-				} else if (!productDoc.category || productDoc.discount) {
+					} else {
 
-					price = await priceAtPurchaseDiscount(productDoc);
+						price = await categoryDiscountPrice(productDoc);
+					}
 
-				} else if (!productDoc.category.discount) {
+					return {
 
-					price = productDoc.currentPrice;
+						product: item.productId,
+						quantity: item.quantity,
+						priceAtPurchase: price,
+						selectedVariant: item.variantId || null
 
-				} else {
+					};
 
-					price = await categoryDiscountPrice(productDoc);
-				}
-
-				return {
-
-					product: item.productId,
-					quantity: item.quantity,
-					priceAtPurchase: price,
-					selectedVariant: item.variantId || null
-
-				};
-
-			}));
+				}));
 
 
 

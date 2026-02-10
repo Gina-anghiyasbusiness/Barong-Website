@@ -11064,7 +11064,7 @@
       if (result.data.status === "success") {
         showAlert("success", `Product Added to ${type} successfully!!`);
         window.setTimeout(() => {
-          location.assign(`/barong/${slug}`);
+          location.assign(`/my-account/${id}`);
         }, 2500);
       }
     } catch (err) {

@@ -9,6 +9,7 @@ const categoryDiscountPrice = require('../utilities/categoryDiscountOnPurchase')
 
 const missingDiscountCheckLoop = async (product, item) => {
 
+
 	if (!product.discount && !product.category) {
 
 		item.discountPrice = product.currentPrice;

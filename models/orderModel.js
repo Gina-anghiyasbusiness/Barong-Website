@@ -22,9 +22,16 @@ const orderSchema = new mongoose.Schema({
 	product: [
 		{
 			product: {
+
 				type: mongoose.Schema.Types.ObjectId,
-				ref: 'SpecProd',
+				refPath: 'cart.productModel',
 				required: true
+			},
+
+			productModel: {
+				type: String,
+				required: true,
+				enum: ['SpecProd', 'Shoe', 'Accessory']
 			},
 
 			quantity: {

@@ -524,19 +524,6 @@ exports.getAccessoryPage = catchAsync(async (req, res, next) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //--------------------- Categories Page ------------------------//
 
 
@@ -661,21 +648,52 @@ exports.getContactPage = (req, res) => {
 
 exports.getAccountPage = catchAsync(async (req, res, next) => {
 
+
 	const user = await User.findById(req.user.id)
-		.populate('cart.product')
-		.populate('wishlist.product')
 		.populate('addresses');
+
+	if (!user) {
+
+		return next(new AppError('User not found', 404));
+	}
+
+	const populateProducts = async (items) => {
+
+		for (const item of items) {
+			let product = await SpecProd.findById(item.product).populate('category');
+			let productType = 'barong';
+
+			if (!product) {
+				product = await Shoe.findById(item.product).populate('category');
+				if (product) productType = 'shoe';
+			}
+
+			if (!product) {
+				product = await Accessory.findById(item.product).populate('category');
+				if (product) productType = 'accessory';
+			}
+
+			// Direct property assignment
+			item.product = product;
+			item.productType = productType;
+
+			// Force Mongoose to recognize the change
+			item.markModified('product');
+			item.markModified('productType');
+		}
+	};
+
+	await populateProducts(user.cart);
+	await populateProducts(user.wishlist);
+
+
 
 	//------------- Variants --------------//
 
 	const enrichWithVariants = (list) => {
-
 		list.forEach(item => {
-
-			const variant = item.product?.variants.find(v => v._id.toString() === item.variant?.toString());
-
-			/// variantDetails is a custom property to help rendering in pug
-
+			if (!item.product) return;
+			const variant = item.product?.variants?.find(v => v._id.toString() === item.variant?.toString());
 			item.variantDetails = variant;
 		});
 	};
@@ -683,71 +701,74 @@ exports.getAccountPage = catchAsync(async (req, res, next) => {
 	enrichWithVariants(user.cart);
 	enrichWithVariants(user.wishlist);
 
-	//------------- ------- --------------//
-
-
-	/// Get Default Address
-
+	//------------- Get Default Address --------------//
 
 	const getMainAddress = (addresses) => {
-
-		return addresses.find(address => address.isDefault === true) || addresses[0] || {}
+		return addresses.find(address => address.isDefault === true) || addresses[0] || {};
 	};
 
 	const homeAddress = getMainAddress(user.addresses);
 
-
-	/// Render orders
+	//------------- Render Orders --------------//
 
 	const orders = await Order.find({ user: user.id })
-		.populate('product.product')
 		.sort({ createdAt: -1 });
 
+
+	for (const order of orders) {
+
+		for (const item of order.product) {
+
+			let productDoc = await SpecProd.findById(item.product);
+
+			if (!productDoc) {
+				productDoc = await Shoe.findById(item.product);
+			}
+
+			if (!productDoc) {
+				productDoc = await Accessory.findById(item.product);
+			}
+
+			item.product = productDoc; // Will be null if not found
+
+		}
+	}
 
 	// ------------- Variants --------------//
 
 	orders.forEach(order => {
-
 		order.product.forEach(item => {
-
 			if (item.product?.variants) {
-
 				const variants = item.product.variants;
 				const variantId = item.selectedVariant?.toString();
 				const matchedVariant = variants.find(v => v._id.toString() === variantId);
-
 				item.variantDetails = matchedVariant || null;
-
 			} else {
-
 				item.variantDetails = null;
 			}
 		});
 	});
 
-	// ------------- -------- --------------//
-
-	/// render reviews
+	//------------- Render Reviews --------------//
 
 	const reviews = await Review.find({ user: req.user.id })
 		.populate('product');
 
+	//------------- Update Prices --------------//
+
 	const updatePrice = async (productBase) => {
-
 		await Promise.all(productBase.map(async item => {
-
-			const productDoc = await SpecProd.findById(item.product.id).populate('category');
-
-			await missingDiscountCheckLoop(productDoc, item);
-
-		}))
+			if (!item.product) return;
+			await missingDiscountCheckLoop(item.product, item);
+		}));
 	};
+
+
 
 	if (user.cart) await updatePrice(user.cart);
 	if (user.wishlist) await updatePrice(user.wishlist);
 
 	res.status(200).render('myAccount', {
-
 		pageTitle: 'My Account',
 		pageDescription: 'Account Page',
 		canonicalUrl: `${process.env.CANONICAL_URL}myAccount`,
@@ -757,12 +778,8 @@ exports.getAccountPage = catchAsync(async (req, res, next) => {
 		homeAddress,
 		orders,
 		reviews
-
-	})
-})
-
-
-
+	});
+});
 
 //------------------ Get address form page --------------------//
 
@@ -827,14 +844,29 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 	const user = await User.findById(req.user.id);
 
 	let cart;
+
 	let product;
 
 	if (!productId) {
 
 		cart = await User.findById(user).populate('cart.product').select('cart');
 
-	} else product = await SpecProd.findById(productId).populate('category');
+	}
+	else {
+		product = await SpecProd.findById(productId).populate('category');
 
+		if (!product) {
+			product = await Shoe.findById(productId).populate('category');
+		}
+
+		if (!product) {
+			product = await Accessory.findById(productId).populate('category');
+		}
+
+		if (!product) {
+			return next(new AppError('Product not found', 404));
+		}
+	}
 
 
 	let selectedAddress;
@@ -861,26 +893,18 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 			variant = item.product.variants.find(v => v._id.toString() === item.variant.toString());
 
 			item.variantDetails = variant;
-
-
 		});
-
 
 	} else variant = product.variants.find(v => v.id === productVariant) || {};
 
-
 	if (!variant) { return next(new AppError('No Variant Found', 404)) }
-
-
 
 	if (variant.inStock < qty) {
 
 		console.log('Stock insufficient, throwing error');
 
 		return next(new AppError(`Not enough ${variant.size} in stock! Only ${variant.inStock} left.`, 400));
-
 	}
-
 
 
 
@@ -888,70 +912,55 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 	//--------------- --------------------------- ----------------
 
 
-
 	/// cart total		
 
-
 	let totalNet = 0;
-
 	let totalArr = [];
-
-
-
-
 	if (!product) {
-
 
 		await Promise.all(cart.cart.map(async item => {
 
+			let foundProduct; // Changed from 'product' to 'foundProduct'
 
-			const product = await SpecProd.findById(item.product._id).populate('category');
+			foundProduct = await SpecProd.findById(item.product._id).populate('category');
 
-			if (!product) return next(new AppError('No Product Found', 404));
+			if (!foundProduct) {
+				foundProduct = await Shoe.findById(item.product._id).populate('category');
+			}
 
+			if (!foundProduct) {
+				foundProduct = await Accessory.findById(item.product._id).populate('category');
+			}
+
+			if (!foundProduct) return next(new AppError('No Product Found', 404));
 
 			///							Cart Checkout								///
 
+			if (!foundProduct.category && !foundProduct.discount) {
 
-			if (!product.category && !product.discount) {
-
-				item.discountPrice = product.currentPrice;
-
+				item.discountPrice = foundProduct.currentPrice;
 			}
+			else if (!foundProduct.category || foundProduct.discount) {
 
-			else if (!product.category || product.discount) {
-
-				item.discountPrice = await priceAtPurchaseDiscount(product);
-
+				item.discountPrice = await priceAtPurchaseDiscount(foundProduct);
 			}
+			else if (!foundProduct.category.discount) {
 
-			else if (!product.category.discount) {
-
-				item.discountPrice = product.currentPrice;
+				item.discountPrice = foundProduct.currentPrice;
 			}
-
 			else {
 
-				item.discountPrice = await categoryDiscountPrice(product);
-
+				item.discountPrice = await categoryDiscountPrice(foundProduct);
 			}
 
-
 			item.saleTotal = item.discountPrice * item.quantity;
-
 			totalArr.push(item.saleTotal);
 
 		}))
 
-
 		///			BuyItNow Item Discount - Checkout			///
 
-
-
 	} else {
-
-
-
 		if (!product.discount && !product.category) {
 
 			product.discountPrice = product.currentPrice
@@ -966,13 +975,11 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 			totalNet = product.discountPrice * qty;
 		}
 
-
 		else if (!product.category.discount) {
 
 			product.discountPrice = product.currentPrice
 
 			totalNet = product.discountPrice * qty;
-
 		}
 
 		else {
@@ -981,27 +988,18 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 
 			totalNet = product.discountPrice * qty;
 		}
-
 	}
 
-
 	///			/////////////////////////		///
-
-
 
 	for (let i = 0; i < totalArr.length; i++) {
 
 		totalNet += totalArr[i];
 	}
 
-
-
 	const delivery = totalNet < 50 ? 10 : 0;
 	const taxes = Math.round(((totalNet + delivery) * 0.1) * 10) / 10;
 	const totalGross = (totalNet + delivery) + taxes;
-
-
-
 
 	///  Buy ItNow total	
 
@@ -1150,6 +1148,7 @@ exports.getSuccessfulPaymentPage = (req, res) => {
 		canonicalUrl: `${process.env.CANONICAL_URL}payment-success`
 	})
 }
+
 
 
 exports.getSuccessfulPaymentPageGuest = (req, res) => {

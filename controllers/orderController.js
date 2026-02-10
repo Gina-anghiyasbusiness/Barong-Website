@@ -1,6 +1,8 @@
 const Order = require('./../models/orderModel');
 const Transaction = require('./../models/transactionModel');
 const SpecProd = require('./../models/specProdModel');
+const Accessory = require('../models/accessoryModel');
+const Shoe = require('../models/shoeModel');
 const Discount = require('./../models/discountModel');
 const User = require('./../models/userModel');
 const GuestAddress = require('../models/guestAddressModel');
@@ -20,32 +22,12 @@ const checkoutVar = require('../utilities/checkoutVariable');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 
-
 const { client, paypal } = require('./../utilities/paypalUtility');
-
-
-
-const updateStockLevels = async (productId, variantId, qty) => {
-
-	const product = await SpecProd.findById(productId);
-	const variant = product.variants.id(variantId);
-
-	if (!variant) throw new Error('Variant not found');
-	if (variant.inStock < qty) throw new Error('Not enough stock');
-
-	variant.inStock -= qty;
-
-	await product.save();
-};
-
-
 
 
 ///			////////////////////////			///////////////////			///////////////////////
 /// DONT FORGET TO ADD STRIPE WEBHOOK ROUTE TO APP.JS AND INCLUDE SCRIPT IN BASE	///
 ///			////////////////////////			///////////////////			///////////////////////
-
-
 
 
 
@@ -80,14 +62,26 @@ let totalNet;
 
 exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
-
 	const { product, qty, variant } = req.params;
 
+	let buyItNowProduct = await SpecProd.findById(product).populate('category');
 
+	if (!buyItNowProduct) {
 
-	const buyItNowProduct = await SpecProd.findById(product).populate('category');
+		buyItNowProduct = await Shoe.findById(product).populate('category');
+	}
 
-	if (!buyItNowProduct) return next(new AppError('No product found', 400));
+	if (!buyItNowProduct) {
+
+		buyItNowProduct = await Accessory.findById(product).populate('category');
+	}
+
+	if (!buyItNowProduct) {
+
+		return next(new AppError('Product not found', 404));
+	}
+
+	/// Find variant (rest of your code...)
 
 
 
@@ -181,7 +175,19 @@ exports.cartItemsPayPal = catchAsync(async (req, res, next) => {
 
 		const qty = item.quantity
 
-		const product = await SpecProd.findById(item.product.id).populate('category');
+		let product = await SpecProd.findById(item.product.id).populate('category');
+
+		if (!product) {
+			product = await Shoe.findById(item.product.id).populate('category');
+		}
+
+		if (!product) {
+			product = await Accessory.findById(item.product.id).populate('category');
+		}
+
+		if (!product) {
+			return next(new AppError('Product not found', 404));
+		}
 
 
 
@@ -331,8 +337,20 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 			///			PriceAtPurchase Calc			///
 
+			let product = await SpecProd.findById(item.product.id).populate('category');
 
-			const product = await SpecProd.findById(item.product._id).populate('category');
+			if (!product) {
+				product = await Shoe.findById(item.product.id).populate('category');
+			}
+
+			if (!product) {
+				product = await Accessory.findById(item.product.id).populate('category');
+			}
+
+			if (!product) {
+				return next(new AppError('Product not found', 404));
+			}
+
 
 
 			priceAtPurchase = await checkoutVar(product, priceAtPurchase);
@@ -524,8 +542,21 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 	/// find Product and Variant	
 
 
-	const buyItNowProduct = await SpecProd.findById(product).populate('category');
-	;
+	let buyItNowProduct = await SpecProd.findById(product).populate('category');
+
+	if (!buyItNowProduct) {
+		buyItNowProduct = await Shoe.findById(product).populate('category');
+	}
+
+	if (!buyItNowProduct) {
+		buyItNowProduct = await Accessory.findById(product).populate('category');
+	}
+
+	if (!buyItNowProduct) {
+		return next(new AppError('Product not found', 404));
+	}
+
+
 	const buyItNowVariant = buyItNowProduct.variants.find(v => v.id === variant);
 
 
@@ -718,8 +749,19 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 
 
 
-	const buyItNowProduct = await SpecProd.findById(product).populate('category');
-	;
+	let buyItNowProduct = await SpecProd.findById(product).populate('category');
+
+	if (!buyItNowProduct) {
+		buyItNowProduct = await Shoe.findById(product).populate('category');
+	}
+
+	if (!buyItNowProduct) {
+		buyItNowProduct = await Accessory.findById(product).populate('category');
+	}
+
+	if (!buyItNowProduct) {
+		return next(new AppError('Product not found', 404));
+	}
 	const buyItNowVariant = buyItNowProduct.variants.find(v => v.id === variant);
 
 
@@ -855,36 +897,43 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 	const user = await User.findById(req.user.id)
-		.populate('cart.product')
-		.select('cart addresses ');
+		.select('cart addresses'); // ✅ Remove .populate()
 
+
+	for (const item of user.cart) {
+
+		let foundProduct = await SpecProd.findById(item.product).populate('category');
+
+		if (!foundProduct) {
+			foundProduct = await Shoe.findById(item.product).populate('category');
+		}
+
+		if (!foundProduct) {
+			foundProduct = await Accessory.findById(item.product).populate('category');
+		}
+
+		item.product = foundProduct;
+		item.markModified('product');
+	}
 
 	const defaultAddress = user.addresses?.find(addr => addr.isDefault);
-
 	const shippingAddress = defaultAddress || user.addresses[0];
 
-
 	if (!user || user.cart.length === 0) return next(new AppError('Cart is empty', 400));
-
 
 	let price;
 	let overallArr = [];
 	let overallPrice = 0;
 
-
 	const line_items = await Promise.all(user.cart.map(async item => {
-
-
-		/// Add product cost to stripe
-
 
 		const qty = Number(item.quantity) || 1;
 
 
-		const product = await SpecProd.findById(item.product.id).populate('category');
+		const product = item.product;
 
+		if (!product) return null;
 
-		if (!product) return next(new AppError('No Product Found', 404));
 
 
 		///							Cart Checkout								///
@@ -895,26 +944,20 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 			price = product.currentPrice;
 
 		}
-
 		else if (!product.category) {
 
 			price = await priceAtPurchaseDiscount(product);
-
 		}
-
 		else if (!product.category.discount) {
 
 			price = product.currentPrice;
 		}
-
 		else {
 
 			price = await categoryDiscountPrice(product);
-
 		}
 
 		overallArr.push(price * qty);
-
 
 		return {
 
