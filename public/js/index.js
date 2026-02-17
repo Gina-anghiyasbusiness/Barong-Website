@@ -195,7 +195,8 @@ if (myAccountMenu) {
 
 		e.preventDefault();
 
-		const pageSections = [overview, addresses, orders, wishlist, cart, reviews, support];
+		// const pageSections = [overview, addresses, orders, wishlist, cart, reviews, support];
+		const pageSections = [overview, addresses, orders, wishlist, cart, support];
 
 
 		function activateSection(activeSection) {
@@ -244,10 +245,10 @@ if (myAccountMenu) {
 			activateSection(cart);
 		}
 
-		if (e.target.classList.contains('account-reviews--btn')) {
+		// if (e.target.classList.contains('account-reviews--btn')) {
 
-			activateSection(reviews);
-		}
+		// 	activateSection(reviews);
+		// }
 
 		if (e.target.classList.contains('account-support--btn')) {
 
@@ -512,6 +513,7 @@ document.querySelectorAll('.product__size--btn')
 ///		Buy It Now - Single product Page	///
 
 
+
 const buyItNowBtnId = document.getElementById('buy-it-now');
 
 
@@ -521,25 +523,30 @@ if (buyItNowBtnId) {
 
 		e.preventDefault();
 
+
 		const productId = buyItNowBtnId.dataset.productId;
-		const qty = parseInt(document.getElementById('add-to-cart-qty').value) || 1;
+		const productType = buyItNowBtnId.dataset.productType;
+		const qtyInput = document.getElementById('add-to-cart-qty');
+		const qty = qtyInput?.value || 1;
 
 		const userAddress = buyItNowBtnId.dataset.userObject;
 		const userArray = JSON.parse(userAddress);
 
-		if (!selectedVariant || !qty || userArray.length < 1 || !productId) {
+		if (productType !== 'accessory' && !selectedVariant) {
 
-			return showAlert('error', 'Please select a size or add an address first');
+			showAlert('error', 'Please select a size first');
+
+			return;
 		}
+
+		selectedVariant = productType === 'accessory' ? null : selectedVariant;
 
 		buyItNowCheckout(productId, qty, selectedVariant);
 	})
 }
 
 
-
 ///		Guest
-
 
 const buyItNowBtnGuest = document.getElementById('buy-it-now-guest');
 
@@ -550,16 +557,19 @@ if (buyItNowBtnGuest) {
 		e.preventDefault();
 
 		const productId = buyItNowBtnGuest.dataset.productId;
+		const productType = buyItNowBtnGuest.dataset.productType;
 		const qty = 1;
 
+		if (productType !== 'accessory' && !selectedVariant) {
 
-		if (!selectedVariant || !qty || !productId) {
+			showAlert('error', 'Please select a size first');
 
-			return showAlert('error', 'Please add an address first');
+			return;
 		}
 
-		buyItNowGuestCheckout(productId, qty, selectedVariant);
+		selectedVariant = productType === 'accessory' ? null : selectedVariant;
 
+		buyItNowGuestCheckout(productId, qty, selectedVariant);
 	})
 }
 
@@ -615,19 +625,24 @@ if (addToCartBtnId) {
 
 		const id = addToCartBtnId.dataset.productId;
 		const slug = addToCartBtnId.dataset.productSlug;
+		const productType = addToCartBtnId.dataset.productType;
 
-		const qty = parseInt(document.getElementById('add-to-cart-qty').value) || 1;
+		const qtyInput = document.getElementById('add-to-cart-qty');
+		const qty = qtyInput?.value || 1;
 
 
 		////----- 	Variants ------////
 
-		if (!selectedVariant) {
+		if (productType !== 'accessory' && !selectedVariant) {
 
 			showAlert('error', 'Please select a size first');
+
 			return;
 		}
 
-		addProductToUser(id, selectedVariant, slug, 'cart', qty);
+		const variant = productType === 'accessory' ? null : selectedVariant;
+
+		addProductToUser(id, variant, slug, 'cart', qty);
 
 		////-------- ------- -------////
 	})
@@ -639,37 +654,36 @@ if (addToCartBtnId) {
 ///				Add To Cart - Wishlist Page			///
 
 
-const addToCartBtn = document.querySelectorAll('.wishlist-btn--atc');
+const addToCartBtns = document.querySelectorAll('.wishlist-btn--atc');
 
-if (addToCartBtn) {
 
-	addToCartBtn.forEach(btn =>
+if (addToCartBtns.length > 0) {
+
+	addToCartBtns.forEach(btn => {
 
 		btn.addEventListener('click', function (e) {
 
 			e.preventDefault();
 
-			const id = btn.dataset.productId;
-			const slug = btn.dataset.productSlug;
+			const id = btn.dataset.productId;        // ✅ Use btn
+			const slug = btn.dataset.productSlug;    // ✅ Use btn
+			const productType = btn.dataset.productType; // ✅ Use btn
+
 
 			const qtyInput = btn.closest('.myAccount__cart--item').querySelector('.add-to-cart-qty');
-			const qty = parseInt(qtyInput?.value) || 1;
+			const qty = qtyInput?.value || 1;
 
-			////----- 	Variants ------////
-
-			if (!selectedVariant) {
-
+			if (productType !== 'accessory' && !selectedVariant) {
 				showAlert('error', 'Please select a size first');
 				return;
 			}
 
-			////-------- ------- -------////
+			const variant = productType === 'accessory' ? null : selectedVariant;
 
-			addProductToUser(id, selectedVariant, slug, 'cart', qty);
-		})
-	)
+			addProductToUser(id, variant, slug, 'cart', qty);
+		});
+	});
 }
-
 
 
 
@@ -735,20 +749,19 @@ if (addToWishlistBtn) {
 
 		const id = addToWishlistBtn.dataset.productId;
 		const slug = addToWishlistBtn.dataset.productSlug;
+		const productType = addToWishlistBtn.dataset.productType; // Get the type
+		const qty = document.getElementById('add-to-cart-qty')?.value || 1;
 
 
-		////----- 	Variants ------////
-
-		if (!selectedVariant) {
-
+		if (productType !== 'accessory' && !selectedVariant) {
 			showAlert('error', 'Please select a size first');
-
 			return;
 		}
 
-		addProductToUser(id, selectedVariant, slug, 'wishlist');
 
-		////-------- ------- -------////
+		const variant = productType === 'accessory' ? null : selectedVariant;
+
+		addProductToUser(id, variant, slug, 'wishlist', qty);
 	})
 }
 

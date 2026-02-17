@@ -32,6 +32,7 @@ export const buyItNowCheckout = async (productId, qty, selectedVariant) => {
 }
 
 
+
 /// guest
 
 export const buyItNowGuestCheckout = async (productId, qty, selectedVariant) => {
@@ -137,7 +138,7 @@ export const saveAddressCheckout = async (data, product, qty, variant) => {
 
 			/// call buyCart or BuyitNow functions
 
-			if (!product || !variant) {
+			if (!product) {
 
 				const purchaseCart = document.getElementById('checkout-submit--stripe');
 
@@ -169,7 +170,7 @@ export const saveAddressCheckout = async (data, product, qty, variant) => {
 //---------- Add product - user cart -----------//
 
 
-export const addProductToUser = async (id, selectedVariant, slug, type, quantity = 1) => {
+export const addProductToUser = async (id, variant, slug, type, quantity = 1) => {
 
 	const url = type === 'cart' ? `/api/v1/products/${id}/shopping/cart` : `/api/v1/products/${id}/shopping/wishlist`
 
@@ -180,7 +181,7 @@ export const addProductToUser = async (id, selectedVariant, slug, type, quantity
 			method: "PATCH",
 			url,
 			data: {
-				variant: selectedVariant,
+				variant,
 				quantity
 			}
 		})
@@ -189,11 +190,22 @@ export const addProductToUser = async (id, selectedVariant, slug, type, quantity
 
 			showAlert('success', `Product Added to ${type} successfully!!`);
 
-			window.setTimeout(() => {
+			if (type === 'cart') {
 
-				location.assign(`/my-account/${id}`);
+				window.setTimeout(() => {
 
-			}, 2500);
+					location.assign(`/my-account/${id}?show=my-account-cart`);
+
+				}, 2500);
+
+			} else {
+				window.setTimeout(() => {
+
+					location.assign(`/my-account/${id}?show=my-account-wishlist`);
+
+				}, 2500);
+			}
+
 		}
 	} catch (err) {
 

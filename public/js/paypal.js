@@ -18,57 +18,58 @@ document.addEventListener('DOMContentLoaded', function () {
 		qty = guestContainer.dataset.qty;
 		variant = guestContainer.dataset.variant;
 
-		paypal.Buttons(
-			{
-				createOrder: async function (data, actions) {
+		const variantParam = (variant && variant !== 'null' && variant !== '') ? variant : 'null';
 
-					try {
+		paypal.Buttons({
 
-						const res = await fetch(`/api/v1/orders/paypal/buy-it-now-guest/${product}/${qty}/${variant}`, {
-							method: 'POST',
-							body: JSON.stringify({ product, qty, variant }),
-							headers: { 'Content-Type': 'application/json' }
-						});
+			createOrder: async function (data, actions) {
 
-						const orderData = await res.json();
+				try {
 
-						return orderData.orderID;
+					const res = await fetch(`/api/v1/orders/paypal/buy-it-now-guest/${product}/${qty}/${variantParam}`, {
+						method: 'POST',
+						body: JSON.stringify({ product, qty, variant: variantParam }),
+						headers: { 'Content-Type': 'application/json' }
+					});
 
-					} catch (err) {
+					const orderData = await res.json();
 
-						alert('There was an error creating the PayPal order.');
+					return orderData.orderID;
 
-						throw err;
-					}
-				},
+				} catch (err) {
 
+					alert('There was an error creating the PayPal order.');
 
-				onApprove: async function (data, actions) {
-
-					try {
-
-						const res = await fetch(`/api/v1/orders/paypal/capture-order-guest/${data.orderID}`, {
-							method: 'POST',
-							headers: { 'Content-Type': 'application/json' },
-							body: JSON.stringify({ product, qty, variant })
-						});
-
-						const finalData = await res.json();
-
-						window.location.assign('/order-success-guest');
-
-					} catch (err) {
-
-						alert('There was an error capturing your PayPal order.');
-					}
-				},
-
-				onError: function (err) {
-
-					alert('There was a PayPal error! Please try again or use another payment method.');
+					throw err;
 				}
+			},
 
-			}).render('#paypal-button-container-guest');
+			onApprove: async function (data, actions) {
+
+				try {
+
+					const res = await fetch(`/api/v1/orders/paypal/capture-order-guest/${data.orderID}`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ product, qty, variant: variantParam })
+					});
+
+					const finalData = await res.json();
+
+					window.location.assign('/order-success-guest');
+
+				} catch (err) {
+
+					alert('There was an error capturing your PayPal order.');
+				}
+			},
+
+			onError: function (err) {
+
+				alert('There was a PayPal error! Please try again or use another payment method.');
+			}
+
+		}).render('#paypal-button-container-guest');
 
 		return;
 
@@ -90,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	/// Cart Logic
 
 
-	if (!product || !qty || !variant) {
+	if (!product || !qty) {
 
 		paypal.Buttons({
 
@@ -151,8 +152,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		/// BuyItNow Logic
 
-
 	} else {
+
+		const variantParam = (variant && variant !== 'null' && variant !== '') ? variant : 'null';
 
 		paypal.Buttons({
 
@@ -160,10 +162,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 				try {
 
-
-					const res = await fetch(`/api/v1/orders/paypal/buy-it-now/${product}/${qty}/${variant}`, {
+					const res = await fetch(`/api/v1/orders/paypal/buy-it-now/${product}/${qty}/${variantParam}`, {
 						method: 'POST',
-						body: JSON.stringify({ product, qty, variant }),
+						body: JSON.stringify({ product, qty, variant: variantParam }),
 						headers: { 'Content-Type': 'application/json' }
 					});
 
@@ -184,13 +185,9 @@ document.addEventListener('DOMContentLoaded', function () {
 				try {
 
 					const res = await fetch(`/api/v1/orders/paypal/capture-order/${data.orderID}`, {
-						method: 'POST', headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({
-							product,
-							qty,
-							variant
-
-						})
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ product, qty, variant: variantParam })
 					});
 
 					const finalData = await res.json();
@@ -206,11 +203,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 				alert('There was a PayPal error! Please try again or use another payment method.');
 			}
-
 		}).render('#paypal-button-container');
 
 	}
+
 });
-
-
-

@@ -8,7 +8,6 @@ const orderController = require('../controllers/orderController.js');
 
 
 
-
 /// Add Address route guest
 
 
@@ -23,19 +22,15 @@ router.post('/checkout-session-bin-guest/:product/:qty/:variant',
 
 
 
-
 ///		Paypal buyitnow - guest routes
 
 
 router.post('/paypal/buy-it-now-guest/:product/:qty/:variant', orderController.buyItNowItemPayPal);
 
 
-
 ///? PayPal "Capture Order" (finalizes order after approval)
 
 router.post('/paypal/capture-order-guest/:orderID', orderController.capturePayPalOrder);
-
-
 
 
 
@@ -91,6 +86,7 @@ router.post('/paypal/capture-order/:orderID', orderController.capturePayPalOrder
 ///			Stripe			///
 
 router.get('/checkout-session', orderController.buyCartItems);
+
 
 router.get(
 	'/checkout-session-bin/:product/:qty/:variant',

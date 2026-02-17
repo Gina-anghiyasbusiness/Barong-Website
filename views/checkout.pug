@@ -32,7 +32,8 @@ block content
 								.checkout__page--text-flex
 									.checkout__page--text-left
 										p.checkout__col.checkoutItem__meta Color: #{item.product.color}
-										p.checkout__size.checkoutItem__meta Size: #{item.variantDetails.size}
+										if item.variantDetails
+											p.checkout__size.checkoutItem__meta Size: #{item.variantDetails.size}
 									.checkout__page--text-left
 										p.checkout__style.checkoutItem__meta Quantity: #{item.quantity}
 										p.checkout__style.checkoutItem__meta Current Price: $#{item.discountPrice}
@@ -59,11 +60,12 @@ block content
 							p.checkout__desc.checkoutItem__desc Description: #{product.description}
 							.checkout__page--text-flex
 								.checkout__page--text-left
-									p.checkout__col.checkoutItem__meta Color: #{item.product.color}
-									p.checkout__size.checkoutItem__meta Size: #{item.variantDetails.size}
+									p.checkout__col.checkoutItem__meta Color: #{product.color}
+									if variant
+										p.checkout__size.checkoutItem__meta Size: #{variant.size}
 								.checkout__page--text-left
-									p.checkout__style.checkoutItem__meta Quantity: #{item.quantity}
-									p.checkout__style.checkoutItem__meta Current Price: $#{item.discountPrice}
+									p.checkout__style.checkoutItem__meta Quantity: #{qty}
+									p.checkout__style.checkoutItem__meta Current Price: $#{product.discountPrice}
 
 						.checkout__page--price-box.checkoutItem__priceBox
 							.checkout__priceWrap
@@ -248,7 +250,7 @@ block content
 										p.checkout__page--totals-p $#{totalGross}
 
 							.checkoutPanel__section.checkoutPanel__payments
-								button#checkout-submit--stripe-guest.checkout__page-submit--btn(type="button") Pay with Card
+								button#checkout-submit--stripe-guest.checkout__page-submit--btn(type="submit") Pay with Card
 
 								#paypal-button-container-guest(
 									data-product=(product && product.id) || ''

@@ -18,72 +18,6 @@ const filterObj = require('../utilities/filterObject');
 
 
 
-// exports.addToCart = catchAsync(async (req, res, next) => {
-
-
-// 	//---------------------- Variants -----------------------//
-
-// 	const { user, product, variant, quantity } = req.body;
-
-// 	const userCart = await User.findById(user).select('cart');
-
-// 	const duplicate = userCart.cart.some(
-
-// 		item => item.product.toString() === product.toString() &&
-// 			item.variant?.toString() === variant.toString()
-// 	);
-
-
-// 	if (!user || !product || !variant || !quantity || quantity < 1) return next(new AppError('No product, user or variant! Please try again', 404));
-
-
-// 	const foundProduct = await SpecProd.findById(product);
-
-// 	const selectedVariant = foundProduct.variants.id(variant);
-
-
-// 	if (!selectedVariant) {
-
-// 		return next(new AppError('Variant not found in product', 404));
-// 	}
-
-
-// 	if (selectedVariant.inStock < quantity) {
-
-// 		console.log('Stock insufficient, throwing error');
-
-// 		return next(new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400));
-
-// 	}
-
-
-// 	//---------------------- ------- -----------------------//
-
-// 	let addCart;
-
-// 	if (userCart.cart.length >= 10 || duplicate) {
-
-// 		return next(new AppError('Cannot add this item to cart', 400));
-
-// 	} else addCart = await User.findByIdAndUpdate(
-
-// 		user,
-// 		{
-// 			$push: {
-// 				cart: { product, variant, quantity }
-// 			}
-// 		},
-// 		{ new: true }
-// 	)
-
-// 	res.status(200).json({
-// 		status: 'success',
-// 		cart: addCart
-// 	})
-// })
-
-
-
 exports.addToCart = catchAsync(async (req, res, next) => {
 
 	//---------------------- Variants -----------------------//
@@ -97,21 +31,26 @@ exports.addToCart = catchAsync(async (req, res, next) => {
 			item.variant?.toString() === variant.toString()
 	);
 
-	if (!user || !product || !variant || !quantity || quantity < 1) {
+	if (!user || !product || !quantity || quantity < 1) {
 		return next(new AppError('No product, user or variant! Please try again', 404));
 	}
 
-	// Find product in correct model
+
 	let foundProduct = await SpecProd.findById(product);
+
 	let productModel = 'SpecProd';
 
 	if (!foundProduct) {
+
 		foundProduct = await Shoe.findById(product);
+
 		if (foundProduct) productModel = 'Shoe';
 	}
 
 	if (!foundProduct) {
+
 		foundProduct = await Accessory.findById(product);
+
 		if (foundProduct) productModel = 'Accessory';
 	}
 
@@ -119,16 +58,34 @@ exports.addToCart = catchAsync(async (req, res, next) => {
 		return next(new AppError('Product not found', 404));
 	}
 
-	const selectedVariant = foundProduct.variants.id(variant);
 
-	if (!selectedVariant) {
-		return next(new AppError('Variant not found in product', 404));
+	let selectedVariant = null;
+
+	if (foundProduct.variants && foundProduct.variants.length > 0) {
+
+		// Product HAS variants (SpecProd, Shoe)
+
+		if (!variant || variant === 'null' || variant === 'undefined') {
+
+			return next(new AppError('Please select a size', 400));
+		}
+
+		// ✅ variants exists, safe to call .id()
+
+		selectedVariant = foundProduct.variants.id(variant);
+
+		if (!selectedVariant) {
+
+			return next(new AppError('Variant not found in product', 404));
+		}
+
+		if (selectedVariant.inStock < quantity) {
+
+			return next(new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400));
+		}
 	}
 
-	if (selectedVariant.inStock < quantity) {
-		console.log('Stock insufficient, throwing error');
-		return next(new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400));
-	}
+
 
 	//---------------------- ------- -----------------------//
 
@@ -153,6 +110,8 @@ exports.addToCart = catchAsync(async (req, res, next) => {
 		cart: addCart
 	});
 });
+
+
 
 
 
@@ -240,7 +199,6 @@ exports.addToWishlist = catchAsync(async (req, res, next) => {
 
 	const { user, product, variant } = req.body;
 
-
 	const userWishlist = await User.findById(user).select('wishlist');
 
 
@@ -250,7 +208,7 @@ exports.addToWishlist = catchAsync(async (req, res, next) => {
 			item.variant?.toString() === variant.toString()
 	);
 
-	if (!user || !product || !variant) return next(new AppError('No product, user or variant! Please try again', 404));
+	if (!user || !product) return next(new AppError('No product or user Please try again', 404));
 
 
 	let addWishlist;

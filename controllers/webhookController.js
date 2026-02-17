@@ -19,19 +19,26 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const updateStockLevels = async (productId, variantId, qty) => {
 
+
 	let product = await SpecProd.findById(productId);
 
 	if (!product) {
 		product = await Shoe.findById(productId);
 	}
+
 	if (!product) {
 		product = await Accessory.findById(productId);
 	}
+
 	if (!product) {
 		throw new Error('Product not found');
 	}
 
-	const variant = product.variants.id(variantId);
+	if (!product.variants || product.variants.length === 0 || !variantId) {
+		return;
+	}
+
+	const variant = product.variants.id(variantId); // ✅ Now safe to call
 
 	if (!variant) throw new Error('Variant not found');
 	if (variant.inStock < qty) throw new Error('Not enough stock');
@@ -40,6 +47,7 @@ const updateStockLevels = async (productId, variantId, qty) => {
 
 	await product.save();
 };
+
 
 
 ///			////////////////////////			///////////////////			///////////////////////
@@ -82,14 +90,25 @@ exports.handleStripeWebhook = async (req, res) => {
 
 
 
-
-
 	/// ✅ Check which type of event was received		///
 
 
 	if (event.type === 'checkout.session.completed') {
 
 		const session = event.data.object;
+
+		// Retrieve the actual payment method used
+
+		let paymentMethod = 'Stripe';
+
+		if (session.payment_intent) {
+
+			const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent);
+			const actualMethod = paymentIntent.payment_method_types?.[0] || paymentIntent.charges?.data?.[0]?.payment_method_details?.type;
+
+			if (actualMethod === 'afterpay_clearpay') paymentMethod = 'Afterpay';
+		}
+
 
 		/// ✅ Extract session data
 
@@ -112,13 +131,8 @@ exports.handleStripeWebhook = async (req, res) => {
 		}
 
 
-
 		if (!session.metadata?.address) return res.status(400).send('Missing metadata.address');
 		shippingAddress = JSON.parse(session.metadata.address);
-
-
-
-
 
 
 
@@ -193,17 +207,13 @@ exports.handleStripeWebhook = async (req, res) => {
 					return {
 
 						product: item.productId,
+						productModel: productDoc.constructor.modelName,
 						quantity: item.quantity,
 						priceAtPurchase: price,
 						selectedVariant: item.variantId || null
 
 					};
-
 				}));
-
-
-
-
 
 			/// 							Create Order 								///
 
@@ -245,7 +255,7 @@ exports.handleStripeWebhook = async (req, res) => {
 					shippingAddress,
 					status: 'Paid',
 					totalAmount: session.amount_total / 100,
-					paymentMethod: 'Stripe',
+					paymentMethod,
 					currency: session.currency.toUpperCase(),
 					orderNum
 
@@ -311,7 +321,19 @@ exports.handleStripeWebhook = async (req, res) => {
 
 		else if (product) {
 
-			const productDoc = await SpecProd.findById(product).populate('category');
+			let productDoc = await SpecProd.findById(product).populate('category');
+
+			let productModel = 'SpecProd';
+
+			if (!productDoc) {
+				productDoc = await Shoe.findById(product).populate('category');
+				if (productDoc) productModel = 'Shoe';
+			}
+
+			if (!productDoc) {
+				productDoc = await Accessory.findById(product).populate('category');
+				if (productDoc) productModel = 'Accessory';
+			}
 
 			if (!productDoc) {
 
@@ -339,23 +361,16 @@ exports.handleStripeWebhook = async (req, res) => {
 				price = await categoryDiscountPrice(productDoc);
 			}
 
-
-
-
 			const orderProducts = [
-
 				{
 					product: product,
+					productModel: productModel,
 					quantity: qty,
 					priceAtPurchase: price,
 
-
-
 					//------------- Variant -------------//
 
-
-					selectedVariant: variant || null
-
+					selectedVariant: variant && variant !== 'null' ? variant : null
 
 					//------------- ------- -------------//
 				}
@@ -368,7 +383,7 @@ exports.handleStripeWebhook = async (req, res) => {
 			try {
 
 
-				await updateStockLevels(product, variant, qty);
+				await updateStockLevels(product, variant && variant !== 'null' ? variant : null, qty);
 
 
 				/// Create custom order number
@@ -393,7 +408,7 @@ exports.handleStripeWebhook = async (req, res) => {
 					shippingAddress,
 					status: 'Paid',
 					totalAmount: session.amount_total / 100,
-					paymentMethod: 'Stripe',
+					paymentMethod,
 					currency: session.currency.toUpperCase(),
 					orderNum
 

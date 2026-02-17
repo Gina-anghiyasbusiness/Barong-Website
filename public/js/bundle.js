@@ -10936,7 +10936,8 @@
   };
   var buyItNow = async (product, qty, variant) => {
     try {
-      const session = await axios_default(`/api/v1/orders/checkout-session-bin/${product}/${qty}/${variant}`);
+      const variantParam = variant || "null";
+      const session = await axios_default(`/api/v1/orders/checkout-session-bin/${product}/${qty}/${variantParam}`);
       const result = await stripe.redirectToCheckout(
         {
           sessionId: session.data.session.id
@@ -10950,11 +10951,12 @@
     }
   };
   var buyItNowGuest = async (product, qty, guestAddressId, variant) => {
+    const variantParam = variant || "null";
     try {
       const session = await axios_default(
         {
           method: "POST",
-          url: `/api/v1/orders/checkout-session-bin-guest/${product}/${qty}/${variant}`,
+          url: `/api/v1/orders/checkout-session-bin-guest/${product}/${qty}/${variantParam}`,
           data: { guestAddressId }
         }
       );
@@ -11036,7 +11038,7 @@
         } else {
           showAlert("success", "Address added successfully!");
         }
-        if (!product || !variant) {
+        if (!product) {
           const purchaseCart = document.getElementById("checkout-submit--stripe");
           purchaseCart.textContent = "Processing....";
           buyCart();
@@ -11050,22 +11052,28 @@
       showAlert("error", err);
     }
   };
-  var addProductToUser = async (id, selectedVariant2, slug, type, quantity = 1) => {
+  var addProductToUser = async (id, variant, slug, type, quantity = 1) => {
     const url = type === "cart" ? `/api/v1/products/${id}/shopping/cart` : `/api/v1/products/${id}/shopping/wishlist`;
     try {
       const result = await axios_default({
         method: "PATCH",
         url,
         data: {
-          variant: selectedVariant2,
+          variant,
           quantity
         }
       });
       if (result.data.status === "success") {
         showAlert("success", `Product Added to ${type} successfully!!`);
-        window.setTimeout(() => {
-          location.assign(`/my-account/${id}`);
-        }, 2500);
+        if (type === "cart") {
+          window.setTimeout(() => {
+            location.assign(`/my-account/${id}?show=my-account-cart`);
+          }, 2500);
+        } else {
+          window.setTimeout(() => {
+            location.assign(`/my-account/${id}?show=my-account-wishlist`);
+          }, 2500);
+        }
       }
     } catch (err) {
       showAlert("error", err.response.data.message);
@@ -28358,7 +28366,7 @@
   if (myAccountMenu) {
     myAccountMenu.addEventListener("click", function(e) {
       e.preventDefault();
-      const pageSections = [overview, addresses, orders, wishlist, cart, reviews, support];
+      const pageSections = [overview, addresses, orders, wishlist, cart, support];
       function activateSection(activeSection) {
         pageSections.forEach((section) => {
           if (section === activeSection) {
@@ -28386,9 +28394,6 @@
       if (e.target.classList.contains("account-cart--btn")) {
         enableRemoveFromCart();
         activateSection(cart);
-      }
-      if (e.target.classList.contains("account-reviews--btn")) {
-        activateSection(reviews);
       }
       if (e.target.classList.contains("account-support--btn")) {
         activateSection(support);
@@ -28516,12 +28521,16 @@
     buyItNowBtnId.addEventListener("click", async (e) => {
       e.preventDefault();
       const productId = buyItNowBtnId.dataset.productId;
-      const qty = parseInt(document.getElementById("add-to-cart-qty").value) || 1;
+      const productType = buyItNowBtnId.dataset.productType;
+      const qtyInput = document.getElementById("add-to-cart-qty");
+      const qty = qtyInput?.value || 1;
       const userAddress = buyItNowBtnId.dataset.userObject;
       const userArray = JSON.parse(userAddress);
-      if (!selectedVariant || !qty || userArray.length < 1 || !productId) {
-        return showAlert("error", "Please select a size or add an address first");
+      if (productType !== "accessory" && !selectedVariant) {
+        showAlert("error", "Please select a size first");
+        return;
       }
+      selectedVariant = productType === "accessory" ? null : selectedVariant;
       buyItNowCheckout(productId, qty, selectedVariant);
     });
   }
@@ -28530,10 +28539,13 @@
     buyItNowBtnGuest.addEventListener("click", async (e) => {
       e.preventDefault();
       const productId = buyItNowBtnGuest.dataset.productId;
+      const productType = buyItNowBtnGuest.dataset.productType;
       const qty = 1;
-      if (!selectedVariant || !qty || !productId) {
-        return showAlert("error", "Please add an address first");
+      if (productType !== "accessory" && !selectedVariant) {
+        showAlert("error", "Please select a size first");
+        return;
       }
+      selectedVariant = productType === "accessory" ? null : selectedVariant;
       buyItNowGuestCheckout(productId, qty, selectedVariant);
     });
   }
@@ -28560,30 +28572,35 @@
       e.preventDefault();
       const id = addToCartBtnId.dataset.productId;
       const slug = addToCartBtnId.dataset.productSlug;
-      const qty = parseInt(document.getElementById("add-to-cart-qty").value) || 1;
-      if (!selectedVariant) {
+      const productType = addToCartBtnId.dataset.productType;
+      const qtyInput = document.getElementById("add-to-cart-qty");
+      const qty = qtyInput?.value || 1;
+      if (productType !== "accessory" && !selectedVariant) {
         showAlert("error", "Please select a size first");
         return;
       }
-      addProductToUser(id, selectedVariant, slug, "cart", qty);
+      const variant = productType === "accessory" ? null : selectedVariant;
+      addProductToUser(id, variant, slug, "cart", qty);
     });
   }
-  var addToCartBtn = document.querySelectorAll(".wishlist-btn--atc");
-  if (addToCartBtn) {
-    addToCartBtn.forEach(
-      (btn) => btn.addEventListener("click", function(e) {
+  var addToCartBtns = document.querySelectorAll(".wishlist-btn--atc");
+  if (addToCartBtns.length > 0) {
+    addToCartBtns.forEach((btn) => {
+      btn.addEventListener("click", function(e) {
         e.preventDefault();
         const id = btn.dataset.productId;
         const slug = btn.dataset.productSlug;
+        const productType = btn.dataset.productType;
         const qtyInput = btn.closest(".myAccount__cart--item").querySelector(".add-to-cart-qty");
-        const qty = parseInt(qtyInput?.value) || 1;
-        if (!selectedVariant) {
+        const qty = qtyInput?.value || 1;
+        if (productType !== "accessory" && !selectedVariant) {
           showAlert("error", "Please select a size first");
           return;
         }
-        addProductToUser(id, selectedVariant, slug, "cart", qty);
-      })
-    );
+        const variant = productType === "accessory" ? null : selectedVariant;
+        addProductToUser(id, variant, slug, "cart", qty);
+      });
+    });
   }
   document.querySelectorAll(".update-cart-quantity").forEach((form) => {
     form.addEventListener("submit", async function(e) {
@@ -28615,11 +28632,14 @@
       e.preventDefault();
       const id = addToWishlistBtn.dataset.productId;
       const slug = addToWishlistBtn.dataset.productSlug;
-      if (!selectedVariant) {
+      const productType = addToWishlistBtn.dataset.productType;
+      const qty = document.getElementById("add-to-cart-qty")?.value || 1;
+      if (productType !== "accessory" && !selectedVariant) {
         showAlert("error", "Please select a size first");
         return;
       }
-      addProductToUser(id, selectedVariant, slug, "wishlist");
+      const variant = productType === "accessory" ? null : selectedVariant;
+      addProductToUser(id, variant, slug, "wishlist", qty);
     });
   }
   function enableRemoveFromWishlist() {

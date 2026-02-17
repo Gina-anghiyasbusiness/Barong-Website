@@ -31,7 +31,7 @@ block content
 							h4.productPage__product-name #{product.name}
 							if user
 								.productPage-wishlist--box
-									button#add-to-wishlist.productPage__wishlist--btn(data-product-id=`${product.id}`,data-user=user.id , data-product-slug=`${product.slug}`) 
+									button#add-to-wishlist.productPage__wishlist--btn(data-product-id=`${product.id}`,data-user=user.id , data-product-slug=`${product.slug}` data-product-type="accessory" ) 
 										i.productPage__product--star(data-lucide='star')
 						p.productPage_sku Product No. #{product.productSku}
 					
@@ -59,74 +59,21 @@ block content
 											
 
 					
-					if user		
-						.productPage__quantity
-							label(for=`quantity`)  Quantity:
-							input#add-to-cart-qty(type="number" name=`quantity` value="1" min="1")
+					if user
+						.productPage__purchase-section 		
+							.productPage__quantity
+								label(for=`quantity`)  Quantity:
+								input#add-to-cart-qty(type="number" name=`quantity` value="1" min="1")
 
-						.productPage__product--btn-box 
-						
-							button#buy-it-now.productPage__product-btn.productPage-buyItNow(data-product-id=`${product.id}`,data-user-object=user , data-product-slug=`${product.slug}`) Buy now
-						
-							button#add-to-cart.productPage__product-btn.productPage-addtocart(data-product-id=`${product.id}`,data-user=user.id , data-product-slug=`${product.slug}`) Add to cart 
+							.productPage__product--btn-box 
+							
+								button#buy-it-now.productPage__product-btn.productPage-buyItNow(data-product-id=`${product.id}`,data-user-object=user , data-product-slug=`${product.slug}` data-product-type="accessory" ) Buy now
+							
+								button#add-to-cart.productPage__product-btn.productPage-addtocart(data-product-id=`${product.id}`,data-user=user.id , data-product-slug=`${product.slug}` data-product-type="accessory" ) Add to cart 
 							
 					else
 						.productPage__product--btn-box 
 						
-							button#buy-it-now-guest.productPage__product-btn.productPage-buyItNow(data-product-id=`${product.id}`,data-user-object=user , data-product-slug=`${product.slug}`) Buy now
+							button#buy-it-now-guest.productPage__product-btn.productPage-buyItNow(data-product-id=`${product.id}`,data-user-object=user , data-product-slug=`${product.slug}` data-product-type="accessory" ) Buy now
 				
-							a(href='/login-page' class='productPage__product-btn productPage-addtocart') Login to Add to cart 
-				
-				
-				
-				
-				
-			//- .productPage__reviews
-			
-			//- 	h2.productPage__reviews--heading.mrgbtm--med  Customer Ratings
-				
-			//- 	.productPage__reviews--top-box
-				
-			//- 		p Overall Rating: #{product.rating} (#{product.totalRatings})
-					
-			//- 		if user
-					
-			//- 			if hasPurchased
-						
-			//- 				if !hasReviewed
-							
-			//- 					button#product-review-btn Leave Review
-								
-			//- 				else 
-			//- 					p Review Submitted
-						
-				
-				
-			//- 	.productPage__reviews--bottom-box.content-hidden
-				
-			//- 		form#submit-review-form.review-form(data-product-id=`${product.id}` , data-slug=`${product.slug}`)
-					
-			//- 			.review-form-row.review-form-row--input
-			//- 				label(for="review-rating")  Rating:
-			//- 				input#review-rating(type="number" , name='review-rating' , min='1' , max='10', required )
-							
-			//- 			.review-form-row.review-form-row--textarea
-			//- 				label(for="review-comment")  Comment:
-			//- 				textarea#review-comment(name="review-comment" placeholder="Write your comment..." rows="3" required)
-			//- 				button#review-cancel-btn Cancel
-			//- 				button(type='submit') Submit
-					
-				
-				
-			//- 	.productPage__reviews--middle-box
-			//- 		each review in product.reviews 
-			//- 			.productPage__review--box
-			//- 				.productPage__review
-			//- 					h4 #{review.user.name.toUpperCase()}
-			//- 					p Rating: #{review.rating} / 10
-			//- 					p Comment: #{review.comment}
-								
-			//- 				+ratingStar(review)
-				
-
-		
+							a(href='/login-page' class='productPage__product-btn productPage-addtocart') Login to Add to cart

@@ -136,8 +136,7 @@ const userSchema = new mongoose.Schema({
 
 			variant: {
 				type: mongoose.Schema.Types.ObjectId,
-				refPath: 'wishlist.productModel',
-				required: true
+				refPath: 'wishlist.productModel'
 			},
 
 			quantity: {
@@ -169,8 +168,7 @@ const userSchema = new mongoose.Schema({
 
 			variant: {
 				refPath: 'cart.productModel',
-				type: mongoose.Schema.Types.ObjectId,
-				required: true
+				type: mongoose.Schema.Types.ObjectId
 			},
 
 			quantity: {

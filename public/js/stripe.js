@@ -47,9 +47,9 @@ export const buyItNow = async (product, qty, variant) => {
 
 	try {
 
-		const session = await axios(`/api/v1/orders/checkout-session-bin/${product}/${qty}/${variant}`);
+		const variantParam = variant || 'null';
 
-		/// store the result
+		const session = await axios(`/api/v1/orders/checkout-session-bin/${product}/${qty}/${variantParam}`);
 
 		const result = await stripe.redirectToCheckout(
 			{
@@ -65,29 +65,27 @@ export const buyItNow = async (product, qty, variant) => {
 	} catch (err) {
 
 		showAlert('error', err);
-
 	}
-
 }
 
 
 
-
 export const buyItNowGuest = async (product, qty, guestAddressId, variant) => {
+
+	const variantParam = variant || 'null';
 
 	try {
 
 		const session = await axios(
 			{
 				method: 'POST',
-				url: `/api/v1/orders/checkout-session-bin-guest/${product}/${qty}/${variant}`,
+				url: `/api/v1/orders/checkout-session-bin-guest/${product}/${qty}/${variantParam}`,
 				data: { guestAddressId }
 			}
 		);
 
 		const result = await stripe.redirectToCheckout(
 			{
-
 				sessionId: session.data.session.id
 			}
 		);

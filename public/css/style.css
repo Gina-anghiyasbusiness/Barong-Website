@@ -2621,7 +2621,7 @@ color: var(--color-text-primary-light);
 	align-items: center;
 	gap: 2rem;
 
-	margin-bottom: .5rem;
+	margin-bottom: 3.2rem;
 	
 }
 
@@ -5042,7 +5042,7 @@ p.creadit-card-address{
 .checkout__form--address-flex{
 	display: flex;
 	flex-direction: column;
-	gap: 1.2rem;
+	gap: .5rem;
 	margin-bottom: 0;
 	background: transparent;
 	padding: 0;
@@ -5133,6 +5133,7 @@ p.creadit-card-address{
 	font-weight: 700;
 
 	padding: 1rem 0;
+	margin-bottom: 1.35rem;
 
 	border: none;
 	border-radius: 10px;
@@ -5266,7 +5267,7 @@ h2.checkout__success--heading{
 
 #paypal-button-container {
 	
-  margin-top: var(--mrg-nrm);
+  margin-top: 1rem;
   text-align: center;
   /* border: 1px solid #ccc; */
   padding: 1rem 3.2rem;
@@ -5306,6 +5307,8 @@ h2.order_page--heading{
 	box-shadow: 0 16px 36px rgba(0,0,0,0.10);
 	border-radius: 12px;
 	padding: 2rem;
+	
+	margin-bottom: 2rem;
 }
 
 .order_page--card-full{
@@ -5574,7 +5577,10 @@ h1.admin_heading {
 
 /* //						Home Page 					// */
 
-
+.admin__home--main{
+	
+	padding: 0 2rem;
+}
 
 section.admin__home--grid {
 	

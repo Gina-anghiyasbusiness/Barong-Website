@@ -24,7 +24,7 @@ const orderSchema = new mongoose.Schema({
 			product: {
 
 				type: mongoose.Schema.Types.ObjectId,
-				refPath: 'cart.productModel',
+				refPath: 'product.productModel',
 				required: true
 			},
 

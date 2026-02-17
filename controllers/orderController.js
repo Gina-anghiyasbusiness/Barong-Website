@@ -31,6 +31,39 @@ const { client, paypal } = require('./../utilities/paypalUtility');
 
 
 
+
+const updateStockLevels = async (productId, variantId, qty) => {
+
+
+	let product = await SpecProd.findById(productId);
+
+	if (!product) {
+		product = await Shoe.findById(productId);
+	}
+
+	if (!product) {
+		product = await Accessory.findById(productId);
+	}
+
+	if (!product) {
+		throw new Error('Product not found');
+	}
+
+	if (!product.variants || product.variants.length === 0 || !variantId) {
+		return;
+	}
+
+	const variant = product.variants.id(variantId); // ✅ Now safe to call
+
+	if (!variant) throw new Error('Variant not found');
+	if (variant.inStock < qty) throw new Error('Not enough stock');
+
+	variant.inStock -= qty;
+
+	await product.save();
+};
+
+
 const calculateTotals = (totalNet) => {
 
 	const delivery = totalNet < 50 ? 10 : 0;
@@ -64,6 +97,9 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
 	const { product, qty, variant } = req.params;
 
+	console.log('=== PAYPAL BUYITNOW ===');
+	console.log('product:', product, 'qty:', qty, 'variant:', variant);
+
 	let buyItNowProduct = await SpecProd.findById(product).populate('category');
 
 	if (!buyItNowProduct) {
@@ -87,11 +123,17 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
 	/// Find variant (using your method from Stripe)
 
-	const buyItNowVariant = buyItNowProduct.variants.find(v => v.id === variant);
+	let buyItNowVariant = null;
 
-	if (!buyItNowVariant) return next(new AppError('No variant found', 400));
-
-
+	if (buyItNowProduct.variants && buyItNowProduct.variants.length > 0) {
+		const actualVariant = (variant && variant !== 'null') ? variant : null;
+		if (actualVariant) {
+			buyItNowVariant = buyItNowProduct.variants.find(v => v.id === actualVariant);
+			if (!buyItNowVariant) {
+				return next(new AppError('Variant not found', 404));
+			}
+		}
+	}
 
 	/// Calculate discount/price 
 
@@ -101,7 +143,8 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
 	totalNet = await checkoutVar(buyItNowProduct, totalNet);
 
-
+	console.log('totalNet:', totalNet);
+	console.log('product price:', buyItNowProduct.currentPrice);
 
 	/// Calculate totals (delivery/tax)
 
@@ -125,7 +168,7 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
 			amount: {
 				currency_code: 'AUD',
-				value: (((totalNet * qty) + delivery + taxAmount) / 10).toFixed(2)
+				value: ((totalNet * qty) + delivery + (taxAmount / 100)).toFixed(2)  // ✅ Fixed
 			},
 
 			description: `${buyItNowProduct.name} x ${qty}`
@@ -282,7 +325,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 	const { product, qty, variant } = req.body;
 
-	const isCartCheckout = !product || !qty || !variant;
+	const isCartCheckout = !product || !qty;
 
 
 	let user = null;
@@ -401,69 +444,91 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 	} else {
 
+		const actualVariant = (variant && variant !== 'null') ? variant : null;
 
-		priceAtPurchase = await checkoutVar(foundProduct, priceAtPurchase);
-
-
-		if (typeof priceAtPurchase !== 'number' || isNaN(priceAtPurchase)) {
-
-			return next(new AppError('Invalid price at purchase', 500));
-		}
+		try {
 
 
-		await updateStockLevels(product, variant, qty);
+			/// 1. Find the product
+
+			let foundProduct = await SpecProd.findById(product).populate('category');
+			if (!foundProduct) foundProduct = await Shoe.findById(product).populate('category');
+			if (!foundProduct) foundProduct = await Accessory.findById(product).populate('category');
+			if (!foundProduct) return next(new AppError('Product not found', 404));
 
 
-		const counter = await Counter.findOneAndUpdate(
+			/// 2. Find the variant
 
-			{ name: 'order' },
-			{ $inc: { seq: 1 } },
-			{ new: true, upsert: true }
-		);
-
-		const orderNum = String(counter.seq).padStart(4, '0');
+			const selectedVariant = actualVariant ? foundProduct.variants?.find(v => v.id === actualVariant) : null;
 
 
+			/// 3. Calculate price
 
-		/// order	
+			priceAtPurchase = await checkoutVar(foundProduct, priceAtPurchase);
 
-		order = await Order.create({
-
-			orderNum,
-			user: req.user ? req.user.id : undefined,
-			product: [{
-				product,
-				quantity: qty,
-				selectedVariant: selectedVariant._id,
-				priceAtPurchase
-			}],
-			shippingAddress,
-			status: 'Paid',
-			totalAmount: amount,
-			paymentMethod: 'PayPal',
-			currency
-		});
+			if (typeof priceAtPurchase !== 'number' || isNaN(priceAtPurchase)) {
+				return next(new AppError('Invalid price at purchase', 500));
+			}
 
 
-		if (!user) {
+			/// 4. Update stock (only if variant exists)
 
-			await GuestAddress.create({
+			if (selectedVariant) {
+				await updateStockLevels(product, selectedVariant._id.toString(), Number(qty));
+			}
 
-				order: order._id,
-				email: payer.email_address,
-				name: `${payer.name.given_name} ${payer.name.surname}`,
-				number: '',
-				street: shipping?.address?.address_line_2 || '',
-				city: suburbCity,
-				state: shipping?.address?.admin_area_1 || '',
-				postcode: shipping?.address?.postal_code || ''
+			/// 5. Create order number
 
+			const counter = await Counter.findOneAndUpdate(
+				{ name: 'order' },
+				{ $inc: { seq: 1 } },
+				{ new: true, upsert: true }
+			);
+			const orderNum = String(counter.seq).padStart(4, '0');
+
+
+			/// 6. Create order
+
+			order = await Order.create({
+				orderNum,
+				user: req.user ? req.user.id : undefined,
+				product: [{
+					product,
+					productModel: foundProduct.constructor.modelName,
+					quantity: Number(qty),
+					selectedVariant: selectedVariant ? selectedVariant._id : null,
+					priceAtPurchase
+				}],
+				shippingAddress,
+				status: 'Paid',
+				totalAmount: amount,
+				paymentMethod: 'PayPal',
+				currency
 			});
+
+
+			/// 7. Guest address (if no logged-in user)
+
+			if (!user) {
+				await GuestAddress.create({
+					order: order._id,
+					email: payer.email_address,
+					name: `${payer.name.given_name} ${payer.name.surname}`,
+					number: '',
+					street: shipping?.address?.address_line_2 || '',
+					city: suburbCity,
+					state: shipping?.address?.admin_area_1 || '',
+					postcode: shipping?.address?.postal_code || ''
+				});
+			}
 		}
 
+		catch (err) {
+			console.error('=== BUYITNOW ERROR ===', err.message);
+			console.error(err.stack);
+			return next(err);
+		}
 	}
-
-
 
 
 	/// transaction	
@@ -525,46 +590,49 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 /// 			Buy It Now Item 				///
 
-
-
-
-
 exports.buyItNowItem = catchAsync(async (req, res, next) => {
 
-
-	/// get values
-
 	const { product, qty, variant } = req.params;
-	const user = await User.findById(req.body.user).select('addresses');
 
+	const user = await User.findById(req.body.user).select('addresses');
 
 
 	/// find Product and Variant	
 
-
 	let buyItNowProduct = await SpecProd.findById(product).populate('category');
 
 	if (!buyItNowProduct) {
+
 		buyItNowProduct = await Shoe.findById(product).populate('category');
 	}
 
 	if (!buyItNowProduct) {
+
 		buyItNowProduct = await Accessory.findById(product).populate('category');
 	}
 
 	if (!buyItNowProduct) {
+
 		return next(new AppError('Product not found', 404));
 	}
 
 
-	const buyItNowVariant = buyItNowProduct.variants.find(v => v.id === variant);
+	let buyItNowVariant = null;
 
+	if (buyItNowProduct.variants && buyItNowProduct.variants.length > 0) {
 
-	if (!user || !buyItNowProduct || !buyItNowVariant) {
+		buyItNowVariant = buyItNowProduct.variants.find(v => v.id === variant);
 
-		return next(new AppError('Missing required data', 400));
+		if (!buyItNowVariant) {
 
+			return next(new AppError('Variant not found', 404));
+		}
 	}
+
+	if (!user || !buyItNowProduct) {
+		return next(new AppError('Missing required data', 400));
+	}
+
 
 	/// find the discount 	
 
@@ -572,19 +640,16 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 	if (!buyItNowProduct.discount && !buyItNowProduct.category) {
 
 		totalNet = buyItNowProduct.currentPrice;
-
 	}
 
 	else if (!buyItNowProduct.category || buyItNowProduct.discount) {
 
 		totalNet = await priceAtPurchaseDiscount(buyItNowProduct);
-
 	}
 
 	else if (!buyItNowProduct.category.discount) {
 
 		totalNet = buyItNowProduct.currentPrice;
-
 	}
 
 	else {
@@ -594,13 +659,9 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 
 
 
-
-
-
 	/// Calculate the totals
 
 	const { delivery, subtotal, taxAmount } = calculateTotals(totalNet * qty);
-
 
 
 	/// get address for delivery
@@ -609,11 +670,9 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 	const shippingAddress = defaultAddress || user.addresses[0];
 
 
-
 	/// throw error if no user or product
 
 	if (!user || !buyItNowProduct) return next(new AppError('No Products Present', 400));
-
 
 	const line_items = [
 		{
@@ -697,8 +756,13 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 
 	const session = await stripe.checkout.sessions.create({
 
-		payment_method_types: ['card'],
+		payment_method_types: ['card', 'afterpay_clearpay'],
 		mode: 'payment',
+
+		shipping_address_collection: {
+			allowed_countries: ['AU'],
+		},
+
 
 		success_url: `${req.protocol}://${req.get('host')}/order-success`,
 		cancel_url: `${req.protocol}://${req.get('host')}/my-account/${user.id}`,
@@ -718,7 +782,7 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 			userId: req.user.id,
 			product: product.toString(),
 			qty: qty.toString(),
-			variant: buyItNowVariant.id.toString(),
+			variant: buyItNowVariant ? buyItNowVariant.id.toString() : null, // ✅ Fix this line
 			address: JSON.stringify(shippingAddress)
 		}
 	});
@@ -736,18 +800,17 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 
 
 
+
 //------------		BuyItNow-GUEST  Item		-------------//
 
 
 
 exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 
-
 	const { guestAddressId } = req.body;
-
 	const { product, qty, variant } = req.params;
 
-
+	const qtyNum = Number(qty);
 
 	let buyItNowProduct = await SpecProd.findById(product).populate('category');
 
@@ -762,49 +825,37 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 	if (!buyItNowProduct) {
 		return next(new AppError('Product not found', 404));
 	}
-	const buyItNowVariant = buyItNowProduct.variants.find(v => v.id === variant);
 
+	let buyItNowVariant = null;
 
-	if (!buyItNowProduct || !buyItNowVariant) {
+	if (buyItNowProduct.variants && buyItNowProduct.variants.length > 0) {
+		buyItNowVariant = buyItNowProduct.variants.find(v => v.id === variant);
 
-		return next(new AppError('Missing required data', 400));
-
+		if (!buyItNowVariant) {
+			return next(new AppError('Variant not found', 404));
+		}
 	}
-
-
-
 
 	const guestAddress = await GuestAddress.findById(guestAddressId).lean();
 
 	if (!guestAddress) return next(new AppError('Guest address not found', 404));
 
-
-
-
 	let totalNet;
 
 	if (!buyItNowProduct.discount && !buyItNowProduct.category) {
-
 		totalNet = buyItNowProduct.currentPrice;
 	}
-
 	else if (!buyItNowProduct.category || buyItNowProduct.discount) {
-
 		totalNet = await priceAtPurchaseDiscount(buyItNowProduct);
 	}
-
 	else if (!buyItNowProduct.category.discount) {
-
 		totalNet = buyItNowProduct.currentPrice;
 	}
-
 	else {
-
 		totalNet = await categoryDiscountPrice(buyItNowProduct);
 	}
 
-	const { delivery, subtotal, taxAmount } = calculateTotals(totalNet * qty);
-
+	const { delivery, subtotal, taxAmount } = calculateTotals(totalNet * qtyNum);
 
 	// Line items
 	const line_items = [
@@ -818,7 +869,7 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 					images: [`http://127.0.0.1:5000/img/product_imgs/${buyItNowProduct.imageCover}`]
 				}
 			},
-			quantity: qty
+			quantity: qtyNum
 		},
 		{
 			price_data: {
@@ -846,15 +897,15 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 		}
 	];
 
+	try {
+		const session = await stripe.checkout.sessions.create({
 
-	/// Create Stripe session for 'guest'
-
-
-
-	const session = await stripe.checkout.sessions.create(
-		{
-			payment_method_types: ['card'],
+			payment_method_types: ['card', 'afterpay_clearpay'],
 			mode: 'payment',
+
+			shipping_address_collection: {
+				allowed_countries: ['AU'],
+			},
 
 			success_url: `${req.protocol}://${req.get('host')}/order-success-guest`,
 			cancel_url: `${req.protocol}://${req.get('host')}/guest-cancel`,
@@ -865,25 +916,26 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 			line_items,
 
 			metadata: {
-
 				userId: 'guest',
 				product: product.toString(),
-				qty: qty.toString(),
-				variant: buyItNowVariant.id.toString(),
+				qty: qtyNum.toString(),
+				variant: buyItNowVariant ? buyItNowVariant.id.toString() : 'null',
 				address: JSON.stringify(guestAddress)
 			}
 		});
 
+		res.status(200).json({
+			status: 'success',
+			session
+		});
 
-	res.status(200).json({
-		status: 'success',
-		session
-	});
-})
-
-
-
-
+	} catch (stripeError) {
+		console.error('STRIPE ERROR:', stripeError);
+		console.error('STRIPE ERROR MESSAGE:', stripeError.message);
+		console.error('STRIPE ERROR TYPE:', stripeError.type);
+		return next(new AppError(`Stripe error: ${stripeError.message}`, 500));
+	}
+});
 
 
 
@@ -1032,8 +1084,13 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 	const session = await stripe.checkout.sessions.create({
 
-		payment_method_types: ['card'],
+
+		payment_method_types: ['card', 'afterpay_clearpay'],
 		mode: 'payment',
+
+		shipping_address_collection: {
+			allowed_countries: ['AU'],
+		},
 
 		success_url: `${req.protocol}://${req.get('host')}/order-success`,
 		cancel_url: `${req.protocol}://${req.get('host')}/my-account/${user.id}`,

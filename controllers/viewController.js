@@ -887,25 +887,34 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 	let variant;
 
 	if (!productId) {
-
+		// Cart checkout
 		cart.cart.forEach(item => {
-
-			variant = item.product.variants.find(v => v._id.toString() === item.variant.toString());
-
-			item.variantDetails = variant;
+			// Only find variant if product has variants
+			if (item.product.variants && item.product.variants.length > 0) {
+				variant = item.product.variants.find(v => v._id.toString() === item.variant.toString());
+				item.variantDetails = variant;
+			} else {
+				item.variantDetails = null; // Accessory has no variants
+			}
 		});
 
-	} else variant = product.variants.find(v => v.id === productVariant) || {};
+	} else {
+		// BuyItNow checkout
+		if (product.variants && product.variants.length > 0) {
+			variant = product.variants.find(v => v.id === productVariant) || {};
 
-	if (!variant) { return next(new AppError('No Variant Found', 404)) }
+			if (!variant) {
+				return next(new AppError('No Variant Found', 404));
+			}
 
-	if (variant.inStock < qty) {
-
-		console.log('Stock insufficient, throwing error');
-
-		return next(new AppError(`Not enough ${variant.size} in stock! Only ${variant.inStock} left.`, 400));
+			if (variant.inStock < qty) {
+				console.log('Stock insufficient, throwing error');
+				return next(new AppError(`Not enough ${variant.size} in stock! Only ${variant.inStock} left.`, 400));
+			}
+		} else {
+			variant = null; // Accessory has no variants
+		}
 	}
-
 
 
 
@@ -1051,21 +1060,46 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 
 	let qty = Number(req.params.qty) || 1;
 
-
 	const productId = req.params.productId;
 	const productVariant = req.params.variant;
 
 
-	const product = await SpecProd.findById(productId).populate('category');
+	//---------- ✅ Multi-model lookup  ------------//
 
-	if (!product) { return next(new AppError('No Product Found', 404)) }
 
-	const variant = product.variants.find(v => v.id === productVariant) || {};
+	let product = await SpecProd.findById(productId).populate('category');
 
-	if (!variant) { return next(new AppError('No Variant Found', 404)) }
+	if (!product) {
+
+		product = await Shoe.findById(productId).populate('category');
+	}
+
+	if (!product) {
+
+		product = await Accessory.findById(productId).populate('category');
+	}
+
+	if (!product) {
+
+		return next(new AppError('No Product Found', 404));
+	}
+
+	let variant = null;
+
+	if (product.variants && product.variants.length > 0) {
+
+		variant = product.variants.find(v => v.id === productVariant);
+
+		if (!variant) {
+
+			return next(new AppError('No Variant Found', 404));
+		}
+	}
+
 
 
 	//--------------- --------------------------- ----------------
+
 
 	let totalNet;
 
@@ -1073,41 +1107,30 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 	if (!product.discount && !product.category) {
 
 		product.discountPrice = product.currentPrice
-
 		totalNet = product.discountPrice * qty;
 	}
 
 	else if (!product.category || product.discount) {
 
 		product.discountPrice = await priceAtPurchaseDiscount(product);
-
 		totalNet = product.discountPrice * qty;
 	}
-
 
 	else if (!product.category.discount) {
 
 		product.discountPrice = product.currentPrice
-
 		totalNet = product.discountPrice * qty;
-
 	}
 
 	else {
 
 		product.discountPrice = await categoryDiscountPrice(product);
-
 		totalNet = product.discountPrice * qty;
 	}
-
-
-
 
 	const delivery = totalNet < 50 ? 10 : 0;
 	const taxes = Math.round(((totalNet + delivery) * 0.1) * 10) / 10;
 	const totalGross = (totalNet + delivery) + taxes;
-
-
 
 	res.status(200).render('checkout', {
 
@@ -1123,15 +1146,8 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 		totalGross,
 		guest: true,
 		paypalClientId: `${process.env.PAYPAL_CLIENT_ID}`
-
 	})
-
 })
-
-
-
-
-
 
 
 
@@ -1174,24 +1190,35 @@ exports.getUserOrderPage = catchAsync(async (req, res, next) => {
 	const order = await Order.findOne({ orderNum });
 
 	if (!order.user.equals(req.user._id)) {
-
 		return next(new AppError('You do not have permission to view this order', 403));
 	}
 
-	const products = order.product;
-	const transaction = await Transaction.findById(order.transaction)
+	for (const item of order.product) {
+		let productDoc = await SpecProd.findById(item.product);
+
+		if (!productDoc) {
+			productDoc = await Shoe.findById(item.product);
+		}
+
+		if (!productDoc) {
+			productDoc = await Accessory.findById(item.product);
+		}
+
+		item.product = productDoc;
+		item.markModified('product');
+	}
+
+	const transaction = await Transaction.findById(order.transaction);
 
 	res.status(200).render('order-page', {
-
 		pageTitle: 'Order Page',
 		pageDescription: 'Successful Payment Page',
 		canonicalUrl: `${process.env.CANONICAL_URL}order-page`,
 		order,
-		products,
+		products: order.product,
 		transaction
-	})
-})
-
+	});
+});
 
 
 exports.getGuestOrderPage = catchAsync(async (req, res, next) => {
