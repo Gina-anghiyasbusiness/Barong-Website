@@ -166,7 +166,10 @@ block content
 														button.productPage__product-btn.wishlist-btns.wishlist-btn--bin(data-product-id=`${item.product.id}`,data-user-object=user , data-product-slug=`${item.product.slug}`) Buy now 													
 													
 											else
-												p Product no longer exists										
+												p Product no longer exists
+							.myAccount__cart--checkout 
+								if wishlist.length < 1
+									p.myAccount__checkout--empty Wishlist Empty									
 		
 			
 						.myAccount__main--cart.content-hidden

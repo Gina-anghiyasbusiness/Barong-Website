@@ -599,11 +599,12 @@ if (buyItNowBtn) {
 			const userAddress = btn.dataset.userObject;
 			const userArray = JSON.parse(userAddress);
 
-			if (!selectedVariant || !qty || userArray.length < 1 || !productId) {
+			if (!qty || userArray.length < 1 || !productId) {
 
-				return showAlert('error', 'Please select a size or add an address first');
+				return showAlert('error', 'Please add an address first');
 			}
 
+			selectedVariant = selectedVariant || 'null';
 
 			buyItNowCheckout(productId, qty, selectedVariant);
 		})

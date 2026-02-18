@@ -1825,75 +1825,12 @@ exports.getOrderSearch = catchAsync(async (req, res, next) => {
 
 
 
-
-
-
-
-
-
-// exports.getOrderSearch = catchAsync(async (req, res, next) => {
-
-// 	let order, orders, transaction;
-
-// 	if (req.query.orderNumSearch) {
-
-// 		const orderNum = req.query.orderNumSearch;
-
-// 		order = await Order.findOne({ orderNum })
-// 			.populate('transaction')
-// 			.populate({
-// 				path: 'product.product',
-// 				select: 'name'
-// 			})
-// 			.populate('user');
-
-// 		if (!order) {
-// 			return next(new AppError('No Order Found with that Order Number', 404))
-// 		}
-// 	}
-
-
-// 	if (req.query.emailSearch) {
-
-// 		const orderEmail = req.query.emailSearch;
-// 		const user = await User.findOne({ email: orderEmail });
-
-// 		if (!user) {
-// 			return next(new AppError('No User Found. Please Try Again', 404))
-// 		}
-
-// 		orders = await Order.find({ user: user._id })
-// 			.populate('transaction')
-// 			.populate({
-// 				path: 'product.product',
-// 				select: 'name'
-// 			})
-// 			.populate('user');
-
-// 		if (!orders || orders.length === 0) {
-
-// 			return next(new AppError('Invalid Email! Try Again'))
-// 		}
-// 	}
-
-// 	res.status(200).render('admin/be_order-search', {
-
-// 		title: `Admin-Order Search`,
-// 		order,
-// 		orders,
-// 	})
-// })
-
-
-
-
-
 /// 	 Transactions Pages	 ///
 
 
 exports.getTransactionList = catchAsync(async (req, res, next) => {
 
-	const transactions = await Transaction.find();
+	const transactions = await Transaction.find().sort({ createdAt: -1 });
 
 
 	res.status(200).render('admin/be_transaction-list', {

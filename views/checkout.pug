@@ -181,8 +181,11 @@ block content
 										p.checkout__page--totals-p $#{totalGross}
 
 							.checkoutPanel__section.checkoutPanel__payments
-								button#checkout-submit--stripe(class='checkout__page-submit--btn') Pay with Card
-
+								button#checkout-submit--stripe(class='checkout__page-submit--btn')
+									.checkout--afterpay_card
+										span Pay with Card or 
+										span 
+											img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
 								#paypal-button-container(
 									data-product=(product && product.id) || ''
 									data-qty=qty || ''
@@ -248,9 +251,15 @@ block content
 									.checkout__page--totals--row.checkoutTotals__total
 										p.checkout__page--totals-p Estimated Total
 										p.checkout__page--totals-p $#{totalGross}
+										
 
 							.checkoutPanel__section.checkoutPanel__payments
-								button#checkout-submit--stripe-guest.checkout__page-submit--btn(type="submit") Pay with Card
+								button#checkout-submit--stripe-guest.checkout__page-submit--btn(type="submit") 
+									.checkout--afterpay_card
+										span Pay with Card or 
+										span 
+											img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
+
 
 								#paypal-button-container-guest(
 									data-product=(product && product.id) || ''

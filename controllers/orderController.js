@@ -332,7 +332,9 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 	if (req.user && req.user.id) {
 
-		user = await User.findById(req.user.id);
+		user = await User.findById(req.user.id)
+			.populate('cart.product')
+			.select('cart addresses name email');
 	}
 
 
@@ -373,74 +375,81 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 	if (isCartCheckout) {
 
-		const cartArray = (await Promise.all(user.cart.map(async item => {
+		try {
 
-			if (!item.product || !item.product._id) return null;
+			console.log('=== CART CHECKOUT START ===', user.cart);
 
+			const cartArray = (await Promise.all(user.cart.map(async item => {
 
-			///			PriceAtPurchase Calc			///
-
-			let product = await SpecProd.findById(item.product.id).populate('category');
-
-			if (!product) {
-				product = await Shoe.findById(item.product.id).populate('category');
-			}
-
-			if (!product) {
-				product = await Accessory.findById(item.product.id).populate('category');
-			}
-
-			if (!product) {
-				return next(new AppError('Product not found', 404));
-			}
+				if (!item.product || !item.product._id) return null;
 
 
+				///			PriceAtPurchase Calc			///
 
-			priceAtPurchase = await checkoutVar(product, priceAtPurchase);
+				let product = await SpecProd.findById(item.product.id).populate('category');
 
-			return {
+				if (!product) {
+					product = await Shoe.findById(item.product.id).populate('category');
+				}
 
-				product: item.product._id.toString(),
+				if (!product) {
+					product = await Accessory.findById(item.product.id).populate('category');
+				}
 
-				selectedVariant: item.variant?._id?.toString(),
-
-				quantity: item.quantity,
-
-				priceAtPurchase
-
-			};
-
-		}))).filter(Boolean); // ⬅️ prevent nulls in DB!
-
-
-		await Promise.all(cartArray.map(async item => {
-
-			await updateStockLevels(item.product, item.selectedVariant, item.quantity);
-		}));
+				if (!product) {
+					return next(new AppError('Product not found', 404));
+				}
 
 
-		const counter = await Counter.findOneAndUpdate(
+				priceAtPurchase = await checkoutVar(product, priceAtPurchase);
 
-			{ name: 'order' },
-			{ $inc: { seq: 1 } },
-			{ new: true, upsert: true }
-		);
+				return {
 
-		const orderNum = String(counter.seq).padStart(4, '0');
+					product: item.product._id.toString(),
+					productModel: product.constructor.modelName,
+					selectedVariant: item.variant?._id?.toString(),
+					quantity: item.quantity,
+					priceAtPurchase
+				};
+
+			}))).filter(Boolean); // ⬅️ prevent nulls in DB!
 
 
-		order = await Order.create({
+			await Promise.all(cartArray.map(async item => {
 
-			orderNum,
-			user: req.user.id,
-			product: cartArray,
-			shippingAddress,
-			status: 'Paid',
-			totalAmount: amount,
-			paymentMethod: 'PayPal',
-			currency
-		});
+				await updateStockLevels(item.product, item.selectedVariant, item.quantity);
+			}));
 
+
+			const counter = await Counter.findOneAndUpdate(
+
+				{ name: 'order' },
+				{ $inc: { seq: 1 } },
+				{ new: true, upsert: true }
+			);
+
+			const orderNum = String(counter.seq).padStart(4, '0');
+
+
+			order = await Order.create({
+
+				orderNum,
+				user: req.user.id,
+				product: cartArray,
+				shippingAddress,
+				status: 'Paid',
+				totalAmount: amount,
+				paymentMethod: 'PayPal',
+				currency
+			});
+
+
+
+		} catch (err) {
+			console.error('=== CART ERROR ===', err.message);
+			console.error(err.stack);
+			return next(err);
+		}
 
 	} else {
 
@@ -554,15 +563,24 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 	await order.save();
 
-	const guestUser = {
 
-		email: payer.email_address,
-		name: `${payer.name.given_name} ${payer.name.surname}`
-	};
+	if (user) {
 
-	const urlConfirm = `${req.protocol}://${req.get('host')}/guest-order-number/${order._id}`;
+		const urlConfirm = `${req.protocol}://${req.get('host')}/user-order-number/${order.orderNum}`;
+		await new Email(user, urlConfirm).orderConfirm();
 
-	await new Email(guestUser, urlConfirm).orderConfirm();
+	} else {
+
+		const guestUser = {
+			email: payer.email_address,
+			name: `${payer.name.given_name} ${payer.name.surname}`
+
+		};
+
+		const urlConfirm = `${req.protocol}://${req.get('host')}/guest-order-number/${order._id}`;
+
+		await new Email(guestUser, urlConfirm).orderConfirm();
+	}
 
 
 	if (isCartCheckout) {
@@ -576,12 +594,6 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 	res.status(200).json({ success: true, order, transaction });
 });
-
-
-
-
-//
-
 
 
 
