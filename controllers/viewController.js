@@ -283,7 +283,7 @@ exports.getShoeListPage = catchAsync(async (req, res, next) => {
 	///			Display Sizes in dropdown			///
 
 
-	const desiredSizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '6', '8', '10', '12', '14', '16', '18'];
+	const desiredSizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL', '6', '8', '10', '12', '14', '16', '18'];
 
 	const sizeList = await formVariants('size', desiredSizeOrder);
 
@@ -1278,9 +1278,7 @@ exports.getUserList = catchAsync(async (req, res) => {
 
 	const userList = await User.find(roleFilter).select('+active');
 
-
 	res.status(200).render('admin/be_user-list', {
-
 		title: 'Admin-Users',
 		userList,
 		selectedRole: req.query.role || ''
@@ -1294,18 +1292,21 @@ exports.getUserPage = catchAsync(async (req, res) => {
 
 	const userPage = await User.findById(req.params.id);
 
-	const wishlistArr = userPage.wishlist.map(item => item.product);
-	const products = await SpecProd.find({ _id: wishlistArr });
 
-	const cartArr = userPage.cart.map(item => item.product);
-	const cartProducts = await SpecProd.find({ _id: cartArr });
+	/// Products for usewr page when cart/wishlist available
+
+	// const wishlistArr = userPage.wishlist.map(item => item.product);
+	// const products = await SpecProd.find({ _id: wishlistArr });
+
+	// const cartArr = userPage.cart.map(item => item.product);
+	// const cartProducts = await SpecProd.find({ _id: cartArr });	
 
 	res.status(200).render('admin/be_user-page', {
 
 		title: `Admin-User`,
 		userPage,
-		products,
-		cartProducts
+		// products,
+		// cartProducts
 	})
 })
 

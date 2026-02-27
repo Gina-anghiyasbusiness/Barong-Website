@@ -220,25 +220,6 @@ exports.createBarong = catchAsync(async (req, res, next) => {
 		req.body.variants = JSON.parse(req.body.variants);
 	}
 
-	if (req.body.sex === 'female' && Array.isArray(req.body.variants)) {
-
-		const sizeMapFemale = {
-
-			S: '8',
-			M: '10',
-			L: '12',
-			XL: '14',
-			XXL: '16',
-			XXXL: '18'
-		};
-
-		req.body.variants = req.body.variants.map(v => {
-
-			const converted = sizeMapFemale[v.size] || v.size;
-
-			return { ...v, size: converted };
-		});
-	}
 
 	///		//////////////////////////////////////////////////////
 

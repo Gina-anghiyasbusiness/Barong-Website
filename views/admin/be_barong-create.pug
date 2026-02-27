@@ -42,12 +42,14 @@ block content
 
 					.product__form--right
 						.product__form--group--variant
-							+variantRow(0, 'S/8', 'S', 0)
-							+variantRow(1, 'M/10', 'M', 0)
-							+variantRow(2, 'L/12', 'L', 0)
-							+variantRow(3, 'XL/14', 'XL', 0)
-							+variantRow(4, 'XXL/16', 'XXL', 0)
-							+variantRow(5, 'XXXL/18', 'XXXL', 0)
+							+variantRow(0, 'XS', 'XS', 0)
+							+variantRow(0, 'S', 'S', 0)
+							+variantRow(1, 'M', 'M', 0)
+							+variantRow(2, 'L', 'L', 0)
+							+variantRow(3, 'XL', 'XL', 0)
+							+variantRow(4, 'XXL', 'XXL', 0)
+							+variantRow(5, 'XXXL', 'XXXL', 0)
+							+variantRow(5, 'XXXXL', 'XXXXL', 0)
 							
 							
 					////-------	-------------  ---------// -//
@@ -59,6 +61,8 @@ block content
 				.product__form--img-box-new
 					label.product__form--img-label(for='product-image-cover') Upload Main Image (Cover):
 					input#product-image-cover(type='file', name='imageCover', accept='image/*')
+		
+
 
 				.product__form--img-box-new
 					label.product__form--img-label Upload Additional Images:

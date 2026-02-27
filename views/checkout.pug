@@ -93,7 +93,7 @@ block content
 							- const number = defaultAddress && defaultAddress.number ? defaultAddress.number : ''
 
 							.checkoutPanel__section
-								p.creadit-card-address.checkoutPanel__title Credit Card Payment Address Details
+								p.creadit-card-address.checkoutPanel__title Delivery and Payment
 
 								.checkout__form--address-flex.checkoutPanel__fields
 
@@ -161,7 +161,7 @@ block content
 											required
 										)
 
-							.checkoutPanel__section
+							.checkoutPanel__section-totals
 								.checkout__page--totals.checkoutTotals
 
 									.checkout__page--totals--row
@@ -186,6 +186,13 @@ block content
 										span Pay with Card or 
 										span 
 											img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
+											
+								.pay-sep
+									span Or
+								
+								p.creadit-card-address-paypal.checkoutPanel__title Pay with PayPal
+								p.checkoutPanel__title.paypal-no_address No Address required
+								
 								#paypal-button-container(
 									data-product=(product && product.id) || ''
 									data-qty=qty || ''
@@ -201,7 +208,7 @@ block content
 						)
 
 							.checkoutPanel__section
-								p.creadit-card-address.checkoutPanel__title Customer Order Details
+								p.creadit-card-address.checkoutPanel__title  Delivery and Payment
 
 								.checkout__form--address-flex.checkoutPanel__fields
 
@@ -233,7 +240,7 @@ block content
 										label(for="address-postcode") Postcode
 										input#address-postcode(type="text" name="address-postcode" minlength="4" maxlength="4" required)
 
-							.checkoutPanel__section
+							.checkoutPanel__section-totals
 								.checkout__page--totals.checkoutTotals
 
 									.checkout__page--totals--row
@@ -259,7 +266,13 @@ block content
 										span Pay with Card or 
 										span 
 											img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
-
+											
+											
+								.pay-sep
+									span Or
+								
+								p.creadit-card-address-paypal.checkoutPanel__title Pay with PayPal
+								p.checkoutPanel__title.paypal-no_address No Address required
 
 								#paypal-button-container-guest(
 									data-product=(product && product.id) || ''

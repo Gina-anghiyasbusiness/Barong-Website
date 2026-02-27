@@ -19,9 +19,7 @@ const specProdSchema = new mongoose.Schema({
 	...base,
 
 
-	///		T-shirt Specific		/// 
-
-
+	///		Barong Specific		/// 
 
 
 	color: {
@@ -47,7 +45,8 @@ const specProdSchema = new mongoose.Schema({
 		{
 			size: {
 				type: String,
-				enum: ['6', '8', '10', '12', '14', '16', '18', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+				// enum: ['6', '8', '10', '12', '14', '16', '18', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+				enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL'],
 				required: true
 			},
 
@@ -84,6 +83,7 @@ const specProdSchema = new mongoose.Schema({
 
 	//----------- Schema options  -----------///
 
+
 	///  CreatedAt Indexed  ///
 
 	{
@@ -100,10 +100,11 @@ const specProdSchema = new mongoose.Schema({
 //--------------- Indexes -------------///
 
 
-specProdSchema.index({ createdAt: -1 });
 
-specProdSchema.index({ category: -1 });
+specProdSchema.index({ category: 1, createdAt: -1 });
 
+specProdSchema.index({ category: 1, currentPrice: 1 });
+specProdSchema.index({ category: 1, currentPrice: -1 });
 
 
 
@@ -135,7 +136,9 @@ specProdSchema.pre('save', async function (next) {
 
 	if (this.isModified('name')) {
 
-		this.slug = slugify(this.name, { lower: true, strict: true });
+		// this.slug = slugify(this.name, { lower: true, strict: true });
+
+		this.slug = slugify(`${this.name}-${this.productSku}`, { lower: true, strict: true });
 	}
 
 	if (!this.currentPrice) {

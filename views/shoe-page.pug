@@ -62,11 +62,16 @@ block content
 						
 					////-------- Variants -------// 
 					
-					.productPage__variant-size--flex
-						each variant, i in product.variants 
-							if variant.inStock > 0
-								button(class=`product__size--btn variant__size--${i+1}` , data-variant=variant._id) #{variant.size}
-								
+					.productPage__variant-size
+						.productPage__variant-size--flex
+							each variant, i in product.variants 
+								if variant.inStock > 0
+									button(class=`product__size--btn variant__size--${i+1}` , data-variant=variant._id) #{variant.size}
+									
+						button(type='button' class='productPage__variant-size--btn size-guide--btn') Size Guide 
+							.productPage__variant-size-guide--box
+								img(src="/img/other_imgs/size_guide.png", class='size_guide-img' alt="")
+									
 					////-- ------------------- --// 
 					
 					if user		

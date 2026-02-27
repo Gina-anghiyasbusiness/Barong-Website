@@ -67,9 +67,10 @@ const AccessorySchema = new mongoose.Schema({
 //--------------- Indexes -------------///
 
 
-AccessorySchema.index({ createdAt: -1 });
+AccessorySchema.index({ category: 1, createdAt: -1 });
 
-AccessorySchema.index({ category: -1 });
+AccessorySchema.index({ category: 1, currentPrice: 1 });
+AccessorySchema.index({ category: 1, currentPrice: -1 });
 
 
 

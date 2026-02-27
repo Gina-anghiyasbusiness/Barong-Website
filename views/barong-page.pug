@@ -67,8 +67,11 @@ block content
 									button(class=`product__size--btn variant__size--${i+1}` , data-variant=variant._id) #{variant.size}
 									
 						button(type='button' class='productPage__variant-size--btn size-guide--btn') Size Guide 
-						.productPage__variant-size-guide--box
-							img(src="/img/other_imgs/size_guide.png", class='size_guide-img' alt="")
+							.productPage__variant-size-guide--box
+								if product.sex === 'male'
+									img(src="/img/sizeChart_imgs/mensSizeChart.png", class='size_guide-img' alt="")
+								else
+									img(src="/img/sizeChart_imgs/womensSizeChart.png", class='size_guide-img' alt="")
 							
 					////-- ------------------- --// 
 					

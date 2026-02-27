@@ -198,7 +198,6 @@ const userSchema = new mongoose.Schema({
 //-----				Indexing  		-----//
 
 
-userSchema.index({ name: -1 });
 userSchema.index({ role: -1 });
 userSchema.index({ active: -1 });
 

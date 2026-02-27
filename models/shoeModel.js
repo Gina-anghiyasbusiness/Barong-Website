@@ -45,7 +45,7 @@ const shoeSchema = new mongoose.Schema({
 		{
 			size: {
 				type: String,
-				enum: ['5', '6', '7', '8', '9', '10', '11'],
+				enum: ['5', '6', '7', '8', '9', '10'],
 				required: true
 			},
 
@@ -96,10 +96,10 @@ const shoeSchema = new mongoose.Schema({
 //--------------- Indexes -------------///
 
 
-shoeSchema.index({ createdAt: -1 });
+shoeSchema.index({ category: 1, createdAt: -1 });
 
-shoeSchema.index({ category: -1 });
-
+shoeSchema.index({ category: 1, currentPrice: 1 });
+shoeSchema.index({ category: 1, currentPrice: -1 });
 
 
 

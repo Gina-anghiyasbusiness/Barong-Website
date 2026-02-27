@@ -13,27 +13,27 @@ block content
 				
 				//- Sort
 				
-				.productList_sort-box
+				//- .productList_sort-box
 				
-					form#form-product-sort.product-sort-form(action="/product-list" method="GET") 
-						.product-sort--row
-							label(for="productSort") Sort:
-							select#productSort(name="productSort") 
-								option(value="newest" selected=selectedOption === 'newest') Newest 
-								option(value="lowest" selected=selectedOption === 'lowest') Lowest Price 
-								option(value="highest" selected=selectedOption === 'highest') Highest Price 
-								option(value="alphabet" selected=selectedOption === 'alphabet') A-Z			
+				//- 	form#form-product-sort.product-sort-form(action="/product-list" method="GET") 
+				//- 		.product-sort--row
+				//- 			label(for="productSort") Sort:
+				//- 			select#productSort(name="productSort") 
+				//- 				option(value="newest" selected=selectedOption === 'newest') Newest 
+				//- 				option(value="lowest" selected=selectedOption === 'lowest') Lowest Price 
+				//- 				option(value="highest" selected=selectedOption === 'highest') Highest Price 
+				//- 				option(value="alphabet" selected=selectedOption === 'alphabet') A-Z			
 						
-						.product-sort--row--box
-							.product-sort--row
-								label(for="productSize") Select Size:
-								select#productSize(name="productSize") 
-									option(value="") All Sizes 
-									each size in sizeList 
-										option(value=size selected=selectedSize === size)=size							
-							button(type='submit') Submit				
+				//- 		.product-sort--row--box
+				//- 			.product-sort--row
+				//- 				label(for="productSize") Select Size:
+				//- 				select#productSize(name="productSize") 
+				//- 					option(value="") All Sizes 
+				//- 					each size in sizeList 
+				//- 						option(value=size selected=selectedSize === size)=size							
+				//- 			button(type='submit') Submit				
 				
-			
+
 			.barongList 		
 			
 				each product in productlist

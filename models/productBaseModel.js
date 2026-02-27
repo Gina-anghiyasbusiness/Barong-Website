@@ -17,15 +17,15 @@ const productBaseSchema = {
 		type: String,
 		required: [true, 'A product must have a name'],
 		maxLength: [128, 'A product name must not be more than 128 characters long'],
-		unique: true,
 		trim: true,
+
+		// unique: true,
 		// validate: [validator.isAlpha, 'Product must only contain letters (SLUG)']
 
 		validate: {
 
 			validator: function (val) {
-
-				return /^[A-Za-z\s]+$/.test(val);
+				return /^[\p{L}\p{N}][\p{L}\p{N}\s&'",.\-()]*$/u.test(val.trim());
 			},
 
 			message: 'Product name must only contain letters and spaces'
