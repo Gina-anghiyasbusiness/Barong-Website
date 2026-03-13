@@ -9,7 +9,6 @@ import { buyCart, buyItNow, buyItNowGuest } from './stripe';
 //---------- Buy It Now - to checkout -----------//
 
 
-
 export const buyItNowCheckout = async (productId, qty, selectedVariant) => {
 
 	try {
