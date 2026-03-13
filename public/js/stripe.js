@@ -13,8 +13,6 @@ export const buyCart = async () => {
 
 	try {
 
-
-
 		/// create the checkout session on orderRoute which calls orderController.buyCartItem
 
 		const session = await axios(`/api/v1/orders/checkout-session`);

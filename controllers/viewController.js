@@ -1012,6 +1012,10 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 
 	///  Buy ItNow total	
 
+	const sitePreview = process.env.SITE_PREVIEW === 'true';
+
+	console.log(sitePreview)
+
 
 	if (!productId) {
 
@@ -1027,7 +1031,8 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 			totalGross,
 			defaultAddress: addressToRender,
 			selectedLabel: selectedLabel,
-			paypalClientId: `${process.env.PAYPAL_CLIENT_ID}`
+			paypalClientId: `${process.env.PAYPAL_CLIENT_ID}`,
+			sitePreview: process.env.SITE_PREVIEW === 'true'
 		})
 
 	} else {
@@ -1046,7 +1051,8 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 			totalGross,
 			defaultAddress: addressToRender,
 			selectedLabel: selectedLabel,
-			paypalClientId: `${process.env.PAYPAL_CLIENT_ID}`
+			paypalClientId: `${process.env.PAYPAL_CLIENT_ID}`,
+			sitePreview
 		})
 	}
 })
@@ -1132,6 +1138,9 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 	const taxes = Math.round(((totalNet + delivery) * 0.1) * 10) / 10;
 	const totalGross = (totalNet + delivery) + taxes;
 
+	const sitePreview = process.env.SITE_PREVIEW === 'true';
+
+
 	res.status(200).render('checkout', {
 
 		pageTitle: 'Checkout',
@@ -1145,7 +1154,8 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 		taxes,
 		totalGross,
 		guest: true,
-		paypalClientId: `${process.env.PAYPAL_CLIENT_ID}`
+		paypalClientId: `${process.env.PAYPAL_CLIENT_ID}`,
+		sitePreview
 	})
 })
 

@@ -181,22 +181,29 @@ block content
 										p.checkout__page--totals-p $#{totalGross}
 
 							.checkoutPanel__section.checkoutPanel__payments
-								button#checkout-submit--stripe(class='checkout__page-submit--btn')
-									.checkout--afterpay_card
-										span Pay with Card or 
-										span 
-											img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
-											
-								.pay-sep
-									span Or
-								
-								p.creadit-card-address-paypal.checkoutPanel__title Pay with PayPal
-								p.checkoutPanel__title.paypal-no_address No Address required
-								
-								#paypal-button-container(
-									data-product=(product && product.id) || ''
-									data-qty=qty || ''
-									data-variant=(variant && variant.id) || ''
+							
+								if sitePreview
+									button(disabled)
+								else
+							
+									button#checkout-submit--stripe(class='checkout__page-submit--btn')
+										.checkout--afterpay_card
+											span Pay with Card or 
+											span 
+												img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
+												
+									.pay-sep
+										span Or
+									
+									p.creadit-card-address-paypal.checkoutPanel__title Pay with PayPal
+									p.checkoutPanel__title.paypal-no_address No Address required
+								if sitePreview
+									button(disabled) Preview Mode
+								else
+									#paypal-button-container(
+										data-product=(product && product.id) || ''
+										data-qty=qty || ''
+										data-variant=(variant && variant.id) || ''
 								)
 
 					else
@@ -261,24 +268,30 @@ block content
 										
 
 							.checkoutPanel__section.checkoutPanel__payments
-								button#checkout-submit--stripe-guest.checkout__page-submit--btn(type="submit") 
-									.checkout--afterpay_card
-										span Pay with Card or 
-										span 
-											img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
-											
-											
-								.pay-sep
-									span Or
-								
-								p.creadit-card-address-paypal.checkoutPanel__title Pay with PayPal
-								p.checkoutPanel__title.paypal-no_address No Address required
-
-								#paypal-button-container-guest(
-									data-product=(product && product.id) || ''
-									data-qty=qty || ''
-									data-variant=(variant && variant.id) || ''
-								)
+								if sitePreview
+									button(disabled)
+								else
+									button#checkout-submit--stripe-guest.checkout__page-submit--btn(type="submit") 
+										.checkout--afterpay_card
+											span Pay with Card or 
+											span 
+												img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
+												
+												
+									.pay-sep
+										span Or
+									
+									p.creadit-card-address-paypal.checkoutPanel__title Pay with PayPal
+									p.checkoutPanel__title.paypal-no_address No Address required
+									
+								if sitePreview
+									button(disabled) Preview Mode
+								else
+									#paypal-button-container-guest(
+										data-product=(product && product.id) || ''
+										data-qty=qty || ''
+										data-variant=(variant && variant.id) || ''
+									)
 
 		script(src=`https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=AUD`)
 		script(src="/js/paypal.js")

@@ -6,32 +6,38 @@ const productController = require('./../controllers/productController.js');
 
 const orderController = require('../controllers/orderController.js');
 
+const middlewareDisableCheckout = require('../middleware/previewCheckoutDisabled.js');
 
 
-/// Add Address route guest
+
+console.log('ORDER ROUTES FILE LOADED');
+
+
+//---------- Disable Checkout Routes while in Development ---------------//
+
+
+/// Guest Checkout
 
 
 router.post('/add-address-checkout-guest',
+	middlewareDisableCheckout,
 	orderController.addAddressToUserGuest
 );
 
-
 router.post('/checkout-session-bin-guest/:product/:qty/:variant',
+	middlewareDisableCheckout,
 	orderController.buyItNowGuestItem
 );
 
+router.post('/paypal/buy-it-now-guest/:product/:qty/:variant',
+	middlewareDisableCheckout,
+	orderController.buyItNowItemPayPal
+);
 
-
-///		Paypal buyitnow - guest routes
-
-
-router.post('/paypal/buy-it-now-guest/:product/:qty/:variant', orderController.buyItNowItemPayPal);
-
-
-///? PayPal "Capture Order" (finalizes order after approval)
-
-router.post('/paypal/capture-order-guest/:orderID', orderController.capturePayPalOrder);
-
+router.post('/paypal/capture-order-guest/:orderID',
+	middlewareDisableCheckout,
+	orderController.capturePayPalOrder
+);
 
 
 
@@ -52,6 +58,10 @@ router.patch('/update-user-order/:orderstatus/:transstatus/:address/:ordernum',
 //-------- Buy product routes for cart and buyitnow -------//
 
 
+
+/// logged in user checkout
+
+
 router.use(
 	authController.protectRoute,
 	authController.restrictTo('user'),
@@ -59,49 +69,108 @@ router.use(
 );
 
 
+router.post('/paypal/buy-it-now/:product/:qty/:variant',
+	middlewareDisableCheckout,
+	orderController.buyItNowItemPayPal
+);
 
+router.post('/paypal/cart',
+	middlewareDisableCheckout,
+	orderController.cartItemsPayPal
+);
 
+router.post('/paypal/capture-order/:orderID',
+	middlewareDisableCheckout,
+	orderController.capturePayPalOrder
+);
 
+router.get('/checkout-session',
+	middlewareDisableCheckout,
+	orderController.buyCartItems
+);
 
-///			Paypal			///
-
-///? PayPal "Buy It Now" (creates order)
-
-router.post('/paypal/buy-it-now/:product/:qty/:variant', orderController.buyItNowItemPayPal);
-
-
-///? PayPal "Cart" (creates order)
-
-router.post('/paypal/cart', orderController.cartItemsPayPal);
-
-
-///? PayPal "Capture Order" (finalizes order after approval)
-
-router.post('/paypal/capture-order/:orderID', orderController.capturePayPalOrder);
-
-
-
-
-
-///			Stripe			///
-
-router.get('/checkout-session', orderController.buyCartItems);
-
-
-router.get(
-	'/checkout-session-bin/:product/:qty/:variant',
+router.get('/checkout-session-bin/:product/:qty/:variant',
+	middlewareDisableCheckout,
 	orderController.buyItNowItem
 );
 
-
-
-/// Add Address route
-
-router.post('/add-address-checkout', orderController.addAddressToUser)
-
-
-
-
+router.post('/add-address-checkout',
+	middlewareDisableCheckout,
+	orderController.addAddressToUser
+);
 
 
 module.exports = router;
+
+
+
+
+
+//--------------- OLD NON PREVIEW ROUTES --------------- //
+
+
+
+/// Add Address route guest
+
+
+// router.post('/add-address-checkout-guest',
+// 	orderController.addAddressToUserGuest
+// );
+
+
+// router.post('/checkout-session-bin-guest/:product/:qty/:variant',
+// 	orderController.buyItNowGuestItem
+// );
+
+
+
+///		Paypal buyitnow - guest routes
+
+
+// router.post('/paypal/buy-it-now-guest/:product/:qty/:variant', orderController.buyItNowItemPayPal);
+
+
+// ///? PayPal "Capture Order" (finalizes order after approval)
+
+// router.post('/paypal/capture-order-guest/:orderID', orderController.capturePayPalOrder);
+
+
+
+// ///			Paypal			///
+
+// ///? PayPal "Buy It Now" (creates order)
+
+// router.post('/paypal/buy-it-now/:product/:qty/:variant', orderController.buyItNowItemPayPal);
+
+
+// ///? PayPal "Cart" (creates order)
+
+// router.post('/paypal/cart', orderController.cartItemsPayPal);
+
+
+// ///? PayPal "Capture Order" (finalizes order after approval)
+
+// router.post('/paypal/capture-order/:orderID', orderController.capturePayPalOrder);
+
+
+
+
+
+// ///			Stripe			///
+
+// router.get('/checkout-session', orderController.buyCartItems);
+
+
+// router.get(
+// 	'/checkout-session-bin/:product/:qty/:variant',
+// 	orderController.buyItNowItem
+// );
+
+
+
+// /// Add Address route
+
+// router.post('/add-address-checkout', orderController.addAddressToUser)
+
+
+
