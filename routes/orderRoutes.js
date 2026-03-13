@@ -10,8 +10,6 @@ const middlewareDisableCheckout = require('../middleware/previewCheckoutDisabled
 
 
 
-console.log('ORDER ROUTES FILE LOADED');
-
 
 //---------- Disable Checkout Routes while in Development ---------------//
 
