@@ -1645,17 +1645,16 @@ strong
 
 .barongList	{
 	
-	
-	display: grid;
+		display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(16rem ,20.5rem));
 	align-items: center;
 	justify-content: center;
 	column-gap:3.8rem;
 	row-gap:4.8rem;
 	padding: 2rem 0;
-
 	
 }
+
 .productList	{
 	
 	
@@ -1670,7 +1669,7 @@ strong
 
 .productList--heading-box{
 	
-	padding:6rem 0 3rem;
+	padding:8rem 0 6rem;
 }
 
 
@@ -2168,6 +2167,30 @@ strong
 
 /* //--------------					Product List Page 				-----------// */
 
+
+.main_barong-list{
+	
+	display: grid;
+	grid-template-columns: 1fr 4fr;
+	column-gap: 2rem;
+	
+	
+}
+
+
+.barong-page--list	{
+	
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(16rem ,20.5rem));
+	align-items: center;
+	justify-content: center;
+	column-gap:4rem;
+	row-gap:6rem;
+
+	
+}
+
+
 .productListPage__img{
 	
   width: 100%;
@@ -2175,9 +2198,42 @@ strong
   object-fit: cover;
   object-position: top;
   display: block;	
-	aspect-ratio: 3/5;
+	aspect-ratio: 3/4;
   overflow: hidden;
 }
+
+	.productList_sort-box{
+		
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	
+	
+	.barong-list--filter ul{
+		
+		list-style: none;
+		
+		display: flex;		
+		flex-direction: column;
+		
+		gap: 2rem;
+		
+	}
+	
+	
+	
+	.barong-list--filter a:link,
+	.barong-list--filter a:visited{
+		
+		
+		border: none;
+		background-color: transparent;
+		
+		font-size: var(--text-lg);
+		text-decoration: none;
+		color: var(--color-text);
+	}
 
 
 .productList_filter-sort--box {	
@@ -2194,7 +2250,8 @@ strong
 	
 	display: flex;
 	align-items: center;
-	justify-content: space-around;
+	/* justify-content: space-around; */
+	justify-content: flex-end;
 	
 	gap: 6rem;
 }
@@ -2205,7 +2262,7 @@ strong
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 2rem;
+	gap: 1rem;
 }
 
 
@@ -2228,20 +2285,33 @@ strong
 
 .product-sort--row label{
 	
-	font-size: var(--text-lg);
-	font-weight: 600;	
+	font-size: var(--text-body);
+	/* font-weight: 600;	 */
 }
 
 
 .product-sort--row select{
 	
-	font-size: var(--text-body);
+	font-size: var(--text-small);
+	
+	border: none;
 }
 
 
 .product-sort--row select option{
 	
 		font-size: var(--text-body);
+}
+
+
+.sort_submit--btn{
+	
+	border: none;
+	background-color: var(--color-primary);
+	color: var(--color-primary-lightest);
+	padding: .25rem .5rem;
+	cursor: pointer;
+	
 }
 
 

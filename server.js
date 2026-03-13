@@ -35,11 +35,12 @@ mongoose.connect(process.env.CONNECTION_STRING)
 const port = process.env.PORT || 8080;
 
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
 
-	console.log(`Server Started on : ${port}`);
+	console.log(`Server Started on port: ${port}`);
+});
 
-})
+
 
 
 
