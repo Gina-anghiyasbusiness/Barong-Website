@@ -104,6 +104,8 @@ exports.getHomePage = catchAsync(async (req, res, next) => {
 
 ///			Re-usable variant function -	for forms		///
 
+/// Variants (Sizing)
+
 const formVariants = async (variant, desiredOrder = null) => {
 
 	const variantSearch = await SpecProd.aggregate([
@@ -118,6 +120,23 @@ const formVariants = async (variant, desiredOrder = null) => {
 
 	return desiredOrder.filter(v => Arr.includes(v));
 }
+
+
+/// top level (colors)
+
+const formFields = async (field, desiredOrder = null) => {
+
+	const fieldSearch = await SpecProd.aggregate([
+
+		{ $group: { _id: `$${field}` } }
+	]);
+
+	const arr = fieldSearch.map(v => v._id).filter(Boolean);
+
+	if (!desiredOrder) return arr;
+
+	return desiredOrder.filter(v => arr.includes(v));
+};
 
 
 
@@ -152,24 +171,55 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 	const sizeList = await formVariants('size', desiredSizeOrder);
 
 
-	///			 Filter By Size			///
+	///			Display Colors in dropdown			///
+
+	const desiredColorOrder = [
+		'white',
+		'black',
+		'blue',
+		'red',
+		'green',
+		'yellow',
+		'pink',
+		'purple',
+		'orange',
+		'grey',
+		'brown'
+	];
+
+	const colorList = await formFields('color', desiredColorOrder);
+
+
+	///			 Filtering			///
 
 	const size = req.query.productSize;
+	const selectedColor = req.query.color;
+	const selectedSex = req.query.sex;
 
-	let productlist;
+	const queryObj = {};
 
-	if (!size) {
+	if (selectedColor) {
+		queryObj.color = selectedColor;
+	}
 
-		productlist = await SpecProd.find().sort(sortOption).populate('category');
+	if (selectedSex) {
+		queryObj.sex = selectedSex;
+	}
 
-	} else productlist = await SpecProd.find({ 'variants': { $elemMatch: { size: size, inStock: { $gt: 0 } } } }).sort(sortOption).populate('category');
+	if (size) {
+		queryObj.variants = {
+			$elemMatch: {
+				size: size,
+				inStock: { $gt: 0 }
+			}
+		};
+	}
+
+	let productlist = await SpecProd.find(queryObj)
+		.sort(sortOption)
+		.populate('category');
 
 
-	await Promise.all(productlist.map(async product => {
-
-		await missingDiscountCheck(product);
-
-	}));
 
 	res.status(200).render('barong-list-page', {
 		pageTitle: 'Product List',
@@ -177,8 +227,11 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 		canonicalUrl: `${process.env.CANONICAL_URL}`,
 		productlist,
 		sizeList,
+		colorList,
+		selectedColor,
 		selectedOption,
-		selectedSize: size || ''  // ← add this
+		selectedSex: selectedSex || '',
+		selectedSize: size || ''
 	});
 })
 
@@ -1251,6 +1304,20 @@ exports.getGuestOrderPage = catchAsync(async (req, res, next) => {
 	})
 })
 
+
+/// Successful enquiry 
+
+
+exports.getEnquirySuccess = catchAsync(async (req, res, next) => {
+
+	res.status(200).render('enquirySuccess', {
+
+		pageTitle: 'Enquiry Sent | Widebay Web Wise',
+		pageDescription: 'Your enquiry has been sent successfully. Widebay Web Wise will be in touch soon.',
+		canonicalUrl: `${process.env.CANONICAL_URL}/enquiry-success`,
+		noIndex: true
+	});
+});
 
 
 

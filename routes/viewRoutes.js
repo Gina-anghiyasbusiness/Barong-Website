@@ -57,10 +57,10 @@ router.get('/accessories/:slug', viewController.getAccessoryPage);
 
 
 
+///			Enquiry Success Route 
 
-/// Product Filter / Sort
 
-
+router.get('/enquiry-success', viewController.getEnquirySuccess);
 
 
 

@@ -11,7 +11,7 @@ block content
 				
 				.productList_sort-box
 				
-					h2.homePage--sub-heading  All Barongs
+					h2.homePage--sub-heading  Barongs
 					form#form-product-sort.product-sort-form(action="/barong-list" method="GET") 
 					
 						.product-sort--row
@@ -22,30 +22,54 @@ block content
 								option(value="highest" selected=selectedOption === 'highest') Highest Price 
 								option(value="alphabet" selected=selectedOption === 'alphabet') A-Z			
 						
-						//- .product-sort--row--box
-						//- 	.product-sort--row
-						//- 		label(for="productSize") Select Size:
-						//- 		select#productSize(name="productSize") 
-						//- 			option(value="") All Sizes 
-						//- 			each size in sizeList 
-						//- 				option(value=size selected=selectedSize === size)=size							
-						//- button(type='submit' class='sort_submit--btn') Submit				
-				
 
 			.main_barong-list
 
-				.barong-list--filter
-					ul 
-						li 
-							a(href='#') Mens
-						li 
-							a(href='#') Womens
-						li 
-							a(href='#') Kids
-						li 
-							a(href='#') Shoes
-						li 
-							a(href='#') Accessories
+				.barong-list__filter
+				
+					.barong-list__filter-gender
+						.barong-list__filter--btn-box
+							button#barong__filter-btn--gender.barong-list__filter-btn(type='button') Gender
+						ul.barong-list--ul-gender
+							li
+								a(
+									href=`?productSort=${selectedOption || 'newest'}&productSize=${selectedSize || ''}&color=${selectedColor || ''}&sex=male`
+									class=selectedSex === 'male' ? 'active' : ''
+								) Mens
+							li
+								a(
+									href=`?productSort=${selectedOption || 'newest'}&productSize=${selectedSize || ''}&color=${selectedColor || ''}&sex=female`
+									class=selectedSex === 'female' ? 'active' : ''
+								) Womens
+							li
+								a(
+									href=`?productSort=${selectedOption || 'newest'}&productSize=${selectedSize || ''}&color=${selectedColor || ''}&sex=boy`
+									class=selectedSex === 'boy' ? 'active' : ''
+								) Boys
+								
+									
+								
+					.barong-list__filter-color
+						.barong-list__filter--btn-box
+							button#barong__filter-btn--color.barong-list__filter-btn(type='button') Color					
+						ul#barong-list--ul-color.barong-list--ul-color 
+							each color in colorList
+								li
+									a(href=`?color=${color}` class=selectedColor === color ? 'active' : '') #{color.charAt(0).toUpperCase() + color.slice(1)}
+
+				
+								
+					.barong-list__filter-size
+						.barong-list__filter--btn-box
+							button#barong__filter-btn--size.barong-list__filter-btn(type='button') Size					
+						ul#barong-list--ul-size.barong-list--ul-size 
+							each size in sizeList
+								li 
+									a(href='#') #{size}
+
+					.barong-list__filter-clear 
+						a.barong-list__clear-filters(href='/barong-list') Clear Filters
+
 				
 				.barong-page--list
 					each product in productlist

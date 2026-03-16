@@ -28708,11 +28708,28 @@
   });
   document.addEventListener("DOMContentLoaded", () => {
     const sortOption = document.getElementById("productSort");
-    const sortForm = document.getElementById("form-product-sort");
-    if (sortOption) sortOption.addEventListener("change", () => {
-      sortForm.submit();
-    });
+    if (sortOption) {
+      sortOption.addEventListener("change", () => {
+        const url = new URL(window.location.href);
+        url.searchParams.set("productSort", sortOption.value);
+        window.location.href = url.toString();
+      });
+    }
   });
+  var sizeBoxBtn = document.getElementById("barong__filter-btn--size");
+  var sizeBox = document.getElementById("barong-list--ul-size");
+  if (sizeBoxBtn && sizeBox) {
+    sizeBoxBtn.addEventListener("click", function() {
+      sizeBox.classList.toggle("display--filter-list");
+    });
+  }
+  var colorBoxBtn = document.getElementById("barong__filter-btn--color");
+  var colorBox = document.getElementById("barong-list--ul-color");
+  if (colorBoxBtn && colorBox) {
+    colorBoxBtn.addEventListener("click", function() {
+      colorBox.classList.toggle("display--filter-list");
+    });
+  }
   var sizeGuideBtn = document.querySelector(".size-guide--btn");
   var sizeGuideBox = document.querySelector(".productPage__variant-size-guide--box");
   if (sizeGuideBtn) {

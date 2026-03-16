@@ -36,7 +36,7 @@ const adminRouter = require('./routes/adminRoutes');
 const viewRouter = require('./routes/viewRoutes');
 
 
-
+const enquiryRouter = require('./routes/enquiryRoute');
 
 //-------------------  Controllers ------------------ //
 
@@ -174,7 +174,7 @@ app.use(morgan('dev'));
 
 app.use(express.json());
 
-
+app.use(express.urlencoded({ extended: true }));
 
 
 //---------  Cookie Parser  -------//
@@ -267,6 +267,8 @@ app.use('/api/v1/products', productRouter);
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/admin', adminRouter);
+
+app.use('/api/v1/enquiries', enquiryRouter);
 
 
 app.use('/', viewRouter);

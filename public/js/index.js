@@ -195,9 +195,7 @@ if (myAccountMenu) {
 
 		e.preventDefault();
 
-		// const pageSections = [overview, addresses, orders, wishlist, cart, reviews, support];
 		const pageSections = [overview, addresses, orders, wishlist, cart, support];
-
 
 		function activateSection(activeSection) {
 
@@ -244,11 +242,6 @@ if (myAccountMenu) {
 
 			activateSection(cart);
 		}
-
-		// if (e.target.classList.contains('account-reviews--btn')) {
-
-		// 	activateSection(reviews);
-		// }
 
 		if (e.target.classList.contains('account-support--btn')) {
 
@@ -927,18 +920,20 @@ document.addEventListener('DOMContentLoaded', () => {
 ///			 Sorting		///
 
 
-/// select user role
-
 
 document.addEventListener('DOMContentLoaded', () => {
 
 	const sortOption = document.getElementById('productSort');
-	const sortForm = document.getElementById('form-product-sort');
 
-	if (sortOption) sortOption.addEventListener('change', () => {
+	if (sortOption) {
+		sortOption.addEventListener('change', () => {
+			const url = new URL(window.location.href);
 
-		sortForm.submit();
-	});
+			url.searchParams.set('productSort', sortOption.value);
+
+			window.location.href = url.toString();
+		});
+	}
 });
 
 
@@ -947,25 +942,24 @@ document.addEventListener('DOMContentLoaded', () => {
 ///			 Filter			///
 
 
-// const filterForm = document.getElementById('form-product-filter');
+const sizeBoxBtn = document.getElementById('barong__filter-btn--size');
+const sizeBox = document.getElementById('barong-list--ul-size');
+
+if (sizeBoxBtn && sizeBox) {
+	sizeBoxBtn.addEventListener('click', function () {
+		sizeBox.classList.toggle('display--filter-list');
+	});
+}
 
 
-// if (filterForm) {
+const colorBoxBtn = document.getElementById('barong__filter-btn--color');
+const colorBox = document.getElementById('barong-list--ul-color');
 
-// 	filterForm.addEventListener('submit', e => {
-
-
-// 		e.preventDefault();
-
-// 		const productSize = document.getElementById('productSize').value;
-
-// 		console.log(productSize);
-
-
-
-// 	})
-// }
-
+if (colorBoxBtn && colorBox) {
+	colorBoxBtn.addEventListener('click', function () {
+		colorBox.classList.toggle('display--filter-list');
+	});
+}
 
 
 ///			 Size guide button			///
@@ -989,6 +983,11 @@ if (sizeGuideBtn) {
 		else { return }
 	})
 }
+
+
+/// Contact form
+
+
 
 
 
