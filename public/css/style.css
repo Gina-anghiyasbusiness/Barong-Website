@@ -762,19 +762,22 @@ input:-webkit-autofill {
 
 
 .header{
-	max-width: 152rem;
+	max-width: 146rem;
 	margin: 0 auto;
 	display: flex;
 	align-items: center;
 
-  padding: .25rem 0 ; 
+  padding: .75rem 0 ; 
+	
+	gap: 4rem;
  
 
 }
 
 
 .header__logo--box{	
-flex: 0 0 20%;
+/* flex: 0 0 20%; */
+flex: 0 0 12.5%;
 display: flex;
 align-items: center;
 justify-content: center;
@@ -819,8 +822,8 @@ ul.header__nav--list{
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 8rem;	
-	
+	/* gap: 8rem;	 */
+	gap: 3.2rem;
 	list-style: none;
 	
 	
@@ -832,7 +835,7 @@ ul.header__nav--list{
 	
 	font-size: var(--text-lg);
 	font-weight: 600;
-  letter-spacing: 0.04em;
+  /* letter-spacing: 0.04em; */
 	
 }
 	
@@ -937,7 +940,8 @@ grid-template-columns: 1fr 1fr;
 
 .header__user--settings{
 
-flex: 0 0 25%;
+/* flex: 0 0 25%; */
+flex: 0 0 12.5%;
 
 }
 
@@ -1543,7 +1547,7 @@ strong
 
 .productList--heading-box{
 	
-	padding:8rem 0 6rem;
+	padding:3rem 0 3rem;
 }
 
 
@@ -2037,8 +2041,101 @@ strong
 .homePage_contact-cta:link,
 .homePage_contact-cta:visited{
 	font-size: var(--text-xlg);
-	padding: 1.8rem 3.6rem;
+	padding: 1.2rem 3.2rem;
 }
+
+/* //--------------					Static Sales Page 				-----------// */
+
+
+.salesPage, .customizationPage , .rentalsPage {
+	padding: 8rem 0 10rem 0;
+}
+
+
+.salesPage--heading-box , .customizationPage--heading-box , .rentalsPage--heading-box{
+	display: flex;
+	flex-direction: column;
+
+	gap: 2.4rem;
+	
+	max-width: 75rem;
+}
+
+
+.salesPage__benefits , .customizationPage__benefits , .rentalsPage__benefits {
+	display: flex;
+	flex-direction: column;
+	gap: 1.2rem;
+	
+	list-style: none;
+}
+
+
+.salesPage__actions {
+	margin-top: 1.2rem;
+}
+
+.salesPage--heading, .customizationPage--heading , .rentalsPage--heading  {
+	font-size: 3.6rem;
+	font-weight: 600;
+}
+
+.salesPage__tagline , .customizationPage__tagline , .rentalsPage__tagline  {
+	font-size: 2rem;
+	font-weight: 500;
+}
+
+.salesPage__text , .customizationPage__text , .rentalsPage__text  {
+	font-size: 1.6rem;
+	line-height: 1.6;
+	
+}
+
+.salesPage__benefit, .customizationPage__benefit , .rentalsPage__benefit  {
+	font-size: 1.6rem;
+}
+
+
+
+.salesPage__cta:link,
+.customizationPage__cta:link,
+.rentalsPage__cta:link,
+.salesPage__cta:visited, 
+.rentalsPage__cta:visited, 
+.customizationPage__cta:visited {
+	display: inline-block;
+	
+	background-color: var(--color-primary-dark);
+	color: var(--color-text-white);
+	
+	font-size: 1.6rem;
+	font-weight: 500;
+	text-decoration: none;
+
+	padding: 1.4rem 3.2rem;
+	border-radius: 3px;
+
+	box-shadow: 0 2px 8px rgba(184, 134, 11, 0.25);
+	
+	transition: all 0.3s ease;
+	margin-top: 3.2rem;
+}
+
+.salesPage__cta:hover,
+.customizationPage__cta:hover,
+.rentalsPage__cta:hover,
+.customizationPage__cta:active,
+.rentalsPage__cta:active,
+.salesPage__cta:active {
+	background-color: var(--color-primary-darkest);
+	box-shadow: 0 4px 14px rgba(184, 134, 11, 0.4);
+	transform: translateY(-2px);
+}
+
+
+/* //--------------				Customization Page 				-----------// */
+
+
 
 /* //--------------					Product List Page 				-----------// */
 

@@ -629,6 +629,21 @@ exports.getFrontEndCategoryPage = catchAsync(async (req, res, next) => {
 
 
 
+//--------------------- Sales Page --------------------------//
+
+
+
+exports.getSalesPage = (req, res) => {
+
+	res.status(200).render('sales', {
+
+		pageTitle: 'Sales',
+		pageDescription: 'Sales Page',
+		canonicalUrl: `${process.env.CANONICAL_URL}sales`
+	})
+}
+
+
 //--------------------- Services Page --------------------------//
 
 
@@ -640,6 +655,37 @@ exports.getServicesPage = (req, res) => {
 		pageTitle: 'Services',
 		pageDescription: 'Services Page',
 		canonicalUrl: `${process.env.CANONICAL_URL}services`
+	})
+}
+
+
+
+//--------------------- Customization Page --------------------------//
+
+
+
+exports.getCustomizationPage = (req, res) => {
+
+	res.status(200).render('custom', {
+
+		pageTitle: 'Customizations',
+		pageDescription: 'Customizations Page',
+		canonicalUrl: `${process.env.CANONICAL_URL}custom`
+	})
+}
+
+
+//--------------------- Rentals Page --------------------------//
+
+
+
+exports.getRentalsPage = (req, res) => {
+
+	res.status(200).render('rentals', {
+
+		pageTitle: 'Rentals',
+		pageDescription: 'Rentals Page',
+		canonicalUrl: `${process.env.CANONICAL_URL}rentals`
 	})
 }
 

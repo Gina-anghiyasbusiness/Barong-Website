@@ -7,7 +7,7 @@ const viewController = require('./../controllers/viewController.js');
 
 
 
-//----------------  CLIENT ROUTES (FRONTEND-----------------///
+//----------------  CLIENT ROUTES (FRONTEND) -----------------///
 
 
 /// IS LOGGED IN CHECK ON ALL ROUTES
@@ -30,7 +30,10 @@ router.get('/set-new-password-page/:token', viewController.setNewPasswordPage);
 
 
 
-///		 Product Pages			
+//------------		 Product Pages		--------------//
+
+
+router.get('/static/sales', viewController.getSalesPage);
 
 
 /// Barongs
@@ -57,14 +60,61 @@ router.get('/accessories/:slug', viewController.getAccessoryPage);
 
 
 
-///			Enquiry Success Route 
 
+//------------		Service Pages		--------------//
+
+
+/// Services
+
+router.get('/static/services', viewController.getServicesPage);
+
+
+/// Customization
+
+
+router.get('/static/custom', viewController.getCustomizationPage);
+
+
+/// Rentals
+
+
+router.get('/static/rentals', viewController.getRentalsPage);
+
+
+
+
+
+
+
+
+//------------	Other	Static Pages		--------------//
+
+
+/// About
+
+router.get('/static/about', viewController.getAboutPage);
+
+
+
+
+/// Contact
+
+router.get('/static/contact', viewController.getContactPage);
+
+
+
+///	Enquiry Success Route 
 
 router.get('/enquiry-success', viewController.getEnquirySuccess);
 
 
 
 
+
+
+
+
+//---------- Categories and blog not added yet!! ----------//
 
 
 
@@ -77,37 +127,11 @@ router.get('/categories/:catId', viewController.getFrontEndCategoryPage);
 
 
 
-/// Services
-
-
-
-router.get('/static/services', viewController.getServicesPage);
-
-
 /// Blog
 
-
 ///? THROWS ERROR AS PAGE IS EMPTY
 
-
-router.get('/static/blog', viewController.getBlogPage);
-
-
-
-/// About
-
-
-///? THROWS ERROR AS PAGE IS EMPTY
-
-
-router.get('/static/about', viewController.getAboutPage);
-
-
-/// Contact
-
-
-
-router.get('/static/contact', viewController.getContactPage);
+// router.get('/static/blog', viewController.getBlogPage);
 
 
 
