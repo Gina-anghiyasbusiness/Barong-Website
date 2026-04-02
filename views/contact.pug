@@ -54,22 +54,40 @@ block content
 						form(action="/api/v1/enquiries" method='POST' class='contactPage__form-box')
 							.contactPage__form-row 
 								label(for="name") Name
-								input(type="text" name='name' id='name')
+								input(type="text" name='name' id='name' required)
+							.contactPage__form-row 
+								label(for="phone") Phone
+								input(type="tel" name='phone' id='phone')
 							.contactPage__form-row 
 								label(for="email") Email
-								input(type="text" name='email' id='email')
+								input(type="email" name='email' id='email' required)
 							.contactPage__form-row 
-								label(for="enquiryType") Enquiry Type
-								select(name="enquiryType" id='enquiryType') 
-									option(value="servicesEnquiry") Services Enquiry
-									option(value="salesEnquiry") Sales Enquiry
-									option(value="customBarong") Custom Barong
-									option(value="barongRentals") Barong rentals
-									option(value="shoes") Shoes
-									option(value="general") General
+								label(for="enquiry") Enquiry Type
+								select(name="enquiry" id='enquiry' required)
+									option(value="" disabled selected) Select enquiry type
+									option(value="customTailoring") Custom Tailoring
+									option(value="rentals") Rentals
+									option(value="sales") Product / Sales Enquiry
+									option(value="general") General Enquiry
 								
+							.contactPage__form-row-method
+								p Preferred Contact Method
+									.contactPage__form-method
+
+										.contactPage__contact-methods
+											label Call
+											input(type="radio" name="preferredContactMethod" value="call")
+
+										.contactPage__contact-methods
+											label Text
+											input(type="radio" name="preferredContactMethod" value="text")
+
+										.contactPage__contact-methods
+											label Email
+											input(type="radio" name="preferredContactMethod" value="email")
+									
 							.contactPage__form-row 
-								label(for="message"  class='enquiry-label') Enquiry
-								textarea(name="message" rows='4', cols="42", placeholder='Enter your Enquiry here')
+								label(for="message"  class='enquiry-label') Additional Requests
+								textarea(name="message" rows='4', cols="42", id='message' placeholder='Add any Additional Requests here')
 							.contactPage--btn-box
 								button(type='submit' class='submit_form--button') Submit Enquiry

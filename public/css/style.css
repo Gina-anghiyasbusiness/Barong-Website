@@ -822,8 +822,8 @@ ul.header__nav--list{
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	/* gap: 8rem;	 */
-	gap: 3.2rem;
+	gap: 8rem;	
+	/* gap: 3.2rem; */
 	list-style: none;
 	
 	
@@ -833,7 +833,7 @@ ul.header__nav--list{
 	
 	font-family: "Cairo", serif;
 	
-	font-size: var(--text-lg);
+	font-size: var(--text-xlg);
 	font-weight: 600;
   /* letter-spacing: 0.04em; */
 	
@@ -1489,14 +1489,13 @@ flex: 0 0 12.5%;
 .homePage--sub-heading{
 	
   font-size: 2.4rem;
-  font-weight: 500;
-
-
-	
+  font-weight: 500;	
 	margin: 1.2rem auto 2rem auto;
 	line-height: 1.3;
  
 }
+
+
 
 .homePage--p {
 	
@@ -2047,12 +2046,12 @@ strong
 /* //--------------					Static Sales Page 				-----------// */
 
 
-.salesPage, .customizationPage , .rentalsPage {
+.salesPage, .customizationPage , .rentalsPage ,  .servicesPage {
 	padding: 8rem 0 10rem 0;
 }
 
 
-.salesPage--heading-box , .customizationPage--heading-box , .rentalsPage--heading-box{
+.salesPage--heading-box , .servicesPage--heading-box , .customizationPage--heading-box , .rentalsPage--heading-box{
 	display: flex;
 	flex-direction: column;
 
@@ -2062,7 +2061,7 @@ strong
 }
 
 
-.salesPage__benefits , .customizationPage__benefits , .rentalsPage__benefits {
+.salesPage__benefits , .customizationPage__benefits , .rentalsPage__benefits , .servicesPage__benefits {
 	display: flex;
 	flex-direction: column;
 	gap: 1.2rem;
@@ -2071,27 +2070,35 @@ strong
 }
 
 
-.salesPage__actions {
+.salesPage__actions , 	.servicesPage__actions {
 	margin-top: 1.2rem;
 }
 
-.salesPage--heading, .customizationPage--heading , .rentalsPage--heading  {
+
+.servicesPage__actions{
+	
+	display: flex;
+	align-items: center;
+	gap: 4rem;
+}
+
+.salesPage--heading, .customizationPage--heading , .rentalsPage--heading , .servicesPage--heading {
 	font-size: 3.6rem;
 	font-weight: 600;
 }
 
-.salesPage__tagline , .customizationPage__tagline , .rentalsPage__tagline  {
+.salesPage__tagline , .customizationPage__tagline , .rentalsPage__tagline , .servicesPage__tagline  {
 	font-size: 2rem;
 	font-weight: 500;
 }
 
-.salesPage__text , .customizationPage__text , .rentalsPage__text  {
+.salesPage__text , .customizationPage__text , .rentalsPage__text , .servicesPage__text  {
 	font-size: 1.6rem;
 	line-height: 1.6;
 	
 }
 
-.salesPage__benefit, .customizationPage__benefit , .rentalsPage__benefit  {
+.salesPage__benefit, .customizationPage__benefit , .rentalsPage__benefit , .servicesPage__benefit  {
 	font-size: 1.6rem;
 }
 
@@ -2100,8 +2107,10 @@ strong
 .salesPage__cta:link,
 .customizationPage__cta:link,
 .rentalsPage__cta:link,
+.servicesPage__cta:link,
 .salesPage__cta:visited, 
 .rentalsPage__cta:visited, 
+.servicesPage__cta:visited, 
 .customizationPage__cta:visited {
 	display: inline-block;
 	
@@ -2124,8 +2133,10 @@ strong
 .salesPage__cta:hover,
 .customizationPage__cta:hover,
 .rentalsPage__cta:hover,
+.servicesPage__cta:hover,
 .customizationPage__cta:active,
 .rentalsPage__cta:active,
+.servicesPage__cta:active,
 .salesPage__cta:active {
 	background-color: var(--color-primary-darkest);
 	box-shadow: 0 4px 14px rgba(184, 134, 11, 0.4);
@@ -2159,6 +2170,18 @@ strong
 	column-gap:4.6rem;
 	row-gap:6rem;
 
+	
+}
+
+.productList--sub-heading {
+	
+	   font-size: 2.4rem;
+    font-weight: 500;
+   
+    line-height: 1.3;
+		
+		padding: 3rem 0 4.8rem;
+	
 	
 }
 
@@ -3244,6 +3267,36 @@ background-color: #fff;
 .enquiry-label{
 	
 	align-self: flex-start;
+}
+
+	.contactPage__form-row-method{
+		
+		
+		font-weight: 300;
+	}
+	.contactPage__form-row-method p{
+		
+		text-align: left;
+		margin-bottom: 1rem;
+	}
+	
+	
+
+
+.contactPage__form-method{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap:5rem;
+}
+
+.contactPage__contact-methods{
+	
+	font-size: 1.4rem;
+	
+	display: flex;
+align-items: center;
+gap: 1rem;
 }
 
 

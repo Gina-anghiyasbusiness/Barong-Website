@@ -4,8 +4,23 @@ extends base
 
 block content
 
-	main.container
+	main
 	
-		.contactPage--headings.mrgbtm--lg 
+		section.servicesPage
+			.container
+		
+				.servicesPage--heading-box
 
-			h2.contactPage--sub-heading Services
+					h1.servicesPage--heading Services
+					p.servicesPage__tagline Timeless Filipino Elegance for Every Occasion
+					p.servicesPage__text Whether you need a custom-tailored piece or an elegant outfit for a special occasion, Ang Hiyas offers services designed to help you look your best with confidence and style.
+
+					ul.servicesPage__benefits
+						li.servicesPage__benefit Custom tailoring for a perfect fit
+						li.servicesPage__benefit Rental options for weddings and formal occasions
+						li.servicesPage__benefit Traditional elegance with modern style
+						
+					.servicesPage__actions
+						a.servicesPage__cta(href='/static/custom') Custom Tailoring
+						a.servicesPage__cta(href='/static/rentals') Rentals
+						

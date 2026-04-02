@@ -690,6 +690,17 @@ exports.getRentalsPage = (req, res) => {
 }
 
 
+exports.getRentalGuidePage = (req, res) => {
+
+	res.status(200).render('rental-guide', {
+
+		pageTitle: 'Rental Guide',
+		pageDescription: 'Rentals Guide Page',
+		canonicalUrl: `${process.env.CANONICAL_URL}rental-guide`
+	})
+}
+
+
 
 
 //--------------------- Blog Page --------------------------//

@@ -13,6 +13,12 @@ const enquirySchema = new mongoose.Schema({
 		required: [true, 'An Enquiry must have a name']
 	},
 
+	phone: {
+
+		type: String
+	},
+
+
 	email: {
 
 		type: String,
@@ -26,6 +32,11 @@ const enquirySchema = new mongoose.Schema({
 
 		type: String,
 		required: [true, 'An Enquiry must have an enquiry']
+	},
+
+	preferredContactMethod: {
+		type: String,
+		enum: ['call', 'text', 'email']
 	},
 
 

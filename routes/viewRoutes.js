@@ -81,6 +81,9 @@ router.get('/static/custom', viewController.getCustomizationPage);
 router.get('/static/rentals', viewController.getRentalsPage);
 
 
+router.get('/static/rental-guidelines', viewController.getRentalGuidePage);
+
+
 
 
 
