@@ -1341,7 +1341,8 @@ flex: 0 0 12.5%;
 	min-height: calc(100vh - 7rem);
 	margin-left: calc(-50vw + 50%);
 
-	background-image: url('/img/other_imgs/hero__img.jpeg');
+	/* background-image: url('/img/other_imgs/hero__img.jpeg'); */
+	background-image: url('/img/other_imgs/hero__img-1.jpeg');
 	background-repeat: no-repeat;
 	background-position: center center;
 	background-size: cover;
@@ -1351,7 +1352,7 @@ flex: 0 0 12.5%;
 	
 	align-items:flex-end;
 	
-
+margin-bottom: 6rem;
  
 }
 
@@ -1359,7 +1360,7 @@ flex: 0 0 12.5%;
 	content: '';
 	position: absolute;
 	inset: 0;
-	background: rgba(0, 0, 0, 0.13);
+	background: rgba(0, 0, 0, 0.15);
 }
 
 .homePage__hero--box{
@@ -1377,7 +1378,7 @@ flex: 0 0 12.5%;
 	
 	text-align: center;
 	
-	padding-bottom: 19.5rem;
+	padding-bottom: 18rem;
 	
 	color: var(--color-text-primary-light); 
 	
@@ -1471,7 +1472,7 @@ flex: 0 0 12.5%;
 
 .homePage-productList{
 	
- padding: 0 2rem 10rem ;
+ padding: 0 2rem 6rem ;
 }
 
 
@@ -1490,7 +1491,7 @@ flex: 0 0 12.5%;
 	
   font-size: 2.4rem;
   font-weight: 500;	
-	margin: 1.2rem auto 2rem auto;
+	margin: 0 auto 4rem;
 	line-height: 1.3;
  
 }
@@ -1702,7 +1703,7 @@ strong
 
 .homePage-services{
 	
-	padding: 0 0 7.2rem;
+	padding: 0 0 6rem;
 
 }
 
@@ -1790,7 +1791,7 @@ strong
 
 .homePage-how-it-works{
 	
-		padding: 0 2rem 12rem;
+		padding: 0 2rem 9rem;
 
 }
 
@@ -1873,8 +1874,8 @@ strong
 	display: grid;
 	align-items: center;
 	grid-template-columns:6fr 7fr;
-	gap:8rem;
-	padding: 0 2rem;
+	gap:10rem;
+	padding: 0 4rem;
 
 }
 
@@ -1907,6 +1908,13 @@ strong
   font-size: var(--text-xxxlg);
 
   line-height: 1.1;
+	
+	font-size: 2.8rem;
+    font-weight: 500;
+    /* margin: 0 auto 4rem; */
+		
+		color: var(--color-text-primary);
+    line-height: 1.3;
  
 }
 
@@ -2020,7 +2028,7 @@ strong
 	padding: 2rem 0;
 	display: flex;
 	flex-direction: column;
-	gap: 2.4rem;
+	gap: 1rem;
 }
 
 .homePage-contact--cta p{
@@ -2037,13 +2045,21 @@ strong
 	justify-content: center;
 }
 
+
+.cta-heading h2{
+font-size: 2.4rem;
+    font-weight: 500;
+    margin: 0 auto 1rem;
+    line-height: 1.3;
+}
+
 .homePage_contact-cta:link,
 .homePage_contact-cta:visited{
 	font-size: var(--text-xlg);
 	padding: 1.2rem 3.2rem;
 }
 
-/* //--------------					Static Sales Page 				-----------// */
+/* //--------------					Static Sales / services Pages 				-----------// */
 
 
 .salesPage, .customizationPage , .rentalsPage ,  .servicesPage {
@@ -2054,11 +2070,28 @@ strong
 .salesPage--heading-box , .servicesPage--heading-box , .customizationPage--heading-box , .rentalsPage--heading-box{
 	display: flex;
 	flex-direction: column;
-
-	gap: 2.4rem;
 	
 	max-width: 75rem;
 }
+
+ .customizationPage--heading-box , .rentalsPage--heading-box{
+
+	gap: 3rem;
+	
+	
+}
+
+.salesPage--heading-box{
+	gap: 2.2rem;
+	
+	
+}
+
+.servicesPage--heading-box{
+	
+	gap: 2rem;
+	
+ }
 
 
 .salesPage__benefits , .customizationPage__benefits , .rentalsPage__benefits , .servicesPage__benefits {
@@ -2143,8 +2176,76 @@ strong
 	transform: translateY(-2px);
 }
 
+	/* //--------------				Logo bg 				-----------// */
+
+.servicesPage , .customizationPage , .rentalsPage, .salesPage{
+	
+	/* position: relative;
+	overflow: hidden;
+	width: 100vw;
+	min-height: calc(100vh - 7rem);
+	margin-left: calc(-50vw + 50%);
+	
+	background-image: url('/img/logo/default-logo.png');
+	background-repeat: no-repeat;
+	background-size: cover; */
+	
+	background-image:
+  radial-gradient(circle at 50% 50%,
+    rgba(255,255,255,0.94) 0%,  
+    rgba(255,255,255,0.93) 100%
+  ), url('/img/logo/default-logo.png');
+		
+	background-repeat: no-repeat, no-repeat;
+  background-position: top ;
+	background-size: 140% 140%,min(1100px, 90vw) ;	
+	background-position: 50% 50%, 50% 18%;
+	
+
+
+	
+}
+
+/* .servicesPage::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: rgba(0,0,0, 0.1);
+}
+	
+*/
+
+/* //--------------					Sales Main Page 				-----------// */
+
+
+
+
+
+
+/* //--------------				Services Main Page 				-----------// */
+
+
 
 /* //--------------				Customization Page 				-----------// */
+
+
+.customizationPage__grid , .salesPage__grid{
+	
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	gap: 6.4rem;
+}
+
+.customizationPage--img,
+.salesPage--img{
+	
+	width: 100%;
+	
+	border-radius: 12px;
+}
+
+/* //--------------				Rentals Page 				-----------// */
+
 
 
 
