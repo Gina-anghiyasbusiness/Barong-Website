@@ -3123,7 +3123,7 @@ background-image:
  align-items: stretch;
 	justify-content: space-between;
 	gap: 2.4rem;
-	padding: 3.2rem 2rem 2rem;
+	padding: 2rem;
 	
 
 }
@@ -3220,7 +3220,7 @@ background-image:
 .contactPage__form-section{
 	
 	/* margin-bottom: 3.2rem; */
-	padding: 2rem 0 3rem;
+	padding: 0 0 3rem;
 }
 
 
@@ -3279,7 +3279,7 @@ background-color: #fff;
 	
 	display: flex;
 	flex-direction: column;
-	gap: 1.6rem;
+	gap: 1.4rem;
 	
 
 	
