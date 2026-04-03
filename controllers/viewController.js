@@ -675,6 +675,17 @@ exports.getCustomizationPage = (req, res) => {
 }
 
 
+exports.getCustomContactPage = (req, res) => {
+
+	res.status(200).render('custom-contact', {
+
+		pageTitle: 'Customizations Enquiry',
+		pageDescription: 'Customizations Enquiry Page',
+		canonicalUrl: `${process.env.CANONICAL_URL}custom-contact`
+	})
+}
+
+
 //--------------------- Rentals Page --------------------------//
 
 

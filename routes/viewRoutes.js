@@ -75,6 +75,9 @@ router.get('/static/services', viewController.getServicesPage);
 router.get('/static/custom', viewController.getCustomizationPage);
 
 
+router.get('/static/contact-custom', viewController.getCustomContactPage);
+
+
 /// Rentals
 
 

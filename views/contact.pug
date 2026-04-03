@@ -46,48 +46,59 @@ block content
 			
 			section.contactPage__form-section 
 					
-				.contactPage__form
+				.contactPage__grid
 				
-					.contactPage__form-heading
-						h2 Send an Enquiry
+					.contactPage__textbox
+					
+						.contactPage__form-heading
 						
-						form(action="/api/v1/enquiries" method='POST' class='contactPage__form-box')
-							.contactPage__form-row 
-								label(for="name") Name
-								input(type="text" name='name' id='name' required)
-							.contactPage__form-row 
-								label(for="phone") Phone
-								input(type="tel" name='phone' id='phone')
-							.contactPage__form-row 
-								label(for="email") Email
-								input(type="email" name='email' id='email' required)
-							.contactPage__form-row 
-								label(for="enquiry") Enquiry Type
-								select(name="enquiry" id='enquiry' required)
-									option(value="" disabled selected) Select enquiry type
-									option(value="customTailoring") Custom Tailoring
-									option(value="rentals") Rentals
-									option(value="sales") Product / Sales Enquiry
-									option(value="general") General Enquiry
-								
-							.contactPage__form-row-method
-								p Preferred Contact Method
-									.contactPage__form-method
-
-										.contactPage__contact-methods
-											label Call
-											input(type="radio" name="preferredContactMethod" value="call")
-
-										.contactPage__contact-methods
-											label Text
-											input(type="radio" name="preferredContactMethod" value="text")
-
-										.contactPage__contact-methods
-											label Email
-											input(type="radio" name="preferredContactMethod" value="email")
+							h2 Get in Touch
+							
+						.contactPage__form-text
+							p We'd love to hear from you! 
+							p Whether you have a question about our products, enquiry about our services, need support, or just want to get in touch, our team is here to help
+							p Simply fill out the form and we'll get back to you as soon as possible.
+						
+						
+					.contactPage__form
+					
+							
+							form(action="/api/v1/enquiries" method='POST' class='contactPage__form-box')
+								.contactPage__form-row 
+									label(for="name") Name
+									input(type="text" name='name' id='name' required)
+								.contactPage__form-row 
+									label(for="email") Email
+									input(type="email" name='email' id='email' required)
+								.contactPage__form-row 
+									label(for="phone") Phone (optional)
+									input(type="tel" name='phone' id='phone')
+								.contactPage__form-row 
+									label(for="enquiry") Enquiry Type
+									select(name="enquiry" id='enquiry' required)
+										option(value="" disabled selected) Select enquiry type
+										option(value="general") General Enquiry
+										option(value="rentals") Rentals
+										option(value="sales") Product / Sales Enquiry
 									
-							.contactPage__form-row 
-								label(for="message"  class='enquiry-label') Additional Requests
-								textarea(name="message" rows='3', cols="42", id='message' placeholder='Add any Additional Requests here')
-							.contactPage--btn-box
-								button(type='submit' class='submit_form--button') Submit Enquiry
+								.contactPage__form-row-method
+									label.contactPage__method-label Preferred Contact Method
+
+								.contactPage__form-method
+									.contactPage__contact-methods
+										label(for="contact-call") Call
+										input(type="radio" name="preferredContactMethod" value="call" id="contact-call")
+
+									.contactPage__contact-methods
+										label(for="contact-text") Text
+										input(type="radio" name="preferredContactMethod" value="text" id="contact-text")
+
+									.contactPage__contact-methods
+										label(for="contact-email") Email
+										input(type="radio" name="preferredContactMethod" value="email" id="contact-email")
+																	
+								.contactPage__form-row 
+									label(for="message"  class='enquiry-label') Additional Requests
+									textarea(name="message" rows='3', cols="42", id='message' placeholder='Add any Additional Requests here')
+								.contactPage--btn-box
+									button(type='submit' class='submit_form--button') Submit Enquiry

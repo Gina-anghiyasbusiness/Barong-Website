@@ -1,0 +1,73 @@
+extends base 
+
+block content
+
+	main.container
+	
+			
+			section.customContactPage
+					
+					
+				.customContactPage__textbox
+				
+					.customContactPage__form-heading
+					
+						h2 Customization Enquiry
+						
+					.customContactPage__form-text
+					
+						p Book your custom-fitting today.
+						p  Submit your enquiry and we'll get back to you with all the options. 
+					
+					
+				.customContactPage__form
+				
+						
+						form(action="/api/v1/enquiries" method='POST' class='customContactPage__form-box')
+							.customContactPage__form-row 
+								label(for="name") Name
+								input(type="text" name='name' id='name' required)
+							.customContactPage__form-row 
+								label(for="email") Email
+								input(type="email" name='email' id='email' required)
+							.customContactPage__form-row 
+								label(for="phone") Phone (optional)
+								input(type="tel" name='phone' id='phone')
+							.customContactPage__form-row 
+								label(for="outfit") Outfit Type
+								select(name="outfit" id='outfit' required)
+									option(value="" disabled selected) Select Outfit type
+									option(value="barong") Barong
+									option(value="filipiniana") Filipiniana
+									option(value="both") Both
+							.customContactPage__form-row 
+								label(for="outfit") Event Details
+								select(name="outfit" id='outfit' required)
+									option(value="" disabled selected) Select Event Details
+									option(value="wedding ") Wedding 
+									option(value="graduation") Graduation
+									option(value="oath-taking") Oath Taking
+									option(value="formal-party ") Formal Party 
+									option(value="other") Other
+								
+							.customContactPage__form-row-method
+								label.contactPage__method-label Preferred Contact Method
+
+							.customContactPage__form-method
+								.customContactPage__contact-methods
+									label(for="contact-call") Call
+									input(type="radio" name="preferredContactMethod" value="call" id="contact-call")
+
+								.customContactPage__contact-methods
+									label(for="contact-text") Text
+									input(type="radio" name="preferredContactMethod" value="text" id="contact-text")
+
+								.customContactPage__contact-methods
+									label(for="contact-email") Email
+									input(type="radio" name="preferredContactMethod" value="email" id="contact-email")
+																
+							.customContactPage__form-row 
+								label(for="message"  class='enquiry-label-customization') Additional Requests
+								textarea(name="message" rows='3', cols="42", id='message' placeholder='Add any Additional Requests here')
+							.customContactPage--btn-box
+								button(type='submit' class='submit_form--button-customization') Submit Enquiry

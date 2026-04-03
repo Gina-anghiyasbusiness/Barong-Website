@@ -2178,7 +2178,7 @@ font-size: 2.4rem;
 
 	/* //--------------				Logo bg 				-----------// */
 
-.servicesPage , .customizationPage , .rentalsPage, .salesPage{
+.servicesPage , .customizationPage , .rentalsPage, .salesPage,.customContactPage {
 	
 	/* position: relative;
 	overflow: hidden;
@@ -3217,19 +3217,70 @@ background-image:
 
 
 
-.contactPage__form-section{
+.contactPage__grid {
+	display: grid;
+	grid-template-columns: 10fr 9fr;
+	gap: 4rem;
+	align-items: start;
 	
-	/* margin-bottom: 3.2rem; */
-	padding: 0 0 3rem;
+	
 }
 
 
+.contactPage__textbox{
+	
+padding: 1.2rem 2rem 0 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2.4rem;
+
+	box-sizing: border-box;
+}
+
+
+.contactPage__form-section{
+	
+	
+padding: 3rem 5rem 6rem 6rem;
+}
+
+.contactPage__form-text{
+	
+	display: flex;
+	
+	flex-direction: column;
+	
+	gap: 2.8rem;
+}
+
+.contactPage__form-text p{
+	
+
+	color: var(--color-text-muted-dk);
+	
+
+}
+
+.contactPage__form-text p:first-child{
+	font-size: 2.3rem;
+	font-weight: 400;
+	line-height: 1.35;
+	margin-bottom: 1.4rem;
+}
+
+.contactPage__form-text p:not(:first-child){
+	font-size: 1.8rem;
+	font-weight: 400;
+	line-height: 1.45;
+max-width: 56rem;
+color: var(--color-text-muted);
+}
 
 .contactPage__form{
 	
 	margin: 0 auto;
-	max-width: 56rem;
 
+	width: 82%;
 
 	display: flex;
 	align-items: center;
@@ -3243,7 +3294,7 @@ background-image:
     0 2px 8px rgba(20,17,11,.05);	
 	
   border-radius: 8px;      
-  padding:2rem 0;  
+  padding:1rem 0;  
 	
 	/* background: radial-gradient(circle at 50% 50%,
   rgba(201,155,40,.1) 0%,
@@ -3261,7 +3312,7 @@ background-color: #fff;
 .contactPage__form-heading h2{
 	
 	font-size: var(--text-h2);
-	margin-bottom: 1.2rem;
+	margin-bottom: .75rem;
 	
 }
 
@@ -3279,10 +3330,17 @@ background-color: #fff;
 	
 	display: flex;
 	flex-direction: column;
-	gap: 1.4rem;
+	gap: 1.1rem;
+	padding: 1rem 3rem;
+	width: 100%;
+	box-sizing: border-box;
 	
 
 	
+}
+
+.contactPage__method-label {
+	font-size: var(--text-small);
 }
 
 
@@ -3340,10 +3398,10 @@ background-color: #fff;
 		font-family: "Cairo", serif;
 	
   width: 100%;
-  padding: .25rem 1rem;
+  padding: 0 .5rem;
   border-radius: 8px;
   border: 1px solid rgba(20,17,11,.18);
-  font-size: var(--text-small);
+  font-size: 1.3rem;
   /* background: #fff; */
   background: var(--color-bg);
 }
@@ -3375,7 +3433,7 @@ background-color: #fff;
 		
 		font-weight: 300;
 	}
-	.contactPage__form-row-method p{
+	.contactPage__form-row-method label{
 		
 		text-align: left;
 		margin-bottom: 1rem;
@@ -3399,6 +3457,9 @@ background-color: #fff;
 align-items: center;
 gap: 1rem;
 }
+
+
+
 
 
 .submit_form--button{
@@ -3470,6 +3531,219 @@ gap: 1rem;
 	
 	font-size: var(--text-xlg);
 	
+}
+
+
+/* //---------------				Customizarion form Page 			---------------// */
+
+.customContactPage{
+	max-width: 112rem;
+	margin: 0 auto;
+	padding: 3rem 5rem 6rem;
+	display: flex;
+	flex-direction: column;
+	gap: 3.2rem;
+}
+.customContactPage__grid {
+
+}
+
+.customContactPage__textbox {
+	max-width: 76rem;
+	padding: 1.2rem 2rem 0 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2.4rem;
+	box-sizing: border-box;
+	align-items: center;
+	text-align: center;
+}
+.customContactPage__form-section {
+	padding: 3rem 5rem 6rem 6rem;
+	
+}
+
+.customContactPage__form-text {
+	display: flex;
+	flex-direction: column;
+	gap: 2.2rem;
+}
+
+.customContactPage__form-text p {
+	color: var(--color-text-muted-dk);
+}
+
+.customContactPage__form-text p:first-child {
+	font-size: 2.3rem;
+	font-weight: 400;
+	line-height: 1.35;
+	margin-bottom: 1.4rem;
+}
+
+.customContactPage__form-text p:not(:first-child) {
+	font-size: 1.8rem;
+	font-weight: 400;
+	line-height: 1.45;
+
+	color: var(--color-text-muted);
+}
+
+.customContactPage__form {
+	margin: 0 auto;
+	width: 100%;
+	max-width: 56rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	gap: 2rem;
+	border: 1px solid rgba(20,17,11,.10);
+	box-shadow:
+		0 18px 50px rgba(20,17,11,.10),
+		0 2px 8px rgba(20,17,11,.05);
+	border-radius: 8px;
+	padding: .5rem 0;
+	background-color: #fff;
+}
+
+.customContactPage__form-heading h2 {
+	font-size: var(--text-h2);
+	margin-bottom: .75rem;
+}
+
+.customContactPage__form-heading p {
+	text-align: center;
+	font-size: var(--text-small);
+	margin-bottom: 1.2rem;
+}
+
+.customContactPage__form-box {
+	display: flex;
+	flex-direction: column;
+	gap: 1.3rem;
+	padding: 1rem 3rem;
+	width: 98%;
+	box-sizing: border-box;
+}
+
+.contactPage__method-label,
+.customContactPage__method-label {
+	font-size: var(--text-small);
+}
+
+.customContactPage__form-row {
+	display: flex;
+	flex-direction: column;
+	gap: .75rem;
+}
+
+.customContactPage__form-row label {
+	font-size: var(--text-small);
+	font-weight: 300;
+}
+
+.contactPage--btn-box {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.customContactPage__form-row select {
+	font-family: "Cairo", serif;
+	font-weight: 300;
+}
+
+.customContactPage__form-row option {
+	font-family: "Cairo", serif;
+	font-weight: 300;
+}
+
+.customContactPage__form-row input,
+.customContactPage__form-row select,
+.customContactPage__form-row textarea {
+	font-family: "Cairo", serif;
+	width: 100%;
+	padding: 0 .5rem;
+	border-radius: 8px;
+	border: 1px solid rgba(20,17,11,.18);
+	font-size: 1.3rem;
+	background: var(--color-bg);
+}
+
+.customContactPage__form-row textarea {
+	height: auto;
+	resize: vertical;
+}
+
+.customContactPage__form-row input:focus,
+.customContactPage__form-row select:focus,
+.customContactPage__form-row textarea:focus {
+	outline: none;
+	border-color: rgba(201,155,40,.55);
+	box-shadow: 0 0 0 4px rgba(201,155,40,.14);
+}
+
+.enquiry-label {
+	align-self: flex-start;
+}
+
+.customContactPage__form-row-method {
+	font-weight: 300;
+}
+
+.customContactPage__form-row-method label {
+	text-align: left;
+	margin-bottom: 1rem;
+	display: inline-block;
+}
+
+.customContactPage__form-method {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5rem;
+}
+
+.customContactPage__contact-methods {
+	font-size: 1.4rem;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.customContactPage__contact-methods label {
+	margin-bottom: 0;
+}
+
+
+.customContactPage--btn-box {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.enquiry-label-customization {
+	align-self: flex-start;
+}
+
+
+.submit_form--button-customization{
+	display: inline-block;
+	border: none;
+	border-radius: 6px;
+	padding: .75rem 2rem;
+	font-size: 1.6rem;
+	font-weight: 500;
+	font-family: "Cairo", serif;
+	background-color: var(--color-primary-dark);
+	color: var(--color-text-primary-light);
+	cursor: pointer;
+	transition: all 0.25s ease;
+}
+
+.submit_form--button-customization:hover{
+	background-color: var(--color-primary);
+	transform: translateY(-1px);
 }
 
 
