@@ -23,7 +23,7 @@ block content
 				.customContactPage__form
 				
 						
-						form(action="/api/v1/enquiries" method='POST' class='customContactPage__form-box')
+						form(action="/api/v1/enquiries/customization" method='POST' class='customContactPage__form-box')
 							.customContactPage__form-row 
 								label(for="name") Name
 								input(type="text" name='name' id='name' required)
@@ -41,13 +41,13 @@ block content
 									option(value="filipiniana") Filipiniana
 									option(value="both") Both
 							.customContactPage__form-row 
-								label(for="outfit") Event Details
-								select(name="outfit" id='outfit' required)
+								label(for="event") Event Details
+								select(name="event" id='event' required)
 									option(value="" disabled selected) Select Event Details
-									option(value="wedding ") Wedding 
+									option(value="wedding") Wedding 
 									option(value="graduation") Graduation
 									option(value="oath-taking") Oath Taking
-									option(value="formal-party ") Formal Party 
+									option(value="formal-party") Formal Party 
 									option(value="other") Other
 								
 							.customContactPage__form-row-method

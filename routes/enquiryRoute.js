@@ -4,6 +4,8 @@ const enquiryController = require('../controllers/enquiryController');
 
 router.post('/', enquiryController.createEnquiry);
 
+router.post('/customization', enquiryController.createCustomizationEnquiry);
+
 
 
 module.exports = router;

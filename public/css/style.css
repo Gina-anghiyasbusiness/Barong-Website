@@ -34,7 +34,7 @@
   --color-secondary: #384B30;
   --color-secondary-light: #9ca598;
 	
-	--color-surface-layer: #FFFBF2; /* for cards / div boxes on top of bg*/
+	--color-surface-layer: #FFFBF2; 
   --color-border: #E9DEC8;
 	
 		
@@ -454,6 +454,7 @@ body{
 	line-height: 1;			
 	
 	font-family:'Inter' , 'Rubik', serif;
+	/* font-family: 'Rubik', serif; */
 	
 	/* font-family: "Cairo", serif; */
 	
@@ -1360,7 +1361,7 @@ margin-bottom: 6rem;
 	content: '';
 	position: absolute;
 	inset: 0;
-	background: rgba(0, 0, 0, 0.15);
+	background: rgba(0, 0, 0, 0.17);
 }
 
 .homePage__hero--box{
@@ -1378,7 +1379,7 @@ margin-bottom: 6rem;
 	
 	text-align: center;
 	
-	padding-bottom: 18rem;
+	padding-bottom: 21.6rem;
 	
 	color: var(--color-text-primary-light); 
 	
@@ -1394,8 +1395,8 @@ margin-bottom: 6rem;
 	
 	display: flex;
 	justify-content: center;
-	gap: 3rem;
-	margin-top: 3rem;
+	gap: 2rem;
+	margin-top: 1\.8rem;
 	flex-wrap: wrap;
 	
 	
@@ -1413,10 +1414,11 @@ margin-bottom: 6rem;
 	background-color: var(--color-primary-dark);
 	color:var(--color-text-white);
 
-	font-size: 1.8rem;
+	font-size: 1.6rem;
+	font-weight: 600;
 	text-decoration: none;
 
-	padding: 1.4rem 3.6rem;
+	padding: 1rem 2.8rem;
 	
 	margin-bottom: 2rem;
 	
@@ -1487,8 +1489,12 @@ margin-bottom: 6rem;
 	
 }
 
+
+
 .homePage--sub-heading{
 	
+	font-family: 'Rubik', sans-serif;
+
   font-size: 2.4rem;
   font-weight: 500;	
 	margin: 0 auto 4rem;
@@ -2062,27 +2068,41 @@ font-size: 2.4rem;
 /* //--------------					Static Sales / services Pages 				-----------// */
 
 
-.salesPage, .customizationPage , .rentalsPage ,  .servicesPage {
+.salesPage, .customizationPage , .rentalGuidePage, .rentalsPage ,  .servicesPage {
 	padding: 8rem 0 10rem 0;
 }
 
 
-.salesPage--heading-box , .servicesPage--heading-box , .customizationPage--heading-box , .rentalsPage--heading-box{
+.salesPage--heading-box , .rentalGuidePage--heading-box , .servicesPage--heading-box , .customizationPage--heading-box , .rentalsPage--heading-box{
 	display: flex;
 	flex-direction: column;
 	
 	max-width: 75rem;
 }
 
- .customizationPage--heading-box , .rentalsPage--heading-box{
+ .customizationPage--heading-box{
 
 	gap: 3rem;
 	
 	
 }
 
+.rentalsPage--heading-box{
+
+	gap: 1.4rem;
+	
+	
+}
+
+.rentalGuidePage--heading-box{
+
+	gap: 1.4rem;
+	
+	
+}
+
 .salesPage--heading-box{
-	gap: 2.2rem;
+	gap: 2.4rem;
 	
 	
 }
@@ -2102,9 +2122,13 @@ font-size: 2.4rem;
 	list-style: none;
 }
 
-
-.salesPage__actions , 	.servicesPage__actions {
+ .servicesPage__actions {
 	margin-top: 1.2rem;
+}
+
+
+.salesPage__actions {
+	margin-top: 0.5;
 }
 
 
@@ -2115,17 +2139,17 @@ font-size: 2.4rem;
 	gap: 4rem;
 }
 
-.salesPage--heading, .customizationPage--heading , .rentalsPage--heading , .servicesPage--heading {
+.salesPage--heading,  .customizationPage--heading , .rentalsPage--heading, .rentalGuidePage--heading  , .servicesPage--heading {
 	font-size: 3.6rem;
 	font-weight: 600;
 }
 
-.salesPage__tagline , .customizationPage__tagline , .rentalsPage__tagline , .servicesPage__tagline  {
+.salesPage__tagline, .rentalGuidePage__tagline , .customizationPage__tagline , .rentalsPage__tagline , .servicesPage__tagline  {
 	font-size: 2rem;
 	font-weight: 500;
 }
 
-.salesPage__text , .customizationPage__text , .rentalsPage__text , .servicesPage__text  {
+.salesPage__text , .customizationPage__text, .rentalGuidePage__text  , .rentalsPage__text , .servicesPage__text  {
 	font-size: 1.6rem;
 	line-height: 1.6;
 	
@@ -2150,17 +2174,17 @@ font-size: 2.4rem;
 	background-color: var(--color-primary-dark);
 	color: var(--color-text-white);
 	
-	font-size: 1.6rem;
-	font-weight: 500;
+	font-size: 1.4rem;
+	font-weight: 600;
 	text-decoration: none;
 
-	padding: 1.4rem 3.2rem;
+	padding: 1.2rem 2.4rem;
 	border-radius: 3px;
 
 	box-shadow: 0 2px 8px rgba(184, 134, 11, 0.25);
 	
 	transition: all 0.3s ease;
-	margin-top: 3.2rem;
+	margin-top: 2rem;
 }
 
 .salesPage__cta:hover,
@@ -2217,9 +2241,25 @@ font-size: 2.4rem;
 
 /* //--------------					Sales Main Page 				-----------// */
 
+.salesPage__benefits li,
+.servicesPage__benefits	li,
+.customizationPage__benefits li,
+.rentalsPage__benefits li{
+	
+	display: flex;
+	align-items: center;
+	gap: .65rem;
+	
+}
 
-
-
+.salesPage__benefit	img,
+.servicesPage__benefit img,
+.customizationPage__benefit img,
+.rentalsPage__benefit img{
+	
+	width: 1.4rem;
+	height: 1.4rem;
+}
 
 
 /* //--------------				Services Main Page 				-----------// */
@@ -2244,8 +2284,209 @@ font-size: 2.4rem;
 	border-radius: 12px;
 }
 
+
+
 /* //--------------				Rentals Page 				-----------// */
 
+
+
+.rentalsPage__actions a:link,
+.rentalsPage__actions a:visited{
+	
+	margin-top: 1.4rem;
+
+}
+
+.rentalsPage--heading{
+	
+	margin-bottom: 1rem;
+}
+
+
+.rentalsPage__tagline {
+	margin-bottom: 1rem;
+}
+
+
+/*/// Guidelines  */
+
+
+/* 	
+	.rentalGuidePage {
+	padding: 8rem 0 10rem 0;
+	background-color: var(--color-background-light);
+}
+
+.rentalGuidePage--box {
+	max-width: 82rem;
+	margin: 0 auto;
+	padding: 4.8rem 5.2rem;
+	background-color: rgba(255, 248, 235, 0.88);
+	border: 1px solid rgba(184, 134, 11, 0.22);
+	border-radius: 8px;
+	box-shadow: 0 1.2rem 3rem rgba(0, 0, 0, 0.04);
+	backdrop-filter: blur(2px);
+}
+
+.rentalGuidePage--heading-box {
+	display: flex;
+	flex-direction: column;
+	gap: 1.8rem;
+}
+
+.rentalGuidePage--heading {
+	font-size: 5rem;
+	line-height: 1.1;
+	font-weight: 700;
+	color: var(--color-text-dark);
+	margin: 0;
+}
+
+.rentalGuidePage__tagline {
+	font-size: 2rem;
+	font-weight: 500;
+	line-height: 1.4;
+	color: var(--color-text-dark);
+	margin: 0;
+}
+
+.rentalGuidePage__text {
+	font-size: 1.9rem;
+	line-height: 1.8;
+	color: var(--color-text-dark);
+	margin: 0;
+	max-width: 68rem;
+}
+
+.rentalGuidePage__guidelines {
+	list-style: none;
+	margin: 1.6rem 0 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 1.6rem;
+}
+
+.rentalGuidePage__guideline {
+	position: relative;
+	padding-left: 2.8rem;
+	font-size: 1.8rem;
+	line-height: 1.7;
+	color: var(--color-text-dark);
+}
+
+.rentalGuidePage__guideline::before {
+	content: '';
+	position: absolute;
+	top: 1.1rem;
+	left: 0;
+	width: 0.9rem;
+	height: 0.9rem;
+	border-radius: 50%;
+	background-color: var(--color-primary-dark);
+}
+
+.rentalGuidePage__guideline strong {
+	font-weight: 700;
+	color: var(--color-text-dark);
+}
+
+.rentalGuidePage__note {
+	margin-top: 2.4rem;
+	padding-top: 2rem;
+	border-top: 1px solid rgba(184, 134, 11, 0.18);
+	font-size: 1.7rem;
+	line-height: 1.7;
+	color: var(--color-text-dark);
+}
+ */
+ 
+ .rentalGuidePage {
+	padding: 5rem 0 6rem 0;
+	background-color: var(--color-background-light);
+}
+
+.rentalGuidePage--box {
+	max-width: 72rem;
+	margin: 0 auto;
+	padding: 3.2rem 3.6rem;
+	background-color: rgba(255, 248, 235, 0.9);
+	border: 1px solid rgba(184, 134, 11, 0.2);
+	border-radius: 6px;
+	box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.03);
+}
+
+.rentalGuidePage--heading-box {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+}
+
+.rentalGuidePage--heading {
+	font-size: 4.2rem;
+	line-height: 1.1;
+	font-weight: 700;
+	color: var(--color-text-dark);
+	margin: 0;
+}
+
+.rentalGuidePage__tagline {
+	font-size: 1.9rem;
+	font-weight: 500;
+	line-height: 1.4;
+	color: var(--color-text-dark);
+	margin: 0;
+}
+
+.rentalGuidePage__text {
+	font-size: 1.65rem;
+	line-height: 1.4;
+	color: var(--color-text-dark);
+	margin: 0;
+	max-width: 60rem;
+}
+
+.rentalGuidePage__guidelines {
+	list-style: none;
+	margin: 1.2rem 0 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: .65rem;
+}
+
+.rentalGuidePage__guideline {
+	position: relative;
+	padding-left: 2.2rem;
+	font-size: 1.55rem;
+	line-height: 1.55;
+	color: var(--color-text-dark);
+}
+
+.rentalGuidePage__guideline::before {
+	content: '';
+	position: absolute;
+	top: 0.95rem;
+	left: 0;
+	width: 0.7rem;
+	height: 0.7rem;
+	border-radius: 50%;
+	background-color: var(--color-primary-dark);
+}
+
+.rentalGuidePage__guideline strong {
+	font-weight: 700;
+	color: var(--color-text-dark);
+}
+
+.rentalGuidePage__note {
+	margin-top: 1.8rem;
+	padding-top: 1.4rem;
+	border-top: 1px solid rgba(184, 134, 11, 0.16);
+	font-size: 1.6rem;
+	line-height: 1.6;
+	color: var(--color-text-dark);
+}
 
 
 
@@ -3548,10 +3789,10 @@ gap: 1rem;
 .customContactPage{
 	max-width: 112rem;
 	margin: 0 auto;
-	padding: 3rem 5rem 6rem;
+	padding: 2.6rem 5rem 6rem;
 	display: flex;
 	flex-direction: column;
-	gap: 2.4rem;
+	gap: 1.4rem;
 }
 .customContactPage__grid {
 
@@ -3590,7 +3831,7 @@ gap: 1rem;
 }
 
 .customContactPage__form-text p:not(:first-child) {
-	font-size: 1.8rem;
+	font-size: 1.6rem;
 	font-weight: 400;
 	line-height: 1.45;
 

@@ -1,4 +1,5 @@
 const Enquiry = require('./../models/enquiryModel');
+const CustomizationEnquiry = require('./../models/customizationEnquiryModel');
 const catchAsync = require('./../utilities/catchAsync');
 
 
@@ -18,3 +19,26 @@ exports.createEnquiry = catchAsync(async (req, res, next) => {
 	res.redirect(303, '/enquiry-success');
 
 });
+
+
+
+
+exports.createCustomizationEnquiry = catchAsync(async (req, res, next) => {
+
+	const newEnquiry = await CustomizationEnquiry.create({
+
+		name: req.body.name,
+		phone: req.body.phone,
+		email: req.body.email,
+		outfit: req.body.outfit,
+		event: req.body.event,
+		message: req.body.message,
+		preferredContactMethod: req.body.preferredContactMethod,
+
+	});
+
+
+	res.redirect(303, '/enquiry-success');
+
+});
+
