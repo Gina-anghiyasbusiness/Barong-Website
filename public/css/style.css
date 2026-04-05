@@ -2132,7 +2132,7 @@ font-size: 2.4rem;
 }
 
 
-.servicesPage__actions{
+.servicesPage__actions , 	.rentalsPage__actions{
 	
 	display: flex;
 	align-items: center;
