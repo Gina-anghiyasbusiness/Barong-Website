@@ -26,6 +26,9 @@ block content
 			.main_barong-list
 
 				.barong-list__filter
+
+					.barong-list__filter-clear 
+						a.barong-list__clear-filters(href='/barong-list') Clear Filters
 				
 					.barong-list__filter-gender
 						.barong-list__filter--btn-box
@@ -65,10 +68,17 @@ block content
 						ul#barong-list--ul-size.barong-list--ul-size 
 							each size in sizeList
 								li 
-									a(href='#') #{size}
-
-					.barong-list__filter-clear 
-						a.barong-list__clear-filters(href='/barong-list') Clear Filters
+									a(href=`?productSize=${size}`) #{size}
+									
+					.barong-list__filter-category
+						.barong-list__filter--btn-box
+							button#barong__filter-btn--category.barong-list__filter-btn(type='button') Collection
+						ul#barong-list--ul-category.barong-list--ul-category
+							each category in categoryList
+								li
+									a(href=`?category=${category._id}`)= category.name
+														
+														
 
 				
 				.barong-page--list

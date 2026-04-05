@@ -52,9 +52,9 @@ block content
 							.productPage__product-description
 								p.productPage__product--p #{product.description}
 							.productPage__product-style
-								p.productPage__product--p Collection: #{product.sex}
+								p.productPage__product--p Collection: #{product.category && product.category.name ? product.category.name : 'N/A'}
 								p.productPage__product--p Color: #{product.color}
-						
+														
 					
 					////-------- Variants -------// 
 					

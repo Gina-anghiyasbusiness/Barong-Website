@@ -28730,6 +28730,13 @@
       colorBox.classList.toggle("display--filter-list");
     });
   }
+  var categoryBoxBtn = document.getElementById("barong__filter-btn--category");
+  var categoryBox = document.getElementById("barong-list--ul-category");
+  if (categoryBoxBtn && categoryBox) {
+    categoryBoxBtn.addEventListener("click", function() {
+      categoryBox.classList.toggle("display--filter-list");
+    });
+  }
   var sizeGuideBtn = document.querySelector(".size-guide--btn");
   var sizeGuideBox = document.querySelector(".productPage__variant-size-guide--box");
   if (sizeGuideBtn) {

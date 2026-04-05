@@ -952,6 +952,7 @@ if (sizeBoxBtn && sizeBox) {
 }
 
 
+
 const colorBoxBtn = document.getElementById('barong__filter-btn--color');
 const colorBox = document.getElementById('barong-list--ul-color');
 
@@ -960,6 +961,19 @@ if (colorBoxBtn && colorBox) {
 		colorBox.classList.toggle('display--filter-list');
 	});
 }
+
+
+const categoryBoxBtn = document.getElementById('barong__filter-btn--category');
+const categoryBox = document.getElementById('barong-list--ul-category');
+
+if (categoryBoxBtn && categoryBox) {
+	categoryBoxBtn.addEventListener('click', function () {
+		categoryBox.classList.toggle('display--filter-list');
+	});
+}
+
+
+
 
 
 ///			 Size guide button			///

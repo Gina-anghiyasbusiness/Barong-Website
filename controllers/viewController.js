@@ -166,7 +166,7 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 	///			Display Sizes in dropdown			///
 
 
-	const desiredSizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '6', '8', '10', '12', '14', '16', '18'];
+	const desiredSizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL', '6', '8', '10', '12', '14', '16', '18'];
 
 	const sizeList = await formVariants('size', desiredSizeOrder);
 
@@ -190,11 +190,28 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 	const colorList = await formFields('color', desiredColorOrder);
 
 
+
+	///			Display Category in dropdown			///
+
+	const desiredCategory = ['Premium', 'Standard'];
+
+	const categoryDocs = await Category.find({
+		name: { $in: desiredCategory }
+	}).select('name').lean();
+
+	const categoryList = desiredCategory
+		.map(name => categoryDocs.find(category => category.name === name))
+		.filter(Boolean);
+
+
+
+
 	///			 Filtering			///
 
 	const size = req.query.productSize;
 	const selectedColor = req.query.color;
 	const selectedSex = req.query.sex;
+	const selectedcategory = req.query.category;
 
 	const queryObj = {};
 
@@ -204,6 +221,10 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 
 	if (selectedSex) {
 		queryObj.sex = selectedSex;
+	}
+
+	if (selectedcategory) {
+		queryObj.category = selectedcategory;
 	}
 
 	if (size) {
@@ -227,9 +248,11 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 		canonicalUrl: `${process.env.CANONICAL_URL}`,
 		productlist,
 		sizeList,
+		categoryList,
 		colorList,
 		selectedColor,
 		selectedOption,
+		selectedcategory,
 		selectedSex: selectedSex || '',
 		selectedSize: size || ''
 	});

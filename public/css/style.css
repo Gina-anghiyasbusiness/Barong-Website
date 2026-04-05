@@ -2407,7 +2407,7 @@ font-size: 2.4rem;
 }
 
 .rentalGuidePage--box {
-	max-width: 72rem;
+	max-width: 78rem;
 	margin: 0 auto;
 	padding: 3.2rem 3.6rem;
 	background-color: rgba(255, 248, 235, 0.9);
@@ -2554,6 +2554,7 @@ font-size: 2.4rem;
 
 
 	.barong-list__filter-gender ul,
+	.barong-list__filter-category ul,
 	.barong-list__filter-size ul,
 	.barong-list__filter-color ul{
 		
@@ -2566,6 +2567,7 @@ font-size: 2.4rem;
 		
 	}
 	.barong-list__filter-gender ul:last-child,
+	.barong-list__filter-category ul:last-child,
 	.barong-list__filter-size ul:last-child,
 	.barong-list__filter-color ul:last-child{
 		
@@ -2577,6 +2579,8 @@ font-size: 2.4rem;
 	
 	.barong-list__filter-gender a:link,
 	.barong-list__filter-gender a:visited,
+	.barong-list__filter-category a:link,
+	.barong-list__filter-category a:visited,
 	.barong-list__filter-size a:link,
 	.barong-list__filter-size a:visited,
 	.barong-list__filter-color a:link,
@@ -2634,22 +2638,63 @@ font-size: 2.4rem;
 }
 
 
-.barong-list__filter-clear  a:link,
-.barong-list__filter-clear  a:visited{
-	
-	text-decoration: none;
-	
-	color: var(--color-text-primary-light);
-
-	
-	background-color: var(--color-secondary);
-	
-	padding: 1rem 1.6rem;
-	
-	font-size: var(--text-body);
+.barong-list__filter-category #barong-list--ul-category {
+	display: none;
 }
 
-	.barong-list__filter-size{
+.barong-list__filter-category #barong-list--ul-category.display--filter-list {
+	display: flex;
+}
+
+	.barong-list__filter-clear {
+		
+		/* margin-bottom: 1rem; */
+		
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		
+		
+		
+	}
+	
+	.barong-list__filter-clear  a:link,
+	.barong-list__filter-clear  a:visited{
+		
+		display: inline-block;
+		
+	text-decoration: none;
+	
+	color: var(--color-text);
+	border: 1px solid var(--color-secondary);
+
+	
+	padding:.2rem .5rem;
+	border-radius: 8px;
+	
+	font-size: 1.3rem;
+	font-weight: 400;
+	
+	transition: all .2s;
+}
+
+
+	.barong-list__filter-clear  a:hover,
+	.barong-list__filter-clear  a:active{
+		
+		background-color: var(--color-secondary);
+		color: var(--color-text-primary-light);
+		
+		transform: scale(1.03) translateY(-8%);
+		
+		box-shadow: 1px 2px 12px rgba(136, 136, 136, 0.8);
+	
+}
+
+
+
+
+	.barong-list__filter-category{
 		
 		margin-bottom: 6.4rem;
 	}
