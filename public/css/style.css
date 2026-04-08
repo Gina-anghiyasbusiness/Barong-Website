@@ -3288,7 +3288,7 @@ background-image:
 	grid-template-rows: repeat(10,1fr);
 	align-items: center;
 	
-	row-gap: 1rem;
+	row-gap: 1.4rem;
 	
 
 
@@ -3307,7 +3307,7 @@ background-image:
 
 .aboutPage-right {
 	grid-column: 4/7;
-	grid-row: 2/6;
+	grid-row: 1/6;
 	
 
 
