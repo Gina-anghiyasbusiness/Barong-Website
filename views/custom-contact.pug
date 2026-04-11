@@ -7,67 +7,82 @@ block content
 			
 			section.customContactPage
 					
-					
-				.customContactPage__textbox
+				.customContactPage__grid
 				
-					.customContactPage__form-heading
+					.customContactPage__textbox
 					
-						h2 Customization Enquiry
+						.contactPage__form-heading
 						
-					.customContactPage__form-text
-					
-						p Book your custom-fitting today.
-						p  Submit your enquiry and we'll get back to you with all the options. 
-					
-					
-				.customContactPage__form
-				
+							h1 Timeless Filipino elegance, designed just for you
+							
+						.customizationPage__grid--text--box
 						
-						form(action="/api/v1/enquiries/customization" method='POST' class='customContactPage__form-box')
-							.customContactPage__form-row 
-								label(for="name") Name
-								input(type="text" name='name' id='name' required)
-							.customContactPage__form-row 
-								label(for="email") Email
-								input(type="email" name='email' id='email' required)
-							.customContactPage__form-row 
-								label(for="phone") Phone (optional)
-								input(type="tel" name='phone' id='phone')
-							.customContactPage__form-row 
-								label(for="outfit") Outfit Type
-								select(name="outfit" id='outfit' required)
-									option(value="" disabled selected) Select Outfit type
-									option(value="barong") Barong
-									option(value="filipiniana") Filipiniana
-									option(value="both") Both
-							.customContactPage__form-row 
-								label(for="event") Event Details
-								select(name="event" id='event' required)
-									option(value="" disabled selected) Select Event Details
-									option(value="wedding") Wedding 
-									option(value="graduation") Graduation
-									option(value="oath-taking") Oath Taking
-									option(value="formal-party") Formal Party 
-									option(value="other") Other
+							.customizationPage--heading-box
+						
+								p.customizationPage__text Stand out in a Barong or Filipiniana made just for you. Our custom-tailored pieces are crafted with precision, tradition, and your personal style in mind.
 								
-							.customContactPage__form-row-method
-								label.contactPage__method-label Preferred Contact Method
+								ul.customizationPage__benefits--form
+									li.customizationPage__benefit
+										img(src="/img/icons/check-gold.svg", alt="")
+										p Made to measure
+									li.customizationPage__benefit
+										img(src="/img/icons/check-gold.svg", alt="")
+										p Choice of fabric and design
+									li.customizationPage__benefit
+										img(src="/img/icons/check-gold.svg", alt="")
+										p Perfect fit
+								p.customizationPage__text-sm Ready to get started? Send us your details and we’ll take it from there.
+							
+						
+						
+					.customContactPage__form
+					
+							
+							form(action="/api/v1/enquiries/customization" method='POST' class='customContactPage__form-box')
+								.customContactPage__form-row 
+									label(for="name") Name
+									input(type="text" name='name' id='name' required)
+								.customContactPage__form-row 
+									label(for="email") Email
+									input(type="email" name='email' id='email' required)
+								.customContactPage__form-row 
+									label(for="phone") Phone (optional)
+									input(type="tel" name='phone' id='phone')
+								.customContactPage__form-row 
+									label(for="outfit") Outfit Type
+									select(name="outfit" id='outfit' required)
+										option(value="" disabled selected) Select Outfit type
+										option(value="barong") Barong
+										option(value="filipiniana") Filipiniana
+										option(value="both") Both
+								.customContactPage__form-row 
+									label(for="event") Event Details
+									select(name="event" id='event' required)
+										option(value="" disabled selected) Select Event Details
+										option(value="wedding") Wedding 
+										option(value="graduation") Graduation
+										option(value="oath-taking") Oath Taking
+										option(value="formal-party") Formal Party 
+										option(value="other") Other
+									
+								.customContactPage__form-row-method
+									label.contactPage__method-label Preferred Contact Method
 
-							.customContactPage__form-method
-								.customContactPage__contact-methods
-									label(for="contact-call") Call
-									input(type="radio" name="preferredContactMethod" value="call" id="contact-call")
+								.customContactPage__form-method
+									.customContactPage__contact-methods
+										label(for="contact-call") Call
+										input(type="radio" name="preferredContactMethod" value="call" id="contact-call")
 
-								.customContactPage__contact-methods
-									label(for="contact-text") Text
-									input(type="radio" name="preferredContactMethod" value="text" id="contact-text")
+									.customContactPage__contact-methods
+										label(for="contact-text") Text
+										input(type="radio" name="preferredContactMethod" value="text" id="contact-text")
 
-								.customContactPage__contact-methods
-									label(for="contact-email") Email
-									input(type="radio" name="preferredContactMethod" value="email" id="contact-email")
-																
-							.customContactPage__form-row 
-								label(for="message"  class='enquiry-label-customization') Additional Requests
-								textarea(name="message" rows='4', cols="42", id='message' placeholder='Add any Additional Requests here')
-							.customContactPage--btn-box
-								button(type='submit' class='submit_form--button-customization') Submit Enquiry
+									.customContactPage__contact-methods
+										label(for="contact-email") Email
+										input(type="radio" name="preferredContactMethod" value="email" id="contact-email")
+																	
+								.customContactPage__form-row 
+									label(for="message"  class='enquiry-label-customization') Additional Requests
+									textarea(name="message" rows='3', cols="42", id='message' placeholder='Add any Additional Requests here')
+								.customContactPage--btn-box
+									button(type='submit' class='submit_form--button-customization') Submit Enquiry

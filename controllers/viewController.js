@@ -599,6 +599,95 @@ exports.getAccessoryPage = catchAsync(async (req, res, next) => {
 
 
 
+exports.getBagListPage = catchAsync(async (req, res, next) => {
+
+
+	const parameterFilter = {
+
+		newest: { createdAt: -1 },
+		lowest: { currentPrice: 1 },
+		highest: { currentPrice: -1 },
+		alphabet: { name: 1 },
+
+	}
+
+	const selectedOption = req.query.productSort || 'newest';
+	const sortOption = parameterFilter[req.query.productSort] || { createdAt: -1 };
+
+	let productlist = await Accessory.find().sort(sortOption).populate('category');
+
+	await Promise.all(productlist.map(async product => {
+
+		await missingDiscountCheck(product);
+	}));
+
+	res.status(200).render('bag-list-page', {
+		pageTitle: 'Bags List',
+		pageDescription: 'List of Bags',
+		canonicalUrl: `${process.env.CANONICAL_URL}bags-list`,
+		productlist,
+		selectedOption
+	});
+})
+
+
+
+
+
+exports.getBagPage = catchAsync(async (req, res, next) => {
+
+	const product = await Accessory.findOne({ slug: req.params.slug }).populate({
+		path: 'reviews',
+		select: 'user rating comment'
+	}).populate('category');
+
+	await missingDiscountCheck(product);
+
+	let hasReviewed = false;
+
+	if (req.user && product.reviews.length) {
+
+		hasReviewed = product.reviews.some(
+
+			rev => rev.user._id.toString() === req.user._id.toString()
+		);
+	}
+
+	let hasPurchased = false;
+
+	if (req.user) {
+
+		const orders = await Order.find({ user: req.user.id });
+		const productId = product._id.toString();
+
+		if (!productId || !orders) {
+
+			return;
+
+		} else {
+
+			hasPurchased = orders.some(order => order.product.some(prod => {
+
+				return prod.product?._id?.toString() === productId;
+			}))
+		}
+	}
+
+	if (!product) return next(new AppError('No product Found', 404));
+
+	res.status(200).render('accessories-page', {
+
+		pageTitle: `${product.name} | Template Website`,
+		pageDescription: 'Product Page for your website',
+		canonicalUrl: `${process.env.CANONICAL_URL}product-page/${product.slug}`,
+		product,
+		hasReviewed,
+		hasPurchased
+	});
+})
+
+
+
 
 //--------------------- Categories Page ------------------------//
 

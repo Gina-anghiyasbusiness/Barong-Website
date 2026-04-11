@@ -44,6 +44,13 @@ router.get('/barong/:slug', viewController.getBarongPage);
 
 
 
+/// bags
+
+router.get('/bag-list', viewController.getBagListPage);
+
+router.get('/bag/:slug', viewController.getBagPage);
+
+
 /// Shoes
 
 router.get('/shoe-list', viewController.getShoeListPage);

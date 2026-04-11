@@ -2116,7 +2116,7 @@ font-size: 2.4rem;
  }
 
 
-.salesPage__benefits , .customizationPage__benefits , .rentalsPage__benefits , .servicesPage__benefits {
+.salesPage__benefits , .customizationPage__benefits , .customizationPage__benefits--form,  .rentalsPage__benefits , .servicesPage__benefits {
 	display: flex;
 	flex-direction: column;
 	gap: 1.2rem;
@@ -2151,13 +2151,13 @@ font-size: 2.4rem;
 	font-weight: 500;
 }
 
-.salesPage__text , .customizationPage__text, .rentalGuidePage__text  , .rentalsPage__text , .servicesPage__text  {
+.salesPage__text , .rentalGuidePage__text  , .rentalsPage__text , .servicesPage__text  {
 	font-size: 1.6rem;
 	line-height: 1.6;
 	
 }
 
-.salesPage__benefit, .customizationPage__benefit , .rentalsPage__benefit , .servicesPage__benefit  {
+.salesPage__benefit,  .rentalsPage__benefit , .servicesPage__benefit  {
 	font-size: 1.6rem;
 }
 
@@ -2246,7 +2246,8 @@ font-size: 2.4rem;
 .salesPage__benefits li,
 .servicesPage__benefits	li,
 .customizationPage__benefits li,
-.rentalsPage__benefits li{
+.rentalsPage__benefits li,
+.customizationPage__benefits--form li{
 	
 	display: flex;
 	align-items: center;
@@ -3615,6 +3616,7 @@ background-color: #fff;
 
 
 
+
 .contactPage__form-heading  p{
 	text-align: center;
 	font-size: var(--text-small);
@@ -3830,6 +3832,31 @@ gap: 1rem;
 	
 }
 
+/* //---------------				Customizarion  Page 			---------------// */
+
+
+		.customizationPage--paragraph-box{
+			
+			display: flex;
+			
+			flex-direction: column;
+			
+			gap: 1rem;
+		}
+		
+		
+		.customizationPage__text{
+			
+			font-size: 1.4rem;
+			
+			line-height: 1.2;
+		}
+		
+		.customizationPage__benefit{
+			
+			font-size: 1.4rem;
+		}
+
 
 /* //---------------				Customizarion form Page 			---------------// */
 
@@ -3841,19 +3868,30 @@ gap: 1rem;
 	flex-direction: column;
 	gap: 1.4rem;
 }
-.customContactPage__grid {
+.contactPage__form-heading h1 {
+    font-size: var(--text-h2);
+    margin-bottom: .75rem;
+}
 
+
+.customContactPage__grid {
+	display: grid;
+	grid-template-columns: 10fr 9fr;
+	gap: 2.4rem;
+padding-top: 4rem;
+	
+	
 }
 
 .customContactPage__textbox {
 	max-width: 76rem;
-	padding: 1.2rem 2rem;
+	padding: 2.4rem 2rem 1.2rem;
 	display: flex;
 	flex-direction: column;
-	gap: 1.6rem;
+	gap: 2.8rem;
 	box-sizing: border-box;
 	align-items: center;
-	text-align: center;
+	
 }
 .customContactPage__form-section {
 	padding: 3rem 5rem 6rem 6rem;
@@ -3887,7 +3925,7 @@ gap: 1rem;
 
 .customContactPage__form {
 	margin: 0 auto;
-	width: 100%;
+	width: 87.5%;
 	max-width: 56rem;
 	display: flex;
 	align-items: center;
@@ -3914,11 +3952,13 @@ gap: 1rem;
 	margin-bottom: 1.2rem;
 }
 
+
+
 .customContactPage__form-box {
 	display: flex;
 	flex-direction: column;
-	gap: 1.3rem;
-	padding: .75rem 2rem;
+	gap: 1.2rem;
+	padding: .75rem 1.6rem;
 	width: 95%;
 	box-sizing: border-box;
 }
@@ -3931,7 +3971,7 @@ gap: 1rem;
 .customContactPage__form-row {
 	display: flex;
 	flex-direction: column;
-	gap: .75rem;
+	gap: .5rem;
 }
 
 .customContactPage__form-row label {
@@ -3955,6 +3995,19 @@ gap: 1rem;
 	font-weight: 300;
 }
 
+.customizationPage__text-sm{
+	
+	font-size: 1.4rem;
+  font-weight: 500;
+	
+}
+
+.customizationPage__benefits--form{
+	
+	margin-bottom: 2.2rem;
+}
+
+
 .customContactPage__form-row input,
 .customContactPage__form-row select,
 .customContactPage__form-row textarea {
@@ -3963,7 +4016,7 @@ gap: 1rem;
 	padding: 0 .5rem;
 	border-radius: 8px;
 	border: 1px solid rgba(20,17,11,.18);
-	font-size: 1.3rem;
+	font-size: 1.2rem;
 	background: var(--color-bg);
 }
 
