@@ -11140,6 +11140,22 @@
       showAlert("error", err.response.data.message);
     }
   };
+  var removeProductFromCart = async (removeItem, user) => {
+    try {
+      const result = await axios_default({
+        method: "DELETE",
+        url: `/api/v1/shopping/cart/${removeItem}`
+      });
+      if (result.data.status === "success") {
+        showAlert("success", "Product Deleted from Cart successfully!!");
+        window.setTimeout(() => {
+          location.assign(`/my-account/${user}?show=my-account-cart`);
+        }, 2500);
+      }
+    } catch (err) {
+      showAlert("error", err);
+    }
+  };
   var removeProductFromWishlist = async (removeItem, user) => {
     try {
       const result = await axios_default({
@@ -11154,6 +11170,24 @@
       }
     } catch (err) {
       showAlert("error", err);
+    }
+  };
+  var updateCart = async (cartId, quantity, user) => {
+    try {
+      const result = await axios_default({
+        method: "PATCH",
+        url: `/api/v1/shopping/cart/${cartId}/update-cart-qty`,
+        data: { quantity }
+      });
+      if (result.data.status === "success") {
+        showAlert("success", "Quantity Changed successfully!!");
+        window.setTimeout(() => {
+          location.assign(`/my-account/${user}?show=my-account-cart`);
+        }, 2500);
+      }
+    } catch (err) {
+      console.error(err);
+      showAlert("error", err.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -28553,13 +28587,12 @@
       const qty = qtyInput?.value || 1;
       const userAddress = buyItNowBtnId.dataset.userObject;
       const userArray = JSON.parse(userAddress);
-      const isNonVariantProduct = productType === "accessory" || productType === "bag";
-      if (!isNonVariantProduct && !selectedVariant) {
+      if (productType !== "accessory" && productType !== "bag" && !selectedVariant) {
         showAlert("error", "Please select a size first");
         return;
       }
-      const variant = isNonVariantProduct ? null : selectedVariant;
-      buyItNowCheckout(productId, qty, variant);
+      selectedVariant = productType === "accessory" || productType === "bag" ? null : selectedVariant;
+      buyItNowCheckout(productId, qty, selectedVariant);
     });
   }
   var buyItNowBtnGuest = document.getElementById("buy-it-now-guest");
@@ -28569,13 +28602,12 @@
       const productId = buyItNowBtnGuest.dataset.productId;
       const productType = buyItNowBtnGuest.dataset.productType;
       const qty = 1;
-      const isNonVariantProduct = productType === "accessory" || productType === "bag";
-      if (!isNonVariantProduct && !selectedVariant) {
+      if (productType !== "accessory" && productType !== "bag" && !selectedVariant) {
         showAlert("error", "Please select a size first");
         return;
       }
-      const variant = isNonVariantProduct ? null : selectedVariant;
-      buyItNowGuestCheckout(productId, qty, variant);
+      selectedVariant = productType === "accessory" || productType === "bag" ? null : selectedVariant;
+      buyItNowGuestCheckout(productId, qty, selectedVariant);
     });
   }
   var buyItNowBtn = document.querySelectorAll(".wishlist-btn--bin");
@@ -28605,12 +28637,11 @@
       const productType = addToCartBtnId.dataset.productType;
       const qtyInput = document.getElementById("add-to-cart-qty");
       const qty = qtyInput?.value || 1;
-      const isNonVariantProduct = productType === "accessory" || productType === "bag";
-      if (!isNonVariantProduct && !selectedVariant) {
+      if (productType !== "accessory" && productType !== "bag" && !selectedVariant) {
         showAlert("error", "Please select a size first");
         return;
       }
-      const variant = isNonVariantProduct ? null : selectedVariant;
+      const variant = productType === "accessory" || productType === "bag" ? null : selectedVariant;
       addProductToUser(id, variant, slug, "cart", qty);
     });
   }
@@ -28624,13 +28655,36 @@
         const productType = btn.dataset.productType;
         const qtyInput = btn.closest(".myAccount__cart--item").querySelector(".add-to-cart-qty");
         const qty = qtyInput?.value || 1;
-        const isNonVariantProduct = productType === "accessory" || productType === "bag";
-        if (!isNonVariantProduct && !selectedVariant) {
+        if (productType !== "accessory" && productType !== "bag" && !selectedVariant) {
           showAlert("error", "Please select a size first");
           return;
         }
-        const variant = isNonVariantProduct ? null : selectedVariant;
+        const variant = productType === "accessory" || productType === "bag" ? null : selectedVariant;
         addProductToUser(id, variant, slug, "cart", qty);
+      });
+    });
+  }
+  document.querySelectorAll(".update-cart-quantity").forEach((form) => {
+    form.addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const cartId = this.dataset.cartId;
+      const user = this.dataset.user;
+      const quantity = parseInt(this.querySelector('input[name="quantity"]').value);
+      if (!cartId || !quantity || quantity < 1) {
+        showAlert("error", "Invalid quantity");
+        return;
+      }
+      updateCart(cartId, quantity, user);
+    });
+  });
+  function enableRemoveFromCart() {
+    document.querySelectorAll(".remove-cart--item").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const removeItem = btn.dataset.remove;
+        const user = btn.dataset.user;
+        if (confirm("Are you sure you want to remove this Product from cart?")) {
+          removeProductFromCart(removeItem, user);
+        }
       });
     });
   }
@@ -28642,12 +28696,11 @@
       const slug = addToWishlistBtn.dataset.productSlug;
       const productType = addToWishlistBtn.dataset.productType;
       const qty = document.getElementById("add-to-cart-qty")?.value || 1;
-      const isNonVariantProduct = productType === "accessory" || productType === "bag";
-      if (!isNonVariantProduct && !selectedVariant) {
+      if (productType !== "accessory" && productType !== "bag" && !selectedVariant) {
         showAlert("error", "Please select a size first");
         return;
       }
-      const variant = isNonVariantProduct ? null : selectedVariant;
+      const variant = productType === "accessory" || productType === "bag" ? null : selectedVariant;
       addProductToUser(id, variant, slug, "wishlist", qty);
     });
   }
