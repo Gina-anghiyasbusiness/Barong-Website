@@ -1,5 +1,6 @@
 const SpecProd = require('../models/specProdModel');
 const Accessory = require('../models/accessoryModel');
+const Bag = require('../models/bagModel');
 const Shoe = require('../models/shoeModel');
 const CounterProd = require('../models/counterProduct');
 
@@ -472,12 +473,98 @@ exports.createAccessories = catchAsync(async (req, res, next) => {
 });
 
 
+
+
+
 exports.updateAccessory = factory.updateOne(Accessory);
 exports.deleteAccs = factory.deleteOne(Accessory);
+
+
 
 exports.discontinueAccs = catchAsync(async (req, res, next) => {
 
 	const discontinue = await Accessory.findByIdAndUpdate(
+
+		req.params.id,
+
+		{ discontinued: true },
+		{
+			new: true,
+			runValidators: true
+		}
+	);
+
+	if (!discontinue) {
+
+		return next(new AppError('No product found with that ID', 404));
+	}
+
+	res.status(200).json({
+		status: 'success',
+		data: {
+			discontinue
+		}
+	});
+});
+
+
+
+
+///     Bag Functionality			///
+
+
+exports.createBag = catchAsync(async (req, res, next) => {
+
+	const counterProd = await CounterProd.findOneAndUpdate(
+
+		{ name: 'product' },
+		{ $inc: { seq: 1 } },
+		{ new: true, upsert: true }
+	)
+
+	const productSku = String(counterProd.seq).padStart(4, '0');
+
+	if (req.body.discount === '') req.body.discount = null;
+	if (req.body.category === '') req.body.category = null;
+
+	if (req.file) req.body.imageCover = req.file.filename;
+
+	const data = filterObj(req.body,
+
+		'name',
+		'description',
+		'originalPrice',
+		'imageCover',
+		'imageUrls',
+		'category',
+		'tags',
+		'color'
+	);
+
+	data.productSku = productSku;
+
+	const newProduct = await Bag.create(data);
+
+	res.status(200).json({
+		status: 'success',
+		data: {
+			product: newProduct
+		}
+	});
+});
+
+
+
+exports.updateBag = factory.updateOne(Bag);
+exports.deleteBag = factory.deleteOne(Bag);
+
+
+
+
+
+exports.discontinueBag = catchAsync(async (req, res, next) => {
+
+	const discontinue = await Bag.findByIdAndUpdate(
 
 		req.params.id,
 

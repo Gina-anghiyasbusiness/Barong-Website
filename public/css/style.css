@@ -1553,6 +1553,18 @@ strong
 	
 }
 
+.productList__bags {
+		
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(15rem ,18rem));
+	align-items: center;
+	justify-content: center;
+	gap:3.2rem;
+
+	}
+
+
+
 .productList--heading-box{
 	
 	padding:3rem 0 3rem;
@@ -1586,6 +1598,15 @@ strong
 .productList-box--img {
 	
 	width: 100%;	
+}
+
+
+	.productList__bag-box--img 	{
+	
+	width: 100%;	
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 
@@ -2030,6 +2051,21 @@ strong
 }
 
 
+.watermark-btm--bg {
+	
+	background-image:
+  radial-gradient(circle at 50% 50%,
+    rgba(255,255,255,0.95) 0%,  
+    rgba(255,255,255,0.94) 100%
+  ), url('/img/logo/default-logo.png');
+		
+	background-repeat: no-repeat, no-repeat;
+  background-position: top ;
+	background-size: 140% 140%,min(1200px, 90vw) ;	
+
+}
+
+
 .homePage-contact--cta{
 	
 	text-align:center;
@@ -2066,6 +2102,8 @@ font-size: 2.4rem;
 	font-size: var(--text-xlg);
 	padding: 1.2rem 3.2rem;
 }
+
+
 
 /* //--------------					Static Sales / services Pages 				-----------// */
 
@@ -2645,21 +2683,42 @@ font-size: 2.4rem;
 	display: none;
 }
 
+.bag-list--ul-color , #bag-list--ul-color{
+	
+	display: none;
+}
+
+.bag-list--ul-category , #bag-list--ul-category{
+	
+	display: none;
+}
+
+
 .barong-list__filter-category #barong-list--ul-category.display--filter-list {
 	display: flex;
 }
 
-	.barong-list__filter-clear {
-		
-		/* margin-bottom: 1rem; */
-		
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-		
-		
-		
-	}
+.barong-list__filter-category #bag-list--ul-category.display--filter-list {
+	display: flex;
+}
+
+.barong-list__filter-color #bag-list--ul-color.display--filter-list {
+	display: flex;
+}
+
+
+
+.barong-list__filter-clear {
+	
+	/* margin-bottom: 1rem; */
+	
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	
+	
+	
+}
 	
 	.barong-list__filter-clear  a:link,
 	.barong-list__filter-clear  a:visited{
@@ -2802,16 +2861,30 @@ font-size: 2.4rem;
 }
 
 
-.shoeListPage__img , .accsListPage__img{
+.shoeListPage__img , .accsListPage__img , .bagsListPage__img{
 	
-  width: 100%;
-  height: 100%;          
-  object-fit: cover;
+	
+	object-fit: cover;
   object-position: top;
   display: block;
   overflow: hidden;
 }
 
+
+.shoeListPage__img , .accsListPage__img{
+	
+  width: 100%;
+  height: 100%;          
+	
+}
+
+.bagsListPage__img{
+	
+	width: 90%;
+	height: 90%;          
+	
+	
+}
 
 
 /* //-------------						Product Page 					-------------// */
@@ -6687,6 +6760,8 @@ section.admin__home--grid {
 		border-radius: 8px;
 		
 		width: 100%;
+		
+		text-align: center;
 	}
 
 
@@ -6884,7 +6959,7 @@ h2.product__item--heading{
 }
 
 form.product__form,	form.product__form--create,
-form.shoe__form--create , form.shoe__form, form.accs__form--create , form.accs__form{
+form.shoe__form--create , 	form.bag__form , 	form.bag__form--create, form.shoe__form, form.accs__form--create , form.accs__form{
 	
 	display: flex;
 	flex-direction: column;
@@ -6903,7 +6978,7 @@ form.product__form{
 }
 
 
-form.product__form--create ,form.shoe__form--create, form.accs__form--create{
+form.product__form--create, 	form.bag__form--create ,form.shoe__form--create, form.accs__form--create{
 	width: 50%;
 	
 }
@@ -7333,7 +7408,7 @@ section.admin__create {
 	justify-content:center;
 }
 
-#deactivateUser,#deactivateCategory, #discontinue-btn, #discontinue-shoes-btn, #discontinue-accs-btn {
+#deactivateUser,#deactivateCategory, #discontinue-btn, #discontinue-shoes-btn, #discontinue-accs-btn ,#discontinue-bag-btn {
 	width: 50%;
 	background-color: rgba(255, 0, 0, 0.423);	
 	cursor:pointer;

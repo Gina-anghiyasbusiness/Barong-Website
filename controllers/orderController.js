@@ -2,6 +2,7 @@ const Order = require('./../models/orderModel');
 const Transaction = require('./../models/transactionModel');
 const SpecProd = require('./../models/specProdModel');
 const Accessory = require('../models/accessoryModel');
+const Bag = require('../models/bagModel');
 const Shoe = require('../models/shoeModel');
 const Discount = require('./../models/discountModel');
 const User = require('./../models/userModel');
@@ -39,6 +40,10 @@ const updateStockLevels = async (productId, variantId, qty) => {
 
 	if (!product) {
 		product = await Shoe.findById(productId);
+	}
+
+	if (!product) {
+		product = await Bag.findById(productId);
 	}
 
 	if (!product) {
@@ -105,6 +110,11 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 	if (!buyItNowProduct) {
 
 		buyItNowProduct = await Shoe.findById(product).populate('category');
+	}
+
+	if (!buyItNowProduct) {
+
+		buyItNowProduct = await SBaghoe.findById(product).populate('category');
 	}
 
 	if (!buyItNowProduct) {
@@ -222,6 +232,10 @@ exports.cartItemsPayPal = catchAsync(async (req, res, next) => {
 
 		if (!product) {
 			product = await Shoe.findById(item.product.id).populate('category');
+		}
+
+		if (!product) {
+			product = await Bag.findById(item.product.id).populate('category');
 		}
 
 		if (!product) {
@@ -393,6 +407,10 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 				}
 
 				if (!product) {
+					product = await Bag.findById(item.product.id).populate('category');
+				}
+
+				if (!product) {
 					product = await Accessory.findById(item.product.id).populate('category');
 				}
 
@@ -462,6 +480,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 			let foundProduct = await SpecProd.findById(product).populate('category');
 			if (!foundProduct) foundProduct = await Shoe.findById(product).populate('category');
+			if (!foundProduct) foundProduct = await Bag.findById(product).populate('category');
 			if (!foundProduct) foundProduct = await Accessory.findById(product).populate('category');
 			if (!foundProduct) return next(new AppError('Product not found', 404));
 
@@ -616,6 +635,11 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 	if (!buyItNowProduct) {
 
 		buyItNowProduct = await Shoe.findById(product).populate('category');
+	}
+
+	if (!buyItNowProduct) {
+
+		buyItNowProduct = await Bag.findById(product).populate('category');
 	}
 
 	if (!buyItNowProduct) {
@@ -831,6 +855,10 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 	}
 
 	if (!buyItNowProduct) {
+		buyItNowProduct = await Bag.findById(product).populate('category');
+	}
+
+	if (!buyItNowProduct) {
 		buyItNowProduct = await Accessory.findById(product).populate('category');
 	}
 
@@ -970,6 +998,10 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 		if (!foundProduct) {
 			foundProduct = await Shoe.findById(item.product).populate('category');
+		}
+
+		if (!foundProduct) {
+			foundProduct = await Bag.findById(item.product).populate('category');
 		}
 
 		if (!foundProduct) {

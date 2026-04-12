@@ -292,11 +292,26 @@ router.get('/admin/be_barong-search', viewController.getBarongSearch);
 /// Shoes	
 
 
-router.get('/admin/be_shoes-list', viewController.getShoesList);
+// router.get('/admin/be_shoes-list', viewController.getShoesList);
 
-router.get('/admin/be_shoe-item/:slug', viewController.getShoe);
+// router.get('/admin/be_shoe-item/:slug', viewController.getShoe);
 
-router.get('/admin/be_shoes-create', viewController.createShoesPage);
+// router.get('/admin/be_shoes-create', viewController.createShoesPage);
+
+
+
+/// Bags	
+
+
+router.get('/admin/be_bag-list', viewController.getBagList);
+
+router.get('/admin/be_bag-item/:slug', viewController.getBag);
+
+router.get('/admin/be_bag-create', viewController.createBagPage);
+
+router.get('/admin/be_bag-search', viewController.getBagSearch);
+
+
 
 
 
@@ -310,6 +325,7 @@ router.get('/admin/be_accessories-item/:slug', viewController.getAccessory);
 
 router.get('/admin/be_accessories-create', viewController.createAccessoriesPage);
 
+router.get('/admin/be_accessories-search', viewController.getAccessorySearch);
 
 
 

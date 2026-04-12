@@ -10,6 +10,7 @@ const missingDiscountCheckLoop = require('../utilities/missingDiscountCheckLoop'
 
 const SpecProd = require('./../models/specProdModel');
 const Shoe = require('./../models/shoeModel');
+const Bag = require('../models/bagModel');
 const Accessory = require('../models/accessoryModel');
 const User = require('./../models/userModel');
 const Category = require('./../models/categoryModel');
@@ -124,9 +125,41 @@ const formVariants = async (variant, desiredOrder = null) => {
 
 /// top level (colors)
 
+
 const formFields = async (field, desiredOrder = null) => {
 
 	const fieldSearch = await SpecProd.aggregate([
+
+		{ $group: { _id: `$${field}` } }
+	]);
+
+	const arr = fieldSearch.map(v => v._id).filter(Boolean);
+
+	if (!desiredOrder) return arr;
+
+	return desiredOrder.filter(v => arr.includes(v));
+};
+
+
+
+const formFieldsBags = async (field, desiredOrder = null) => {
+
+	const fieldSearch = await Bag.aggregate([
+
+		{ $group: { _id: `$${field}` } }
+	]);
+
+	const arr = fieldSearch.map(v => v._id).filter(Boolean);
+
+	if (!desiredOrder) return arr;
+
+	return desiredOrder.filter(v => arr.includes(v));
+};
+
+
+const formFieldsAccs = async (field, desiredOrder = null) => {
+
+	const fieldSearch = await Accessory.aggregate([
 
 		{ $group: { _id: `$${field}` } }
 	]);
@@ -240,7 +273,9 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 		.sort(sortOption)
 		.populate('category');
 
-
+	await Promise.all(productlist.map(async product => {
+		await missingDiscountCheck(product);
+	}));
 
 	res.status(200).render('barong-list-page', {
 		pageTitle: 'Product List',
@@ -471,64 +506,89 @@ exports.getShoePage = catchAsync(async (req, res, next) => {
 
 
 
+
 exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 
-
-	///			 Sort Results			///
+	/// Sort Results ///
 
 	const parameterFilter = {
-
 		newest: { createdAt: -1 },
 		lowest: { currentPrice: 1 },
 		highest: { currentPrice: -1 },
-		alphabet: { name: 1 },
-
-	}
+		alphabet: { name: 1 }
+	};
 
 	const selectedOption = req.query.productSort || 'newest';
 	const sortOption = parameterFilter[req.query.productSort] || { createdAt: -1 };
 
 
-	///			Display Sizes in dropdown			///
+	/// Display Colors in dropdown ///
+
+	const desiredColorOrder = [
+		'white',
+		'black',
+		'blue',
+		'red',
+		'green',
+		'yellow',
+		'pink',
+		'purple',
+		'orange',
+		'grey',
+		'brown'
+	];
+
+	const colorList = await formFieldsAccs('color', desiredColorOrder);
 
 
-	const desiredSizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '6', '8', '10', '12', '14', '16', '18'];
+	/// Display Category in dropdown ///
 
-	const sizeList = await formVariants('size', desiredSizeOrder);
+	const desiredCategory = ['Premium', 'Standard'];
+
+	const categoryDocs = await Category.find({
+		name: { $in: desiredCategory }
+	}).select('name').lean();
+
+	const categoryList = desiredCategory
+		.map(name => categoryDocs.find(category => category.name === name))
+		.filter(Boolean);
 
 
-	///			 Filter By Size			///
+	/// Filtering ///
 
-	const size = req.query.productSize;
+	const selectedColor = req.query.color;
+	const selectedcategory = req.query.category;
 
-	let productlist;
+	const queryObj = {};
 
-	if (!size) {
+	if (selectedColor) {
+		queryObj.color = selectedColor;
+	}
 
-		productlist = await Accessory.find().sort(sortOption).populate('category');
+	if (selectedcategory) {
+		queryObj.category = selectedcategory;
+	}
 
-	} else productlist = await Accessory.find({ 'variants': { $elemMatch: { size: size, inStock: { $gt: 0 } } } }).sort(sortOption).populate('category');
-
+	let productlist = await Accessory.find(queryObj)
+		.sort(sortOption)
+		.populate('category');
 
 	await Promise.all(productlist.map(async product => {
-
 		await missingDiscountCheck(product);
-
 	}));
 
 	res.status(200).render('accessories-list-page', {
 		pageTitle: 'Accessories List',
-		pageDescription: 'List of Shoes',
+		pageDescription: 'List of Accessories',
 		canonicalUrl: `${process.env.CANONICAL_URL}accessories-list`,
 		productlist,
-		sizeList,
-		selectedOption,
-		selectedSize: size || ''  // ← add this
+		colorList,
+		categoryList,
+		selectedColor,
+		selectedcategory,
+		selectedOption
 	});
-})
-
-
-
+});
 
 
 
@@ -598,26 +658,66 @@ exports.getAccessoryPage = catchAsync(async (req, res, next) => {
 
 
 
+//------------------  Bag list  Page -----------------------//
+
+
 
 exports.getBagListPage = catchAsync(async (req, res, next) => {
 
-
 	const parameterFilter = {
-
 		newest: { createdAt: -1 },
 		lowest: { currentPrice: 1 },
 		highest: { currentPrice: -1 },
-		alphabet: { name: 1 },
-
-	}
+		alphabet: { name: 1 }
+	};
 
 	const selectedOption = req.query.productSort || 'newest';
 	const sortOption = parameterFilter[req.query.productSort] || { createdAt: -1 };
 
-	let productlist = await Accessory.find().sort(sortOption).populate('category');
+	const desiredColorOrder = [
+		'white',
+		'black',
+		'blue',
+		'red',
+		'green',
+		'yellow',
+		'pink',
+		'purple',
+		'orange',
+		'grey',
+		'brown'
+	];
+
+	const colorList = await formFieldsBags('color', desiredColorOrder);
+
+	const desiredCategory = ['Premium', 'Standard'];
+
+	const categoryDocs = await Category.find({
+		name: { $in: desiredCategory }
+	}).select('name').lean();
+
+	const categoryList = desiredCategory
+		.map(name => categoryDocs.find(category => category.name === name))
+		.filter(Boolean);
+
+	const selectedColor = req.query.color;
+	const selectedcategory = req.query.category;
+
+	const queryObj = {};
+
+	if (selectedColor) {
+		queryObj.color = selectedColor;
+	}
+
+	if (selectedcategory) {
+		queryObj.category = selectedcategory;
+	}
+
+	let productlist = await Bag.find(queryObj)
+		.sort(sortOption)
+		.populate('category');
 
 	await Promise.all(productlist.map(async product => {
-
 		await missingDiscountCheck(product);
 	}));
 
@@ -626,17 +726,20 @@ exports.getBagListPage = catchAsync(async (req, res, next) => {
 		pageDescription: 'List of Bags',
 		canonicalUrl: `${process.env.CANONICAL_URL}bags-list`,
 		productlist,
+		colorList,
+		categoryList,
+		selectedColor,
+		selectedcategory,
 		selectedOption
 	});
-})
-
+});
 
 
 
 
 exports.getBagPage = catchAsync(async (req, res, next) => {
 
-	const product = await Accessory.findOne({ slug: req.params.slug }).populate({
+	const product = await Bag.findOne({ slug: req.params.slug }).populate({
 		path: 'reviews',
 		select: 'user rating comment'
 	}).populate('category');
@@ -675,7 +778,7 @@ exports.getBagPage = catchAsync(async (req, res, next) => {
 
 	if (!product) return next(new AppError('No product Found', 404));
 
-	res.status(200).render('accessories-page', {
+	res.status(200).render('bag-page', {
 
 		pageTitle: `${product.name} | Template Website`,
 		pageDescription: 'Product Page for your website',
@@ -902,6 +1005,11 @@ exports.getAccountPage = catchAsync(async (req, res, next) => {
 			}
 
 			if (!product) {
+				product = await Bag.findById(item.product).populate('category');
+				if (product) productType = 'bag';
+			}
+
+			if (!product) {
 				product = await Accessory.findById(item.product).populate('category');
 				if (product) productType = 'accessory';
 			}
@@ -956,6 +1064,10 @@ exports.getAccountPage = catchAsync(async (req, res, next) => {
 
 			if (!productDoc) {
 				productDoc = await Shoe.findById(item.product);
+			}
+
+			if (!productDoc) {
+				productDoc = await Bag.findById(item.product);
 			}
 
 			if (!productDoc) {
@@ -1093,6 +1205,10 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 		}
 
 		if (!product) {
+			product = await Bag.findById(productId).populate('category');
+		}
+
+		if (!product) {
 			product = await Accessory.findById(productId).populate('category');
 		}
 
@@ -1168,6 +1284,10 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 
 			if (!foundProduct) {
 				foundProduct = await Shoe.findById(item.product._id).populate('category');
+			}
+
+			if (!foundProduct) {
+				foundProduct = await Bag.findById(item.product._id).populate('category');
 			}
 
 			if (!foundProduct) {
@@ -1315,6 +1435,11 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 
 	if (!product) {
 
+		product = await Bag.findById(productId).populate('category');
+	}
+
+	if (!product) {
+
 		product = await Accessory.findById(productId).populate('category');
 	}
 
@@ -1441,6 +1566,10 @@ exports.getUserOrderPage = catchAsync(async (req, res, next) => {
 
 		if (!productDoc) {
 			productDoc = await Shoe.findById(item.product);
+		}
+
+		if (!productDoc) {
+			productDoc = await Bag.findById(item.product);
 		}
 
 		if (!productDoc) {
@@ -1783,6 +1912,97 @@ exports.createShoesPage = catchAsync(async (req, res) => {
 
 
 
+///		Bags	
+
+
+exports.getBagList = catchAsync(async (req, res) => {
+
+	const productList = await Bag.find()
+		.populate('discount')
+		.populate({
+			path: 'category',
+			select: 'name'
+		})
+		.sort({ createdAt: -1 });
+
+
+	res.status(200).render('admin/be_bag-list', {
+		title: 'Admin-Bag-Products',
+		productList
+
+	})
+})
+
+
+
+exports.getBag = catchAsync(async (req, res) => {
+
+	const product = await Bag.findOne({ slug: req.params.slug }).populate(
+		{
+			path: 'category',
+			select: 'name'
+		}
+	);
+
+	const categories = await Category.find().select('name');
+	const discounts = await Discount.find().select('code');
+
+	res.status(200).render('admin/be_bag', {
+
+		title: `Admin-${product.name}`,
+		product,
+		categories,
+		discounts
+	})
+})
+
+
+
+exports.createBagPage = catchAsync(async (req, res) => {
+
+	const categories = await Category.find().select('name');
+	// const discounts = await Discount.find().select('code');
+
+	const product = {};
+
+	res.status(200).render('admin/be_bag-create', {
+
+		title: 'Admin- Create Bag',
+		product,
+		categories,
+		// discounts
+	})
+})
+
+
+
+exports.getBagSearch = catchAsync(async (req, res) => {
+
+	const productSku = req.query.productSearch;
+
+	const product = await Bag.findOne({ productSku }).populate(
+		{
+			path: 'category',
+			select: 'name'
+		});
+
+	const categories = await Category.find().select('name');
+	const discounts = await Discount.find().select('code');
+
+
+	res.status(200).render('admin/be_bag', {
+
+		title: `Admin-Bag`,
+		product,
+		categories,
+		discounts
+	})
+})
+
+
+
+
+
 ///		Accessories	
 
 
@@ -1845,6 +2065,30 @@ exports.createAccessoriesPage = catchAsync(async (req, res) => {
 	})
 })
 
+
+
+exports.getAccessorySearch = catchAsync(async (req, res) => {
+
+	const productSku = req.query.productSearch;
+
+	const product = await Accessory.findOne({ productSku }).populate(
+		{
+			path: 'category',
+			select: 'name'
+		});
+
+	const categories = await Category.find().select('name');
+	const discounts = await Discount.find().select('code');
+
+
+	res.status(200).render('admin/be_accessory', {
+
+		title: `Admin-Accesory`,
+		product,
+		categories,
+		discounts
+	})
+})
 
 
 

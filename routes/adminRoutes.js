@@ -68,6 +68,29 @@ router.route('/shoes/:id')
 
 
 
+///	 Bags 	
+
+
+router.route('/bags')
+	.get(productController.getAllProducts)
+	.post(
+		productController.uploadProductImages,
+		productController.resizeOtherImages,
+		productController.createBag);
+
+
+router.route('/bags/:id')
+	.get(productController.getProduct)
+	.patch(
+		productController.uploadProductImages,
+		productController.resizeOtherImages,
+		productController.updateBag)
+	.delete(
+		authController.restrictTo('supervisor', 'owner'),
+		productController.deleteBag);
+
+
+
 ///	 Accessories 	
 
 
@@ -108,6 +131,10 @@ router.route('/barongs/discontinued/:id')
 
 router.route('/shoes/discontinued/:id')
 	.patch(productController.discontinueShoes);
+
+
+router.route('/bags/discontinued/:id')
+	.patch(productController.discontinueBag);
 
 
 router.route('/accessories/discontinued/:id')

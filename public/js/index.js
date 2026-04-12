@@ -14,6 +14,8 @@ import { updateProductDB, createProductDB, discontinueProduct } from './barongs'
 import { createShoesDB, updateShoeDB, discontinueShoes } from './shoes';
 import { createAccessoriesDB, updateAccessoriesDB, discontinueAccs } from './accessories';
 
+import { createBagDB, updateBagDB, discontinueBag } from './bags';
+
 import { createCategoryDB, updateCategoryDB, deactivateCategoryDB } from './category';
 
 import { userUpdateSettings, userUpdateAddress, userNewAddress, userdeleteAddress } from './frontEndUsers';
@@ -476,6 +478,8 @@ if (cancelBtn && reviewBox) {
 ////------------ Reusable Product	Variants Function- ALL 	-----------////
 
 
+
+
 let selectedVariant = null;
 
 document.querySelectorAll('.product__size--btn')
@@ -495,10 +499,14 @@ document.querySelectorAll('.product__size--btn')
 	})
 
 
+
+
 ////------------------------- ---------------- ----------------------////
 
 
 
+
+//------------------------------------ --------------------------//
 
 ///								Buy It Now								///
 
@@ -507,15 +515,270 @@ document.querySelectorAll('.product__size--btn')
 
 
 
+// const buyItNowBtnId = document.getElementById('buy-it-now');
+
+
+// if (buyItNowBtnId) {
+
+// 	buyItNowBtnId.addEventListener('click', async e => {
+
+// 		e.preventDefault();
+
+
+// 		const productId = buyItNowBtnId.dataset.productId;
+// 		const productType = buyItNowBtnId.dataset.productType;
+// 		const qtyInput = document.getElementById('add-to-cart-qty');
+// 		const qty = qtyInput?.value || 1;
+
+// 		const userAddress = buyItNowBtnId.dataset.userObject;
+// 		const userArray = JSON.parse(userAddress);
+
+// 		if (productType !== 'accessory' && !selectedVariant) {
+
+// 			showAlert('error', 'Please select a size first');
+
+// 			return;
+// 		}
+
+// 		selectedVariant = productType === 'accessory' ? null : selectedVariant;
+
+// 		buyItNowCheckout(productId, qty, selectedVariant);
+// 	})
+// }
+
+
+// ///		Guest
+
+// const buyItNowBtnGuest = document.getElementById('buy-it-now-guest');
+
+// if (buyItNowBtnGuest) {
+
+// 	buyItNowBtnGuest.addEventListener('click', async e => {
+
+// 		e.preventDefault();
+
+// 		const productId = buyItNowBtnGuest.dataset.productId;
+// 		const productType = buyItNowBtnGuest.dataset.productType;
+// 		const qty = 1;
+
+// 		if (productType !== 'accessory' && !selectedVariant) {
+
+// 			showAlert('error', 'Please select a size first');
+
+// 			return;
+// 		}
+
+// 		selectedVariant = productType === 'accessory' ? null : selectedVariant;
+
+// 		buyItNowGuestCheckout(productId, qty, selectedVariant);
+// 	})
+// }
+
+
+
+
+
+// ///		Buy It Now - Wishlist page	///
+
+
+
+// const buyItNowBtn = document.querySelectorAll('.wishlist-btn--bin');
+
+// if (buyItNowBtn) {
+
+// 	buyItNowBtn.forEach(btn => {
+
+// 		btn.addEventListener('click', async e => {
+
+// 			e.preventDefault();
+
+// 			const productId = btn.dataset.productId;
+
+// 			const qtyInput = btn.closest('.myAccount__cart--item').querySelector('.add-to-cart-qty');
+// 			const qty = parseInt(qtyInput?.value) || 1;
+
+// 			const userAddress = btn.dataset.userObject;
+// 			const userArray = JSON.parse(userAddress);
+
+// 			if (!qty || userArray.length < 1 || !productId) {
+
+// 				return showAlert('error', 'Please add an address first');
+// 			}
+
+// 			selectedVariant = selectedVariant || 'null';
+
+// 			buyItNowCheckout(productId, qty, selectedVariant);
+// 		})
+// 	})
+// }
+
+
+
+// ///				Add To Cart - Single product Page			///
+
+
+// const addToCartBtnId = document.getElementById('add-to-cart');
+
+// if (addToCartBtnId) {
+
+// 	addToCartBtnId.addEventListener('click', function (e) {
+
+// 		e.preventDefault();
+
+// 		const id = addToCartBtnId.dataset.productId;
+// 		const slug = addToCartBtnId.dataset.productSlug;
+// 		const productType = addToCartBtnId.dataset.productType;
+
+// 		const qtyInput = document.getElementById('add-to-cart-qty');
+// 		const qty = qtyInput?.value || 1;
+
+
+// 		////----- 	Variants ------////
+
+// 		if (productType !== 'accessory' && !selectedVariant) {
+
+// 			showAlert('error', 'Please select a size first');
+
+// 			return;
+// 		}
+
+// 		const variant = productType === 'accessory' ? null : selectedVariant;
+
+// 		addProductToUser(id, variant, slug, 'cart', qty);
+
+// 		////-------- ------- -------////
+// 	})
+// }
+
+
+
+
+// ///				Add To Cart - Wishlist Page			///
+
+
+// const addToCartBtns = document.querySelectorAll('.wishlist-btn--atc');
+
+
+// if (addToCartBtns.length > 0) {
+
+// 	addToCartBtns.forEach(btn => {
+
+// 		btn.addEventListener('click', function (e) {
+
+// 			e.preventDefault();
+
+// 			const id = btn.dataset.productId;        // ✅ Use btn
+// 			const slug = btn.dataset.productSlug;    // ✅ Use btn
+// 			const productType = btn.dataset.productType; // ✅ Use btn
+
+
+// 			const qtyInput = btn.closest('.myAccount__cart--item').querySelector('.add-to-cart-qty');
+// 			const qty = qtyInput?.value || 1;
+
+// 			if (productType !== 'accessory' && !selectedVariant) {
+// 				showAlert('error', 'Please select a size first');
+// 				return;
+// 			}
+
+// 			const variant = productType === 'accessory' ? null : selectedVariant;
+
+// 			addProductToUser(id, variant, slug, 'cart', qty);
+// 		});
+// 	});
+// }
+
+
+
+// ///			Update Cart	Quantity	///
+
+
+// document.querySelectorAll('.update-cart-quantity').forEach(form => {
+
+// 	form.addEventListener('submit', async function (e) {
+
+// 		e.preventDefault();
+
+// 		const cartId = this.dataset.cartId;
+// 		const user = this.dataset.user;
+
+// 		const quantity = parseInt(this.querySelector('input[name="quantity"]').value);
+
+// 		if (!cartId || !quantity || quantity < 1) {
+
+// 			showAlert('error', 'Invalid quantity');
+
+// 			return;
+// 		}
+
+// 		updateCart(cartId, quantity, user);
+// 	});
+// });
+
+
+
+// ///			Remove From Cart	(function for button usage)		///
+
+
+// function enableRemoveFromCart() {
+
+// 	document.querySelectorAll('.remove-cart--item').forEach(btn => {
+
+// 		btn.addEventListener('click', () => {
+
+// 			const removeItem = btn.dataset.remove;
+// 			const user = btn.dataset.user;
+
+// 			if (confirm('Are you sure you want to remove this Product from cart?')) {
+
+// 				removeProductFromCart(removeItem, user);
+
+// 			}
+// 		});
+// 	});
+// }
+
+
+// ///					 	Add To Wishlist			 			///
+
+
+// const addToWishlistBtn = document.getElementById('add-to-wishlist');
+
+// if (addToWishlistBtn) {
+
+// 	addToWishlistBtn.addEventListener('click', (e) => {
+
+// 		e.preventDefault();
+
+// 		const id = addToWishlistBtn.dataset.productId;
+// 		const slug = addToWishlistBtn.dataset.productSlug;
+// 		const productType = addToWishlistBtn.dataset.productType; // Get the type
+// 		const qty = document.getElementById('add-to-cart-qty')?.value || 1;
+
+
+// 		if (productType !== 'accessory' && !selectedVariant) {
+// 			showAlert('error', 'Please select a size first');
+// 			return;
+// 		}
+
+
+// 		const variant = productType === 'accessory' ? null : selectedVariant;
+
+// 		addProductToUser(id, variant, slug, 'wishlist', qty);
+// 	})
+// }
+
+
+//------------------------------------ --------------------------//
+
+
+///		Buy It Now - Single product Page	///
+
+
 const buyItNowBtnId = document.getElementById('buy-it-now');
 
-
 if (buyItNowBtnId) {
-
 	buyItNowBtnId.addEventListener('click', async e => {
-
 		e.preventDefault();
-
 
 		const productId = buyItNowBtnId.dataset.productId;
 		const productType = buyItNowBtnId.dataset.productType;
@@ -525,17 +788,17 @@ if (buyItNowBtnId) {
 		const userAddress = buyItNowBtnId.dataset.userObject;
 		const userArray = JSON.parse(userAddress);
 
-		if (productType !== 'accessory' && !selectedVariant) {
+		const isNonVariantProduct = productType === 'accessory' || productType === 'bag';
 
+		if (!isNonVariantProduct && !selectedVariant) {
 			showAlert('error', 'Please select a size first');
-
 			return;
 		}
 
-		selectedVariant = productType === 'accessory' ? null : selectedVariant;
+		const variant = isNonVariantProduct ? null : selectedVariant;
 
-		buyItNowCheckout(productId, qty, selectedVariant);
-	})
+		buyItNowCheckout(productId, qty, variant);
+	});
 }
 
 
@@ -544,26 +807,24 @@ if (buyItNowBtnId) {
 const buyItNowBtnGuest = document.getElementById('buy-it-now-guest');
 
 if (buyItNowBtnGuest) {
-
 	buyItNowBtnGuest.addEventListener('click', async e => {
-
 		e.preventDefault();
 
 		const productId = buyItNowBtnGuest.dataset.productId;
 		const productType = buyItNowBtnGuest.dataset.productType;
 		const qty = 1;
 
-		if (productType !== 'accessory' && !selectedVariant) {
+		const isNonVariantProduct = productType === 'accessory' || productType === 'bag';
 
+		if (!isNonVariantProduct && !selectedVariant) {
 			showAlert('error', 'Please select a size first');
-
 			return;
 		}
 
-		selectedVariant = productType === 'accessory' ? null : selectedVariant;
+		const variant = isNonVariantProduct ? null : selectedVariant;
 
-		buyItNowGuestCheckout(productId, qty, selectedVariant);
-	})
+		buyItNowGuestCheckout(productId, qty, variant);
+	});
 }
 
 
@@ -573,15 +834,11 @@ if (buyItNowBtnGuest) {
 ///		Buy It Now - Wishlist page	///
 
 
-
 const buyItNowBtn = document.querySelectorAll('.wishlist-btn--bin');
 
 if (buyItNowBtn) {
-
 	buyItNowBtn.forEach(btn => {
-
 		btn.addEventListener('click', async e => {
-
 			e.preventDefault();
 
 			const productId = btn.dataset.productId;
@@ -593,15 +850,14 @@ if (buyItNowBtn) {
 			const userArray = JSON.parse(userAddress);
 
 			if (!qty || userArray.length < 1 || !productId) {
-
 				return showAlert('error', 'Please add an address first');
 			}
 
 			selectedVariant = selectedVariant || 'null';
 
 			buyItNowCheckout(productId, qty, selectedVariant);
-		})
-	})
+		});
+	});
 }
 
 
@@ -612,9 +868,7 @@ if (buyItNowBtn) {
 const addToCartBtnId = document.getElementById('add-to-cart');
 
 if (addToCartBtnId) {
-
 	addToCartBtnId.addEventListener('click', function (e) {
-
 		e.preventDefault();
 
 		const id = addToCartBtnId.dataset.productId;
@@ -624,22 +878,17 @@ if (addToCartBtnId) {
 		const qtyInput = document.getElementById('add-to-cart-qty');
 		const qty = qtyInput?.value || 1;
 
+		const isNonVariantProduct = productType === 'accessory' || productType === 'bag';
 
-		////----- 	Variants ------////
-
-		if (productType !== 'accessory' && !selectedVariant) {
-
+		if (!isNonVariantProduct && !selectedVariant) {
 			showAlert('error', 'Please select a size first');
-
 			return;
 		}
 
-		const variant = productType === 'accessory' ? null : selectedVariant;
+		const variant = isNonVariantProduct ? null : selectedVariant;
 
 		addProductToUser(id, variant, slug, 'cart', qty);
-
-		////-------- ------- -------////
-	})
+	});
 }
 
 
@@ -650,29 +899,26 @@ if (addToCartBtnId) {
 
 const addToCartBtns = document.querySelectorAll('.wishlist-btn--atc');
 
-
 if (addToCartBtns.length > 0) {
-
 	addToCartBtns.forEach(btn => {
-
 		btn.addEventListener('click', function (e) {
-
 			e.preventDefault();
 
-			const id = btn.dataset.productId;        // ✅ Use btn
-			const slug = btn.dataset.productSlug;    // ✅ Use btn
-			const productType = btn.dataset.productType; // ✅ Use btn
-
+			const id = btn.dataset.productId;
+			const slug = btn.dataset.productSlug;
+			const productType = btn.dataset.productType;
 
 			const qtyInput = btn.closest('.myAccount__cart--item').querySelector('.add-to-cart-qty');
 			const qty = qtyInput?.value || 1;
 
-			if (productType !== 'accessory' && !selectedVariant) {
+			const isNonVariantProduct = productType === 'accessory' || productType === 'bag';
+
+			if (!isNonVariantProduct && !selectedVariant) {
 				showAlert('error', 'Please select a size first');
 				return;
 			}
 
-			const variant = productType === 'accessory' ? null : selectedVariant;
+			const variant = isNonVariantProduct ? null : selectedVariant;
 
 			addProductToUser(id, variant, slug, 'cart', qty);
 		});
@@ -681,85 +927,32 @@ if (addToCartBtns.length > 0) {
 
 
 
-///			Update Cart	Quantity	///
-
-
-document.querySelectorAll('.update-cart-quantity').forEach(form => {
-
-	form.addEventListener('submit', async function (e) {
-
-		e.preventDefault();
-
-		const cartId = this.dataset.cartId;
-		const user = this.dataset.user;
-
-		const quantity = parseInt(this.querySelector('input[name="quantity"]').value);
-
-		if (!cartId || !quantity || quantity < 1) {
-
-			showAlert('error', 'Invalid quantity');
-
-			return;
-		}
-
-		updateCart(cartId, quantity, user);
-	});
-});
-
-
-
-///			Remove From Cart	(function for button usage)		///
-
-
-function enableRemoveFromCart() {
-
-	document.querySelectorAll('.remove-cart--item').forEach(btn => {
-
-		btn.addEventListener('click', () => {
-
-			const removeItem = btn.dataset.remove;
-			const user = btn.dataset.user;
-
-			if (confirm('Are you sure you want to remove this Product from cart?')) {
-
-				removeProductFromCart(removeItem, user);
-
-			}
-		});
-	});
-}
-
-
 ///					 	Add To Wishlist			 			///
 
 
 const addToWishlistBtn = document.getElementById('add-to-wishlist');
 
 if (addToWishlistBtn) {
-
 	addToWishlistBtn.addEventListener('click', (e) => {
-
 		e.preventDefault();
 
 		const id = addToWishlistBtn.dataset.productId;
 		const slug = addToWishlistBtn.dataset.productSlug;
-		const productType = addToWishlistBtn.dataset.productType; // Get the type
+		const productType = addToWishlistBtn.dataset.productType;
 		const qty = document.getElementById('add-to-cart-qty')?.value || 1;
 
+		const isNonVariantProduct = productType === 'accessory' || productType === 'bag';
 
-		if (productType !== 'accessory' && !selectedVariant) {
+		if (!isNonVariantProduct && !selectedVariant) {
 			showAlert('error', 'Please select a size first');
 			return;
 		}
 
-
-		const variant = productType === 'accessory' ? null : selectedVariant;
+		const variant = isNonVariantProduct ? null : selectedVariant;
 
 		addProductToUser(id, variant, slug, 'wishlist', qty);
-	})
+	});
 }
-
-
 
 
 
@@ -973,7 +1166,24 @@ if (categoryBoxBtn && categoryBox) {
 }
 
 
+const bagCategoryBoxBtn = document.getElementById('bag__filter-btn--category');
+const bagCategoryBox = document.getElementById('bag-list--ul-category');
 
+if (bagCategoryBoxBtn && bagCategoryBox) {
+	bagCategoryBoxBtn.addEventListener('click', function () {
+		bagCategoryBox.classList.toggle('display--filter-list');
+	});
+}
+
+
+const bagColorBoxBtn = document.getElementById('bag__filter-btn--color');
+const bagColorBox = document.getElementById('bag-list--ul-color');
+
+if (bagColorBoxBtn && bagColorBox) {
+	bagColorBoxBtn.addEventListener('click', function () {
+		bagColorBox.classList.toggle('display--filter-list');
+	});
+}
 
 
 ///			 Size guide button			///
@@ -1582,6 +1792,136 @@ if (discontinueShoesBtn) {
 		}
 	})
 }
+
+
+/// ----------- Bags ------------- ///
+
+
+
+const bagFormCreate = document.querySelector('.bag__form--create');
+
+if (bagFormCreate) {
+
+	bagFormCreate.addEventListener('submit', e => {
+
+		e.preventDefault();
+
+		const form = new FormData();
+
+		form.append('name', document.getElementById('name').value);
+		form.append('description', document.getElementById('description').value);
+		form.append('originalPrice', document.getElementById('original-price').value);
+		form.append('category', document.getElementById('category').value);
+		form.append('color', document.getElementById('color').value);
+
+
+
+		/// ✅ Image Cover
+
+
+		const cover = document.getElementById('bag-image-cover');
+
+		if (cover && cover.files[0]) {
+
+			form.append('imageCover', cover.files[0]);
+		}
+
+
+		/// ✅ Image Array (no event listener!)
+
+		const extrasInput = document.getElementById('bag-image-array');
+
+		if (extrasInput && extrasInput.files.length > 0) {
+
+			for (let i = 0; i < extrasInput.files.length; i++) {
+				form.append('imageUrls', extrasInput.files[i]);
+			}
+		}
+
+		createBagDB(form);
+	});
+}
+
+
+
+/// Update Bag		
+
+
+const bagForm = document.querySelector('.bag__form');
+
+
+if (bagForm) {
+
+	bagForm.addEventListener('submit', e => {
+
+		e.preventDefault();
+
+		const id = bagForm.dataset.id;
+		const slug = bagForm.dataset.slug;
+
+		const form = new FormData();
+
+		form.append('name', document.getElementById('name').value);
+		form.append('description', document.getElementById('description').value);
+		form.append('originalPrice', document.getElementById('original-price').value);
+		form.append('currentPrice', document.getElementById('current-price').value);
+		form.append('tags', document.getElementById('tags').value);
+		form.append('discount', document.getElementById('discount').value);
+		form.append('category', document.getElementById('category').value);
+		form.append('color', document.getElementById('color').value);
+
+
+
+		/// ✅ Image Cover
+
+		const cover = document.getElementById('bag-image-cover');
+
+		if (cover && cover.files[0]) {
+
+			form.append('imageCover', cover.files[0]);
+		}
+
+
+		/// ✅ Image Array (no event listener!)
+
+		const extrasInput = document.getElementById('bag-image-array');
+
+		if (extrasInput && extrasInput.files.length > 0) {
+
+			for (let i = 0; i < extrasInput.files.length; i++) {
+				form.append('imageUrls', extrasInput.files[i]);
+			}
+		}
+
+		updateBagDB(form, id, slug);
+	});
+}
+
+
+
+/// Discontinue Bag
+
+const discontinueBagBtn = document.getElementById('discontinue-bag-btn');
+
+
+if (discontinueBagBtn) {
+
+	discontinueBagBtn.addEventListener('click', e => {
+
+		e.preventDefault();
+
+		const productId = e.currentTarget.dataset.productId;
+
+		if (confirm('Are you sure you want to discontinue this Product? This action is hard to undo.')) {
+			discontinueBag(productId);
+		}
+	})
+}
+
+
+
+
+
 
 
 
