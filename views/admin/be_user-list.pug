@@ -12,7 +12,8 @@ block content
 		
 			.admin__create--box
 			
-				a(href="/admin/be_new-user-page" , class='admin__create--link') Add New User			
+				if currentAdmin.role !== 'admin'
+					a(href="/admin/be_new-user-page" , class='admin__create--link') Add New User			
 		
 				form#selectRole(action="/admin/be_user-list" method="GET" class='form_role')
 				
@@ -48,7 +49,10 @@ block content
 					p.admin-user__text #{user.phone}
 					p.admin-user__text #{user.role}
 					p.admin-user__text #{user.active ? 'Active' : 'Inactive'}
-					a(href=`/admin/be_user-page/${user.id}` class='admin_edit--arrow') ➡️
+					if currentAdmin.role !== 'admin' || user.role === 'user'
+						a(href=`/admin/be_user-page/${user.id}` class='admin_edit--arrow') ➡️
+					else
+						span.admin_edit--disabled —
 		
 					
 

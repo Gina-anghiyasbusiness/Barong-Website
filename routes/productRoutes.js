@@ -66,6 +66,8 @@ router.route('/:id')
 	.patch(
 		authController.protectRoute,
 		authController.restrictTo('supervisor', 'owner'),
+		productController.filterProductUpdateBody,
+		productController.validateProductRefs,
 		productController.updateProduct);
 
 

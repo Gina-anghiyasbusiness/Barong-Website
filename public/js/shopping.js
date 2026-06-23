@@ -91,9 +91,6 @@ export const saveAddressCheckoutGuest = async (data, product, qty, variant) => {
 
 				buyItNowGuest(product, qty, guestAddressId, variant);
 
-			} else {
-
-				console.log('No address saved');
 			}
 		}
 
@@ -124,11 +121,7 @@ export const saveAddressCheckout = async (data, product, qty, variant) => {
 
 			const msg = result.data.message;
 
-			if (msg === 'Duplicate address') {
-
-				console.log('No new address added (duplicate).');
-
-			} else {
+			if (msg !== 'Duplicate address') {
 
 				showAlert('success', 'Address added successfully!');
 			}

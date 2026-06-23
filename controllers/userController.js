@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('./../models/userModel');
 
 const factory = require('./../controllers/handlerFactory')
@@ -17,12 +18,31 @@ const filterObj = require('../utilities/filterObject');
 
 exports.createBeUser = catchAsync(async (req, res, next) => {
 
+	// if (req.body.role === 'owner' && req.user.role !== 'owner') {
+
+	// 	return next(new AppError('Only owners can create owner accounts', 403));
+	// }
+
+	const requestedRole = req.body.role || 'admin';
+
+
+	if (requestedRole === 'user') {
+
+		return next(new AppError('Customer accounts must be created through signup', 403));
+	}
+
+	if (requestedRole === 'owner' && req.user.role !== 'owner') {
+
+		return next(new AppError('Only owners can create owner accounts', 403));
+	}
+
+
 	const user = await User.create({
 
 		name: req.body.name,
 		email: req.body.email,
 		phone: req.body.phone,
-		role: req.body.role,
+		role: requestedRole,
 		password: req.body.password,
 		passwordConfirm: req.body.passwordConfirm,
 
@@ -46,7 +66,18 @@ exports.createNewAddress = catchAsync(async (req, res, next) => {
 
 	const { type, number, street, city, state, postcode, isDefault } = req.body;
 
+	const defaultValue = isDefault === true || isDefault === 'true';
+
+	if (!['Home', 'Work', 'Other'].includes(type)) {
+
+		return next(new AppError('Invalid address label', 400));
+	}
+
+
 	const user = await User.findById(req.user.id);
+
+	if (!user) return next(new AppError('User not found', 404));
+
 
 	const duplicate = user.addresses.some(addr => addr.label === type);
 
@@ -57,7 +88,7 @@ exports.createNewAddress = catchAsync(async (req, res, next) => {
 	}
 
 
-	if (isDefault === true) {
+	if (defaultValue) {
 
 		await User.updateOne(
 
@@ -82,7 +113,7 @@ exports.createNewAddress = catchAsync(async (req, res, next) => {
 					city: city,
 					state: state,
 					postcode: postcode,
-					isDefault: isDefault
+					isDefault: defaultValue
 				}
 			}
 		},
@@ -141,6 +172,86 @@ exports.getUser = factory.getOne(User);
 /// dont use this to update passwords
 
 
+exports.preventPasswordUpdate = (req, res, next) => {
+
+	if (req.body.password || req.body.passwordConfirm) {
+
+		return next(new AppError('Do not update your password here. Please use Update My Password', 400));
+	}
+
+	next();
+};
+
+
+exports.preventOwnerRoleUpdate = (req, res, next) => {
+
+	if (req.body.role === 'owner' && req.user.role !== 'owner') {
+
+		return next(new AppError('Only owners can assign owner role', 403));
+	}
+
+	next();
+};
+
+
+exports.preventOwnerDelete = catchAsync(async (req, res, next) => {
+
+	const targetUser = await User.findById(req.params.id).select('role');
+
+	if (!targetUser) return next(new AppError('User not found', 404));
+
+	if (targetUser.role === 'owner' && req.user.role !== 'owner') {
+		return next(new AppError('Only owners can delete owner accounts', 403));
+	}
+
+	next();
+});
+
+
+
+exports.preventStaffUserUpdate = catchAsync(async (req, res, next) => {
+
+	const targetUserId = req.params.id || req.params.userId;
+
+	const targetUser = await User.findById(targetUserId).select('role');
+
+
+	if (!targetUser) return next(new AppError('User not found', 404));
+
+	if (targetUser.role === 'owner' && req.user.role !== 'owner') {
+		return next(new AppError('Only owners can update owner accounts', 403));
+	}
+
+	if (req.user.role === 'admin' && targetUser.role !== 'user') {
+		return next(new AppError('Admins cannot update staff accounts', 403));
+	}
+
+	next();
+});
+
+
+
+exports.preventSelfAdminAction = (req, res, next) => {
+
+	if (req.params.id === req.user.id) {
+
+		return next(new AppError('You cannot perform this action on your own account', 400));
+	}
+
+	next();
+};
+
+
+
+exports.filterAdminUserUpdateBody = (req, res, next) => {
+
+	req.body = filterObj(req.body, 'name', 'email', 'phone', 'role');
+
+	next();
+};
+
+
+
 exports.updateUser = factory.updateOne(User);
 
 
@@ -183,19 +294,38 @@ exports.updateMyAddress = catchAsync(async (req, res, next) => {
 
 	const { type, number, street, city, state, postcode, isDefault } = req.body;
 
+	const defaultValue = isDefault === true || isDefault === 'true';
+
+	if (!['Home', 'Work', 'Other'].includes(type)) {
+
+		return next(new AppError('Invalid address label', 400));
+	}
+
+
 	const addressId = req.params.addressId;
 
+	if (!mongoose.Types.ObjectId.isValid(addressId)) {
+
+		return next(new AppError('Invalid address ID', 400));
+	}
+
+
 	const userId = req.params.userId || req.user.id;
+
+	if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
+
+		return next(new AppError('Invalid user ID', 400));
+	}
 
 
 
 	/// If isDefault value is true - remove current isDefault value
 
-	if (isDefault === true) {
+	if (defaultValue) {
 
 		await User.updateOne(
 
-			{ _id: req.user.id, 'addresses.isDefault': true },
+			{ _id: userId, 'addresses.isDefault': true },
 
 			{ $set: { 'addresses.$[elem].isDefault': false } },
 
@@ -215,21 +345,29 @@ exports.updateMyAddress = catchAsync(async (req, res, next) => {
 			/// $[elem] === addressId 
 
 			$set: {
-				'addresses.$[elem].type': type,
+				'addresses.$[elem].label': type,
 				'addresses.$[elem].number': number,
 				'addresses.$[elem].street': street,
 				'addresses.$[elem].city': city,
 				'addresses.$[elem].state': state,
 				'addresses.$[elem].postcode': postcode,
-				'addresses.$[elem].isDefault': isDefault
+				'addresses.$[elem].isDefault': defaultValue
 			}
 		},
 		{
 			/// $[elem] === addressId 
 
-			arrayFilters: [{ 'elem._id': addressId }]
+			arrayFilters: [{ 'elem._id': addressId }],
+			runValidators: true
 		}
 	)
+
+
+	if (addressUpdate.matchedCount === 0) {
+
+		return next(new AppError('Address not found', 404));
+	}
+
 
 	res.status(200).json({
 
@@ -251,12 +389,18 @@ exports.updateMyAddress = catchAsync(async (req, res, next) => {
 /// delete user address by user
 
 
+
 exports.deleteAnAddress = catchAsync(async (req, res, next) => {
 
 	const addressId = req.params.addressId;
 
+	if (!mongoose.Types.ObjectId.isValid(addressId)) {
 
-	await User.findOneAndUpdate(
+		return next(new AppError('Invalid address ID', 400));
+	}
+
+
+	const updatedUser = await User.findOneAndUpdate(
 
 		{ _id: req.user.id, 'addresses._id': addressId },
 
@@ -264,6 +408,11 @@ exports.deleteAnAddress = catchAsync(async (req, res, next) => {
 
 		{ new: true }
 	);
+
+	if (!updatedUser) {
+
+		return next(new AppError('Address not found', 404));
+	}
 
 	res.status(200).json({
 
@@ -286,17 +435,15 @@ exports.deleteUser = factory.deleteOne(User);
 
 
 
-
-
-
 exports.deactivateUser = catchAsync(async (req, res, next) => {
 
-	await User.findByIdAndUpdate(req.params.id, { active: false },
+	const user = await User.findByIdAndUpdate(req.params.id, { active: false },
 		{
 			new: true,
 			runValidators: true
 		});
 
+	if (!user) return next(new AppError('User not found', 404));
 
 	res.status(200).json({
 		status: 'success'

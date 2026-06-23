@@ -28,6 +28,7 @@ router.route('/barongs')
 	.post(
 		productController.uploadProductImages,
 		productController.resizeProductImages,
+		productController.validateProductRefs,
 		productController.createBarong);
 
 
@@ -37,6 +38,8 @@ router.route('/barongs/:id')
 	.patch(
 		productController.uploadProductImages,
 		productController.resizeProductImages,
+		productController.filterProductUpdateBody,
+		productController.validateProductRefs,
 		productController.updateProduct)
 	.delete(
 		authController.restrictTo('supervisor', 'owner'),
@@ -52,6 +55,7 @@ router.route('/shoes')
 	.post(
 		productController.uploadProductImages,
 		productController.resizeOtherImages,
+		productController.validateProductRefs,
 		productController.createShoes);
 
 
@@ -61,6 +65,8 @@ router.route('/shoes/:id')
 	.patch(
 		productController.uploadProductImages,
 		productController.resizeOtherImages,
+		productController.filterProductUpdateBody,
+		productController.validateProductRefs,
 		productController.updateShoe)
 	.delete(
 		authController.restrictTo('supervisor', 'owner'),
@@ -76,6 +82,7 @@ router.route('/bags')
 	.post(
 		productController.uploadProductImages,
 		productController.resizeOtherImages,
+		productController.validateProductRefs,
 		productController.createBag);
 
 
@@ -84,6 +91,8 @@ router.route('/bags/:id')
 	.patch(
 		productController.uploadProductImages,
 		productController.resizeOtherImages,
+		productController.filterSimpleProductUpdateBody,
+		productController.validateProductRefs,
 		productController.updateBag)
 	.delete(
 		authController.restrictTo('supervisor', 'owner'),
@@ -99,6 +108,7 @@ router.route('/accessories')
 	.post(
 		productController.uploadProductImages,
 		productController.resizeOtherImages,
+		productController.validateProductRefs,
 		productController.createAccessories);
 
 
@@ -107,11 +117,47 @@ router.route('/accessories/:id')
 	.patch(
 		productController.uploadProductImages,
 		productController.resizeOtherImages,
+		productController.filterSimpleProductUpdateBody,
+		productController.validateProductRefs,
 		productController.updateAccessory)
 	.delete(
 		authController.restrictTo('supervisor', 'owner'),
 		productController.deleteAccs);
 
+
+
+
+
+
+
+//------------- User Routes ------------//
+
+
+router.route('/users').get(userController.getAllUsers);
+
+
+router.route('/users/:id/deactivate')
+	.patch(
+		authController.restrictTo('supervisor', 'owner'),
+		userController.preventSelfAdminAction,
+		userController.preventOwnerDelete,
+		userController.deactivateUser);
+
+
+router.route('/users/:id')
+	.get(userController.getUser)
+	.patch(
+		userController.preventStaffUserUpdate,
+		userController.preventPasswordUpdate,
+		userController.preventOwnerRoleUpdate,
+		userController.filterAdminUserUpdateBody,
+		userController.updateUser)
+	.delete(
+		authController.restrictTo('supervisor', 'owner'),
+		userController.preventSelfAdminAction,
+		userController.preventOwnerDelete,
+		userController.deleteUser
+	);
 
 
 
@@ -139,22 +185,6 @@ router.route('/bags/discontinued/:id')
 
 router.route('/accessories/discontinued/:id')
 	.patch(productController.discontinueAccs);
-
-
-
-//------------- User Routes ------------//
-
-
-router.route('/users').get(userController.getAllUsers);
-
-
-router.route('/users/:id')
-	.get(userController.getUser)
-	.patch(userController.updateUser)
-	.delete(userController.deactivateUser);
-
-
-
 
 
 

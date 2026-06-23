@@ -1,6 +1,9 @@
 const nodemailer = require('nodemailer');
 const pug = require('pug');
-const { convert } = require('html-to-text')
+const { convert } = require('html-to-text');
+
+
+
 
 module.exports = class Email {
 
@@ -10,7 +13,7 @@ module.exports = class Email {
 		this.firstname = user.name.split(' ')[0];
 
 		this.url = url;
-		this.from = `Mark Beresford ${process.env.EMAIL_FROM}`;
+		this.from = `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM}>`;
 	}
 
 
@@ -21,7 +24,7 @@ module.exports = class Email {
 			return nodemailer.createTransport(
 				{
 					host: process.env.EMAIL_HOST,
-					port: process.env.EMAIL_PORT,
+					port: Number(process.env.EMAIL_PORT),
 					auth: {
 
 						user: process.env.EMAIL_USERNAME,
@@ -32,28 +35,47 @@ module.exports = class Email {
 			)
 		}
 
-		/// (Brevo)
+
+		/// (WORKSPACE)
 
 		if (process.env.NODE_ENV === 'production') {
 
+			const requiredSmtpVars = [
+				'SMTP_HOST',
+				'SMTP_PORT',
+				'SMTP_LOGIN',
+				'SMTP_PASSWORD',
+				'EMAIL_FROM',
+				'EMAIL_FROM_NAME'
+			];
+
+			const missingSmtpVars = requiredSmtpVars.filter(envVar => !process.env[envVar]);
+
+			if (missingSmtpVars.length > 0) {
+
+				throw new Error(`Missing SMTP environment variables: ${missingSmtpVars.join(', ')}`);
+			}
+
+
 			return nodemailer.createTransport({
 
-				host: process.env.BREVO_HOST,
-				port: process.env.BREVO_PORT,
+				host: process.env.SMTP_HOST,
+				port: Number(process.env.SMTP_PORT),
 
-				/// use secure on port 587, dont on 465
 
-				secure: false,
+				secure: Number(process.env.SMTP_PORT) === 465,
 				auth: {
 
-					user: process.env.BREVO_LOGIN,
-					pass: process.env.BREVO_PASSWORD
+					user: process.env.SMTP_LOGIN,
+					pass: process.env.SMTP_PASSWORD
 				}
 			});
 		}
 	}
 
-	async send(template, subject) {
+
+
+	async send(template, subject, throwOnError = false) {
 
 		const html = pug.renderFile(`${__dirname}/../views/emails/${template}.pug`,
 			{
@@ -79,8 +101,12 @@ module.exports = class Email {
 		} catch (err) {
 
 			console.error('❌ Email failed:', err.response || err);
+
+			if (throwOnError) throw err;
 		}
 	}
+
+
 
 
 	/// Template send functions
@@ -100,7 +126,7 @@ module.exports = class Email {
 
 	async resetPassword() {
 
-		await this.send('resetPassword', 'Reset Password')
+		await this.send('resetPassword', 'Reset Password', true);
 	}
 
 

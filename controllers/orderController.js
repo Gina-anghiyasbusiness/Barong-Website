@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const Order = require('./../models/orderModel');
 const Transaction = require('./../models/transactionModel');
 const SpecProd = require('./../models/specProdModel');
@@ -19,11 +21,17 @@ const priceAtPurchaseDiscount = require('../utilities/priceAtPurchase');
 const categoryDiscountPrice = require('../utilities/categoryDiscountOnPurchase');
 const checkoutVar = require('../utilities/checkoutVariable');
 
+const { client, paypal } = require('./../utilities/paypalUtility');
+
+
+if (!process.env.STRIPE_SECRET_KEY) {
+
+	throw new Error('STRIPE_SECRET_KEY environment variable is required');
+}
+
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-
-const { client, paypal } = require('./../utilities/paypalUtility');
 
 
 ///			////////////////////////			///////////////////			///////////////////////
@@ -83,7 +91,6 @@ const calculateTotals = (totalNet) => {
 }
 
 
-let totalNet;
 
 
 ///			 				Checkout Session 		 						///
@@ -102,8 +109,6 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
 	const { product, qty, variant } = req.params;
 
-	console.log('=== PAYPAL BUYITNOW ===');
-	console.log('product:', product, 'qty:', qty, 'variant:', variant);
 
 	let buyItNowProduct = await SpecProd.findById(product).populate('category');
 
@@ -114,7 +119,7 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
 	if (!buyItNowProduct) {
 
-		buyItNowProduct = await SBaghoe.findById(product).populate('category');
+		buyItNowProduct = await Bag.findById(product).populate('category');
 	}
 
 	if (!buyItNowProduct) {
@@ -127,7 +132,19 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 		return next(new AppError('Product not found', 404));
 	}
 
-	/// Find variant (rest of your code...)
+
+
+	/// qtyNum
+
+	const qtyNum = Number(qty);
+
+	if (!Number.isInteger(qtyNum) || qtyNum < 1) {
+
+		return next(new AppError('Invalid quantity', 400));
+
+	}
+
+
 
 
 
@@ -145,6 +162,9 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 		}
 	}
 
+
+
+
 	/// Calculate discount/price 
 
 
@@ -153,13 +173,18 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
 	totalNet = await checkoutVar(buyItNowProduct, totalNet);
 
-	console.log('totalNet:', totalNet);
-	console.log('product price:', buyItNowProduct.currentPrice);
+
+	if (typeof totalNet !== 'number' || Number.isNaN(totalNet) || totalNet <= 0) {
+
+		return next(new AppError('Invalid product price', 400));
+	}
+
+
 
 	/// Calculate totals (delivery/tax)
 
 
-	const { delivery, subtotal, taxAmount } = calculateTotals(totalNet * qty);
+	const { delivery, subtotal, taxAmount } = calculateTotals(totalNet * qtyNum);
 
 
 
@@ -178,10 +203,10 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
 			amount: {
 				currency_code: 'AUD',
-				value: ((totalNet * qty) + delivery + (taxAmount / 100)).toFixed(2)  // ✅ Fixed
+				value: ((totalNet * qtyNum) + delivery + (taxAmount / 100)).toFixed(2)
 			},
 
-			description: `${buyItNowProduct.name} x ${qty}`
+			description: `${buyItNowProduct.name} x ${qtyNum}`
 
 			/// Add shipping info here if required by PayPal for your region
 
@@ -284,6 +309,12 @@ exports.cartItemsPayPal = catchAsync(async (req, res, next) => {
 	}
 
 
+	if (typeof overallPrice !== 'number' || Number.isNaN(overallPrice) || overallPrice <= 0) {
+
+		return next(new AppError('Invalid cart total', 400));
+	}
+
+
 
 	const { delivery, subtotal, taxAmount } = calculateTotals(overallPrice);
 
@@ -362,14 +393,60 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 	const orderData = capture.result;
 
-	const amount = Number(orderData.purchase_units[0].payments.captures[0].amount.value);
 
-	const currency = orderData.purchase_units[0].payments.captures[0].amount.currency_code;
+
+	/// start
+
+
+	/// replace
+
+	// const amount = Number(orderData.purchase_units[0].payments.captures[0].amount.value);
+
+	// const currency = orderData.purchase_units[0].payments.captures[0].amount.currency_code;
+
+
+	/// with
+
+
+	const captureData = orderData.purchase_units?.[0]?.payments?.captures?.[0];
+
+	if (!captureData) {
+		return next(new AppError('PayPal did not return captured payment data', 500));
+	}
+
+	if (captureData.status !== 'COMPLETED') {
+		return next(new AppError('PayPal payment was not completed', 400));
+	}
+
+	const amount = Number(captureData.amount?.value);
+
+	const currency = captureData.amount?.currency_code;
+
+	// if (!amount || Number.isNaN(amount)) {
+	// 	return next(new AppError('Invalid PayPal payment amount', 400));
+	// }
+
+	// if (currency !== 'AUD') {
+	// 	return next(new AppError('Invalid PayPal payment currency', 400));
+	// }
+
+	if (Number.isNaN(amount) || amount <= 0) {
+		return next(new AppError('Invalid PayPal payment amount', 400));
+	}
+
+	if (currency !== 'AUD') {
+		return next(new AppError('Invalid PayPal payment currency', 400));
+	}
+
+
+
+	/// end
+
 
 
 	const payer = orderData.payer;
 
-	const shipping = orderData.purchase_units[0].shipping;
+	const shipping = orderData.purchase_units?.[0]?.shipping;
 
 	const suburbCity = `${shipping?.address?.address_line_1} : ${shipping?.address?.admin_area_2}`
 
@@ -384,6 +461,20 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 	};
 
 
+	/// check for existing order
+
+
+	const existingTransaction = await Transaction.findOne({
+		transactionId: captureData.id
+	});
+
+	if (existingTransaction) {
+		return next(new AppError('This PayPal payment has already been processed', 409));
+	}
+
+
+
+
 	let order, priceAtPurchase;
 
 
@@ -391,7 +482,6 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 		try {
 
-			console.log('=== CART CHECKOUT START ===', user.cart);
 
 			const cartArray = (await Promise.all(user.cart.map(async item => {
 
@@ -431,6 +521,31 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 				};
 
 			}))).filter(Boolean); // ⬅️ prevent nulls in DB!
+
+
+
+			/// check expected amounts
+
+
+			if (cartArray.length === 0) {
+
+				return next(new AppError('Cart is empty', 400));
+			}
+
+
+			const expectedNetTotal = cartArray.reduce((sum, item) => {
+
+				return sum + item.priceAtPurchase * item.quantity;
+
+			}, 0);
+
+			const { delivery, taxAmount } = calculateTotals(expectedNetTotal);
+
+			const expectedAmount = Number((expectedNetTotal + delivery + taxAmount / 100).toFixed(2));
+
+			if (Math.abs(amount - expectedAmount) > 0.01) {
+				return next(new AppError('PayPal payment amount does not match order total', 400));
+			}
 
 
 			await Promise.all(cartArray.map(async item => {
@@ -499,10 +614,35 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 			}
 
 
+			const qtyNum = Number(qty);
+
+			if (!Number.isInteger(qtyNum) || qtyNum < 1) {
+				return next(new AppError('Invalid quantity', 400));
+			}
+
+
+
+			const expectedNetTotal = priceAtPurchase * qtyNum;
+
+
+			const { delivery, taxAmount } = calculateTotals(expectedNetTotal);
+
+			const expectedAmount = Number((expectedNetTotal + delivery + taxAmount / 100).toFixed(2));
+
+			if (Math.abs(amount - expectedAmount) > 0.01) {
+				return next(new AppError('PayPal payment amount does not match order total', 400));
+			}
+
+
+
+
 			/// 4. Update stock (only if variant exists)
 
+
 			if (selectedVariant) {
-				await updateStockLevels(product, selectedVariant._id.toString(), Number(qty));
+
+				await updateStockLevels(product, selectedVariant._id.toString(), qtyNum);
+
 			}
 
 			/// 5. Create order number
@@ -523,7 +663,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 				product: [{
 					product,
 					productModel: foundProduct.constructor.modelName,
-					quantity: Number(qty),
+					quantity: qtyNum,
 					selectedVariant: selectedVariant ? selectedVariant._id : null,
 					priceAtPurchase
 				}],
@@ -562,13 +702,13 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 	/// transaction	
 
 
-	const captureData = orderData.purchase_units[0].payments.captures[0];
+	// const captureData = orderData.purchase_units[0].payments.captures[0];
 
 
-	if (!captureData) {
+	// if (!captureData) {
 
-		return next(new AppError('PayPal did not return captured data', 500));
-	}
+	// 	return next(new AppError('PayPal did not return captured data', 500));
+	// }
 
 	const transaction = await Transaction.create({
 
@@ -625,7 +765,28 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 
 	const { product, qty, variant } = req.params;
 
-	const user = await User.findById(req.body.user).select('addresses');
+
+	if (!mongoose.Types.ObjectId.isValid(product)) {
+
+		return next(new AppError('Invalid product ID', 400));
+	}
+
+
+	const user = await User.findById(req.user.id).select('addresses');
+
+	if (!user) {
+
+		return next(new AppError('User not found', 404));
+	}
+
+
+	const qtyNum = Number(qty);
+
+	if (!Number.isInteger(qtyNum) || qtyNum < 1) {
+
+		return next(new AppError('Invalid quantity', 400));
+	}
+
 
 
 	/// find Product and Variant	
@@ -663,11 +824,16 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 
 			return next(new AppError('Variant not found', 404));
 		}
+
+		if (buyItNowVariant.inStock < qtyNum) {
+
+			return next(new AppError(`Not enough ${buyItNowVariant.size} in stock! Only ${buyItNowVariant.inStock} left.`, 400));
+		}
+
 	}
 
-	if (!user || !buyItNowProduct) {
-		return next(new AppError('Missing required data', 400));
-	}
+
+	let totalNet;
 
 
 	/// find the discount 	
@@ -694,10 +860,16 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 	}
 
 
+	if (typeof totalNet !== 'number' || Number.isNaN(totalNet) || totalNet <= 0) {
+
+		return next(new AppError('Invalid product price', 400));
+	}
+
+
 
 	/// Calculate the totals
 
-	const { delivery, subtotal, taxAmount } = calculateTotals(totalNet * qty);
+	const { delivery, subtotal, taxAmount } = calculateTotals(totalNet * qtyNum);
 
 
 	/// get address for delivery
@@ -705,16 +877,18 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 	const defaultAddress = user.addresses?.find(addr => addr.isDefault);
 	const shippingAddress = defaultAddress || user.addresses[0];
 
+	if (!shippingAddress) {
 
-	/// throw error if no user or product
+		return next(new AppError('Please add a delivery address before checkout', 400));
+	}
 
-	if (!user || !buyItNowProduct) return next(new AppError('No Products Present', 400));
+
 
 	const line_items = [
 		{
 			price_data: {
 				currency: 'aud',
-				unit_amount: totalNet * 100,
+				unit_amount: Math.round(totalNet * 100),
 
 				product_data: {
 					name: buyItNowProduct.name,
@@ -723,11 +897,12 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 					/// ONLY WORKS IN PRODUCTION - USE PRODUCTION URL
 
 					images: [
-						`http://127.0.0.1:5000/img/product_imgs/${buyItNowProduct.imageCover}`
+						`${process.env.SITE_URL}img/product_imgs/${buyItNowProduct.imageCover}`
 					]
+
 				}
 			},
-			quantity: qty
+			quantity: qtyNum
 		}
 	];
 
@@ -817,7 +992,7 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 
 			userId: req.user.id,
 			product: product.toString(),
-			qty: qty.toString(),
+			qty: qtyNum.toString(),
 			variant: buyItNowVariant ? buyItNowVariant.id.toString() : null, // ✅ Fix this line
 			address: JSON.stringify(shippingAddress)
 		}
@@ -846,7 +1021,25 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 	const { guestAddressId } = req.body;
 	const { product, qty, variant } = req.params;
 
+
+	if (!mongoose.Types.ObjectId.isValid(guestAddressId)) {
+
+		return next(new AppError('Invalid guest address ID', 400));
+	}
+
+	if (!mongoose.Types.ObjectId.isValid(product)) {
+
+		return next(new AppError('Invalid product ID', 400));
+	}
+
+
 	const qtyNum = Number(qty);
+
+	if (!Number.isInteger(qtyNum) || qtyNum < 1) {
+
+		return next(new AppError('Invalid quantity', 400));
+	}
+
 
 	let buyItNowProduct = await SpecProd.findById(product).populate('category');
 
@@ -868,15 +1061,24 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 
 	let buyItNowVariant = null;
 
+
 	if (buyItNowProduct.variants && buyItNowProduct.variants.length > 0) {
+
 		buyItNowVariant = buyItNowProduct.variants.find(v => v.id === variant);
 
 		if (!buyItNowVariant) {
 			return next(new AppError('Variant not found', 404));
 		}
+
+		if (buyItNowVariant.inStock < qtyNum) {
+
+			return next(new AppError(`Not enough ${buyItNowVariant.size} in stock! Only ${buyItNowVariant.inStock} left.`, 400));
+		}
 	}
 
+
 	const guestAddress = await GuestAddress.findById(guestAddressId).lean();
+
 
 	if (!guestAddress) return next(new AppError('Guest address not found', 404));
 
@@ -895,18 +1097,26 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 		totalNet = await categoryDiscountPrice(buyItNowProduct);
 	}
 
+
+	if (typeof totalNet !== 'number' || Number.isNaN(totalNet) || totalNet <= 0) {
+
+		return next(new AppError('Invalid product price', 400));
+	}
+
 	const { delivery, subtotal, taxAmount } = calculateTotals(totalNet * qtyNum);
 
-	// Line items
+
+	/// Line items
+
 	const line_items = [
 		{
 			price_data: {
 				currency: 'aud',
-				unit_amount: totalNet * 100,
+				unit_amount: Math.round(totalNet * 100),
 				product_data: {
 					name: buyItNowProduct.name,
 					description: buyItNowProduct.description,
-					images: [`http://127.0.0.1:5000/img/product_imgs/${buyItNowProduct.imageCover}`]
+					images: [`${process.env.SITE_URL}img/product_imgs/${buyItNowProduct.imageCover}`]
 				}
 			},
 			quantity: qtyNum
@@ -988,11 +1198,27 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 
 exports.buyCartItems = catchAsync(async (req, res, next) => {
 
-	const user = await User.findById(req.user.id)
-		.select('cart addresses'); // ✅ Remove .populate()
+	const user = await User.findById(req.user.id).select('cart addresses');
+
+
+	if (!user) {
+
+		return next(new AppError('User not found', 404));
+	}
+
+	if (!user.cart || user.cart.length === 0) {
+
+		return next(new AppError('Cart is empty', 400));
+	}
+
 
 
 	for (const item of user.cart) {
+
+		if (!mongoose.Types.ObjectId.isValid(item.product)) {
+
+			return next(new AppError('Invalid cart product ID', 400));
+		}
 
 		let foundProduct = await SpecProd.findById(item.product).populate('category');
 
@@ -1008,28 +1234,72 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 			foundProduct = await Accessory.findById(item.product).populate('category');
 		}
 
+
+		if (!foundProduct) {
+
+			return next(new AppError('A product in your cart is no longer available', 404));
+		}
+
+
 		item.product = foundProduct;
 		item.markModified('product');
+
 	}
 
 	const defaultAddress = user.addresses?.find(addr => addr.isDefault);
 	const shippingAddress = defaultAddress || user.addresses[0];
 
-	if (!user || user.cart.length === 0) return next(new AppError('Cart is empty', 400));
+	if (!shippingAddress) {
 
-	let price;
+		return next(new AppError('Please add a delivery address before checkout', 400));
+	}
+
+
+
 	let overallArr = [];
 	let overallPrice = 0;
 
+
 	const line_items = await Promise.all(user.cart.map(async item => {
 
-		const qty = Number(item.quantity) || 1;
+		const qty = Number(item.quantity);
+
+		if (!Number.isInteger(qty) || qty < 1) {
+
+			return next(new AppError('Invalid cart item quantity', 400));
+		}
 
 
 		const product = item.product;
 
-		if (!product) return null;
+		if (!product) {
 
+			return next(new AppError('A product in your cart is no longer available', 404));
+		}
+
+
+		if (product.variants && product.variants.length > 0) {
+
+			if (!item.variant) {
+
+				return next(new AppError('Cart item variant is missing', 400));
+			}
+
+			const selectedVariant = product.variants.id(item.variant);
+
+			if (!selectedVariant) {
+
+				return next(new AppError('Variant not found in product', 404));
+			}
+
+			if (selectedVariant.inStock < qty) {
+
+				return next(new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400));
+			}
+		}
+
+
+		let price;
 
 
 		///							Cart Checkout								///
@@ -1053,14 +1323,22 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 			price = await categoryDiscountPrice(product);
 		}
 
+
+		if (typeof price !== 'number' || Number.isNaN(price) || price <= 0) {
+
+			return next(new AppError('Invalid cart item price', 400));
+		}
+
+
 		overallArr.push(price * qty);
+
 
 		return {
 
 			price_data: {
 
 				currency: 'aud',
-				unit_amount: price * 100,
+				unit_amount: Math.round(price * 100),
 
 				product_data: {
 
@@ -1069,7 +1347,7 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 				}
 			},
 
-			quantity: qty || 1
+			quantity: qty
 
 		};
 	}));
@@ -1081,7 +1359,14 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 	}
 
 
+	if (typeof overallPrice !== 'number' || Number.isNaN(overallPrice) || overallPrice <= 0) {
+
+		return next(new AppError('Invalid cart total', 400));
+	}
+
+
 	const { delivery, subtotal, taxAmount } = calculateTotals(overallPrice);
+
 
 
 	/// 		Add delivery		///
@@ -1296,9 +1581,20 @@ exports.updateUserOrder = catchAsync(async (req, res, next) => {
 
 	const orderStatus = req.params.orderstatus;
 	const transactionStatus = req.params.transstatus;
-	const addressString = req.params.address;
+	const addressString = decodeURIComponent(req.params.address);
 
-	const address = JSON.parse(addressString);
+
+	let address;
+
+	try {
+
+		address = JSON.parse(addressString);
+
+	} catch (err) {
+
+		return next(new AppError('Invalid shipping address data', 400));
+	}
+
 
 
 	if (!orderStatus || !transactionStatus || !address || !orderNum) {
@@ -1306,12 +1602,52 @@ exports.updateUserOrder = catchAsync(async (req, res, next) => {
 		return next(new AppError('Missing Order Data... Please Try Again!', 404))
 	}
 
+	if (typeof address !== 'object' || Array.isArray(address)) {
+		return next(new AppError('Invalid shipping address data', 400));
+	}
 
-	const order = await Order.findOneAndUpdate({ orderNum }, { status: orderStatus, shippingAddress: address });
+	if (!address.street || !address.city || !address.postcode) {
+		return next(new AppError('Shipping address is incomplete', 400));
+	}
+
+
+
+	const allowedOrderStatuses = Order.schema.path('status').enumValues;
+
+	const allowedTransactionStatuses = Transaction.schema.path('status').enumValues;
+
+
+	if (!allowedOrderStatuses.includes(orderStatus)) {
+		return next(new AppError('Invalid order status', 400));
+	}
+
+	if (!allowedTransactionStatuses.includes(transactionStatus)) {
+		return next(new AppError('Invalid transaction status', 400));
+	}
+
+
+	const order = await Order.findOneAndUpdate(
+		{ orderNum },
+		{ status: orderStatus, shippingAddress: address },
+		{ new: true, runValidators: true }
+	);
+
+	if (!order) return next(new AppError('Order not found', 404));
+
+
 
 	const transactionNum = order.transaction;
 
-	await Transaction.findByIdAndUpdate(transactionNum, { status: transactionStatus });
+	if (!transactionNum) return next(new AppError('Order transaction not found', 404));
+
+	const transaction = await Transaction.findByIdAndUpdate(
+		transactionNum,
+		{ status: transactionStatus },
+		{ new: true, runValidators: true }
+	);
+
+	if (!transaction) return next(new AppError('Transaction not found', 404));
+
 
 	res.status(200).json({
 		status: 'success',

@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const catchAsync = require('./../utilities/catchAsync');
 const APIFeatures = require('./../utilities/apiFeatures');
 const AppError = require('./../utilities/appError');
@@ -308,7 +310,7 @@ exports.getBarongPage = catchAsync(async (req, res, next) => {
 		select: 'user rating comment'
 	}).populate('category');
 
-
+	if (!product) return next(new AppError('Product not found', 404));
 
 	///			Discount Price			///
 
@@ -338,21 +340,11 @@ exports.getBarongPage = catchAsync(async (req, res, next) => {
 		const orders = await Order.find({ user: req.user.id });
 		const productId = product._id.toString();
 
-		if (!productId || !orders) {
+		hasPurchased = orders.some(order => order.product.some(prod => {
 
-			return;
-
-		} else {
-
-			hasPurchased = orders.some(order => order.product.some(prod => {
-
-				return prod.product?._id?.toString() === productId;
-			}))
-		}
+			return prod.product?._id?.toString() === productId;
+		}))
 	}
-
-	if (!product) return next(new AppError('No product Found', 404));
-
 
 
 	res.status(200).render('barong-page', {
@@ -442,7 +434,7 @@ exports.getShoePage = catchAsync(async (req, res, next) => {
 		select: 'user rating comment'
 	}).populate('category');
 
-
+	if (!product) return next(new AppError('Product not found', 404));
 
 	///			Discount Price			///
 
@@ -472,20 +464,13 @@ exports.getShoePage = catchAsync(async (req, res, next) => {
 		const orders = await Order.find({ user: req.user.id });
 		const productId = product._id.toString();
 
-		if (!productId || !orders) {
+		hasPurchased = orders.some(order => order.product.some(prod => {
 
-			return;
-
-		} else {
-
-			hasPurchased = orders.some(order => order.product.some(prod => {
-
-				return prod.product?._id?.toString() === productId;
-			}))
-		}
+			return prod.product?._id?.toString() === productId;
+		}))
 	}
 
-	if (!product) return next(new AppError('No product Found', 404));
+
 
 	res.status(200).render('shoe-page', {
 
@@ -599,7 +584,7 @@ exports.getAccessoryPage = catchAsync(async (req, res, next) => {
 		select: 'user rating comment'
 	}).populate('category');
 
-
+	if (!product) return next(new AppError('Product not found', 404));
 
 	///			Discount Price			///
 
@@ -629,20 +614,13 @@ exports.getAccessoryPage = catchAsync(async (req, res, next) => {
 		const orders = await Order.find({ user: req.user.id });
 		const productId = product._id.toString();
 
-		if (!productId || !orders) {
+		hasPurchased = orders.some(order => order.product.some(prod => {
 
-			return;
-
-		} else {
-
-			hasPurchased = orders.some(order => order.product.some(prod => {
-
-				return prod.product?._id?.toString() === productId;
-			}))
-		}
+			return prod.product?._id?.toString() === productId;
+		}))
 	}
 
-	if (!product) return next(new AppError('No product Found', 404));
+
 
 	res.status(200).render('accessories-page', {
 
@@ -744,6 +722,8 @@ exports.getBagPage = catchAsync(async (req, res, next) => {
 		select: 'user rating comment'
 	}).populate('category');
 
+	if (!product) return next(new AppError('Product not found', 404));
+
 	await missingDiscountCheck(product);
 
 	let hasReviewed = false;
@@ -763,20 +743,14 @@ exports.getBagPage = catchAsync(async (req, res, next) => {
 		const orders = await Order.find({ user: req.user.id });
 		const productId = product._id.toString();
 
-		if (!productId || !orders) {
 
-			return;
+		hasPurchased = orders.some(order => order.product.some(prod => {
 
-		} else {
-
-			hasPurchased = orders.some(order => order.product.some(prod => {
-
-				return prod.product?._id?.toString() === productId;
-			}))
-		}
+			return prod.product?._id?.toString() === productId;
+		}))
 	}
 
-	if (!product) return next(new AppError('No product Found', 404));
+
 
 	res.status(200).render('bag-page', {
 
@@ -817,12 +791,24 @@ exports.getCategoriesPage = catchAsync(async (req, res, next) => {
 exports.getFrontEndCategoryPage = catchAsync(async (req, res, next) => {
 
 	const categoryId = req.params.catId;
+
+	if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+
+		return next(new AppError('Invalid category ID', 400));
+	}
+
+
 	const category = await Category.findById(categoryId);
+
+	if (!category) return next(new AppError('Category not found', 404));
+
+
 	const products = await SpecProd.find({ category: categoryId }).populate('category');
+
 
 	await Promise.all(products.map(async product => {
 
-		if (!product.category.discount) {
+		if (!product.category || !product.category.discount) {
 
 			product.discountPrice = await priceAtPurchaseDiscount(product);
 
@@ -830,7 +816,6 @@ exports.getFrontEndCategoryPage = catchAsync(async (req, res, next) => {
 
 	}));
 
-	if (!products) return next(new AppError('No Category Found', 404));
 
 	res.status(200).render('category-page', {
 
@@ -993,39 +978,91 @@ exports.getAccountPage = catchAsync(async (req, res, next) => {
 		return next(new AppError('User not found', 404));
 	}
 
-	const populateProducts = async (items) => {
 
-		for (const item of items) {
-			let product = await SpecProd.findById(item.product).populate('category');
-			let productType = 'barong';
 
-			if (!product) {
-				product = await Shoe.findById(item.product).populate('category');
-				if (product) productType = 'shoe';
-			}
+	/// Original Method
 
-			if (!product) {
-				product = await Bag.findById(item.product).populate('category');
-				if (product) productType = 'bag';
-			}
 
-			if (!product) {
-				product = await Accessory.findById(item.product).populate('category');
-				if (product) productType = 'accessory';
-			}
+	// const populateProducts = async (items) => {
 
-			// Direct property assignment
-			item.product = product;
-			item.productType = productType;
+	// 	for (const item of items) {
 
-			// Force Mongoose to recognize the change
-			item.markModified('product');
-			item.markModified('productType');
-		}
+	// 		let product = await SpecProd.findById(item.product).populate('category');
+	// 		let productType = 'barong';
+
+	// 		if (!product) {
+	// 			product = await Shoe.findById(item.product).populate('category');
+	// 			if (product) productType = 'shoe';
+	// 		}
+
+	// 		if (!product) {
+	// 			product = await Bag.findById(item.product).populate('category');
+	// 			if (product) productType = 'bag';
+	// 		}
+
+	// 		if (!product) {
+	// 			product = await Accessory.findById(item.product).populate('category');
+	// 			if (product) productType = 'accessory';
+	// 		}
+
+	// 		// Direct property assignment
+	// 		item.product = product;
+	// 		item.productType = productType;
+
+	// 		// Force Mongoose to recognize the change
+	// 		item.markModified('product');
+	// 		item.markModified('productType');
+	// 	}
+	// };
+
+	// await populateProducts(user.cart);
+	// await populateProducts(user.wishlist);
+
+
+
+	/// DRY Method
+
+
+	const productModels = {
+		SpecProd: { model: SpecProd, type: 'barong' },
+		Shoe: { model: Shoe, type: 'shoe' },
+		Bag: { model: Bag, type: 'bag' },
+		Accessory: { model: Accessory, type: 'accessory' }
 	};
 
-	await populateProducts(user.cart);
-	await populateProducts(user.wishlist);
+
+
+	const populateProducts = async (items) => {
+
+		await Promise.all(items.map(async item => {
+
+			const productConfig = productModels[item.productModel];
+
+			if (!productConfig || !mongoose.Types.ObjectId.isValid(item.product)) {
+
+				item.product = null;
+				return;
+			}
+
+			item.product = await productConfig.model
+				.findById(item.product)
+				.populate('category');
+
+			item.productType = productConfig.type;
+
+			item.markModified('product');
+			item.markModified('productType');
+		}));
+	};
+
+
+	await Promise.all([
+		populateProducts(user.cart),
+		populateProducts(user.wishlist)
+	]);
+
+
+
 
 
 
@@ -1056,28 +1093,54 @@ exports.getAccountPage = catchAsync(async (req, res, next) => {
 		.sort({ createdAt: -1 });
 
 
-	for (const order of orders) {
+	/// Original Method
 
-		for (const item of order.product) {
+	// for (const order of orders) {
 
-			let productDoc = await SpecProd.findById(item.product);
+	// 	for (const item of order.product) {
 
-			if (!productDoc) {
-				productDoc = await Shoe.findById(item.product);
+	// 		let productDoc = await SpecProd.findById(item.product);
+
+	// 		if (!productDoc) {
+	// 			productDoc = await Shoe.findById(item.product);
+	// 		}
+
+	// 		if (!productDoc) {
+	// 			productDoc = await Bag.findById(item.product);
+	// 		}
+
+	// 		if (!productDoc) {
+	// 			productDoc = await Accessory.findById(item.product);
+	// 		}
+
+	// 		item.product = productDoc; // Will be null if not found
+
+	// 	}
+	// }
+
+
+
+	/// DRY Method
+
+
+	await Promise.all(orders.map(async order => {
+
+		await Promise.all(order.product.map(async item => {
+
+			const productConfig = productModels[item.productModel];
+
+			if (!productConfig || !mongoose.Types.ObjectId.isValid(item.product)) {
+
+				item.product = null;
+				return;
 			}
 
-			if (!productDoc) {
-				productDoc = await Bag.findById(item.product);
-			}
+			item.product = await productConfig.model.findById(item.product);
+			item.markModified('product');
+		}));
+	}));
 
-			if (!productDoc) {
-				productDoc = await Accessory.findById(item.product);
-			}
 
-			item.product = productDoc; // Will be null if not found
-
-		}
-	}
 
 	// ------------- Variants --------------//
 
@@ -1156,12 +1219,11 @@ exports.getAddressFormPage = async (req, res, next) => {
 
 	if (!addressId || !user) return next(new AppError('No user or address found', 404));
 
-	const getSelectedAddress = (addresses) => {
 
-		return addresses.find(address => address.id === addressId) || 'No Address Found';
-	};
+	const selectedAddress = user.addresses.find(address => address.id === addressId);
 
-	const selectedAddress = getSelectedAddress(user.addresses);
+	if (!selectedAddress) return next(new AppError('Address not found', 404));
+
 
 	res.status(200).render('address-form-page', {
 
@@ -1174,19 +1236,35 @@ exports.getAddressFormPage = async (req, res, next) => {
 
 
 
+
+
 //---------------------- Checkout page ----------------------//
 
 
 exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 
-	let qty = Number(req.params.qty) || 1;
+	let qty = Number(req.params.qty);
 
 	const selectedLabel = req.query.label || 'Home';
 
 	const productId = req.params.productId;
 	const productVariant = req.params.variant;
 
+	if (productId && (!Number.isInteger(qty) || qty < 1)) {
+
+		return next(new AppError('Invalid quantity', 400));
+	}
+
+	if (productId && !mongoose.Types.ObjectId.isValid(productId)) {
+
+		return next(new AppError('Invalid product ID', 400));
+	}
+
+
 	const user = await User.findById(req.user.id);
+
+	if (!user) return next(new AppError('User not found', 404));
+
 
 	let cart;
 
@@ -1236,32 +1314,40 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 	let variant;
 
 	if (!productId) {
-		// Cart checkout
+
 		cart.cart.forEach(item => {
-			// Only find variant if product has variants
-			if (item.product.variants && item.product.variants.length > 0) {
+
+			if (item.product?.variants && item.product.variants.length > 0 && item.variant) {
+
 				variant = item.product.variants.find(v => v._id.toString() === item.variant.toString());
+
 				item.variantDetails = variant;
+
 			} else {
-				item.variantDetails = null; // Accessory has no variants
+
+				item.variantDetails = null;
 			}
 		});
 
 	} else {
-		// BuyItNow checkout
+
 		if (product.variants && product.variants.length > 0) {
-			variant = product.variants.find(v => v.id === productVariant) || {};
+
+			variant = product.variants.find(v => v.id === productVariant);
 
 			if (!variant) {
+
 				return next(new AppError('No Variant Found', 404));
 			}
 
 			if (variant.inStock < qty) {
-				console.log('Stock insufficient, throwing error');
+
 				return next(new AppError(`Not enough ${variant.size} in stock! Only ${variant.inStock} left.`, 400));
 			}
+
 		} else {
-			variant = null; // Accessory has no variants
+
+			variant = null;
 		}
 	}
 
@@ -1278,7 +1364,12 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 
 		await Promise.all(cart.cart.map(async item => {
 
-			let foundProduct; // Changed from 'product' to 'foundProduct'
+			let foundProduct;
+
+			if (!item.product || !item.product._id) {
+
+				return next(new AppError('A product in your cart is no longer available', 404));
+			}
 
 			foundProduct = await SpecProd.findById(item.product._id).populate('category');
 
@@ -1359,15 +1450,22 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 		totalNet += totalArr[i];
 	}
 
+
+	if (typeof totalNet !== 'number' || Number.isNaN(totalNet) || totalNet <= 0) {
+
+		return next(new AppError('Invalid checkout total', 400));
+	}
+
+
 	const delivery = totalNet < 50 ? 10 : 0;
 	const taxes = Math.round(((totalNet + delivery) * 0.1) * 10) / 10;
 	const totalGross = (totalNet + delivery) + taxes;
 
+
+
 	///  Buy ItNow total	
 
 	const sitePreview = process.env.SITE_PREVIEW === 'true';
-
-	console.log(sitePreview)
 
 
 	if (!productId) {
@@ -1417,10 +1515,20 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 
 exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 
-	let qty = Number(req.params.qty) || 1;
+	let qty = Number(req.params.qty);
+
+	if (!Number.isInteger(qty) || qty < 1) {
+
+		return next(new AppError('Invalid quantity', 400));
+	}
 
 	const productId = req.params.productId;
 	const productVariant = req.params.variant;
+
+	if (!mongoose.Types.ObjectId.isValid(productId)) {
+
+		return next(new AppError('Invalid product ID', 400));
+	}
 
 
 	//---------- ✅ Multi-model lookup  ------------//
@@ -1458,6 +1566,11 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 
 			return next(new AppError('No Variant Found', 404));
 		}
+
+		if (variant.inStock < qty) {
+
+			return next(new AppError(`Not enough ${variant.size} in stock! Only ${variant.inStock} left.`, 400));
+		}
 	}
 
 
@@ -1492,9 +1605,18 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 		totalNet = product.discountPrice * qty;
 	}
 
+	if (typeof totalNet !== 'number' || Number.isNaN(totalNet) || totalNet <= 0) {
+
+		return next(new AppError('Invalid checkout total', 400));
+	}
+
 	const delivery = totalNet < 50 ? 10 : 0;
 	const taxes = Math.round(((totalNet + delivery) * 0.1) * 10) / 10;
 	const totalGross = (totalNet + delivery) + taxes;
+
+
+
+	/// CHECKOUT SITE PREVIEW CONDITIONAL
 
 	const sitePreview = process.env.SITE_PREVIEW === 'true';
 
@@ -1555,13 +1677,18 @@ exports.getSuccessfulPaymentPageGuest = (req, res) => {
 exports.getUserOrderPage = catchAsync(async (req, res, next) => {
 
 	const orderNum = req.params.orderNum;
+
 	const order = await Order.findOne({ orderNum });
+
+	if (!order) return next(new AppError('Order not found', 404));
 
 	if (!order.user.equals(req.user._id)) {
 		return next(new AppError('You do not have permission to view this order', 403));
 	}
 
+
 	for (const item of order.product) {
+
 		let productDoc = await SpecProd.findById(item.product);
 
 		if (!productDoc) {
@@ -1582,6 +1709,8 @@ exports.getUserOrderPage = catchAsync(async (req, res, next) => {
 
 	const transaction = await Transaction.findById(order.transaction);
 
+	if (!transaction) return next(new AppError('Transaction not found', 404));
+
 	res.status(200).render('order-page', {
 		pageTitle: 'Order Page',
 		pageDescription: 'Successful Payment Page',
@@ -1593,14 +1722,28 @@ exports.getUserOrderPage = catchAsync(async (req, res, next) => {
 });
 
 
+
+
 exports.getGuestOrderPage = catchAsync(async (req, res, next) => {
 
 	const orderId = req.params.orderId;
+
+	if (!mongoose.Types.ObjectId.isValid(orderId)) {
+
+		return next(new AppError('Invalid order ID', 400));
+	}
+
+
 	const order = await GuestAddress.findOne({ order: orderId }).populate('order');
+
+	if (!order || !order.order) return next(new AppError('Order not found', 404));
+
 
 	const products = order.order.product;
 
-	const transaction = await Transaction.findById(order.transaction)
+	const transaction = await Transaction.findById(order.transaction);
+
+	if (!transaction) return next(new AppError('Transaction not found', 404));
 
 	res.status(200).render('guest-order-page', {
 
@@ -1667,19 +1810,37 @@ exports.getUserList = catchAsync(async (req, res) => {
 	res.status(200).render('admin/be_user-list', {
 		title: 'Admin-Users',
 		userList,
-		selectedRole: req.query.role || ''
+		selectedRole: req.query.role || '',
+		currentAdmin: req.user
 	})
 })
 
 
 
 
-exports.getUserPage = catchAsync(async (req, res) => {
+exports.getUserPage = catchAsync(async (req, res, next) => {
+
+	if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+
+		return next(new AppError('Invalid user ID', 400));
+	}
 
 	const userPage = await User.findById(req.params.id);
 
+	if (!userPage) return next(new AppError('User not found', 404));
 
-	/// Products for usewr page when cart/wishlist available
+	if (userPage.role === 'owner' && req.user.role !== 'owner') {
+
+		return next(new AppError('Only owners can view owner accounts', 403));
+	}
+
+	if (req.user.role === 'admin' && userPage.role !== 'user') {
+
+		return next(new AppError('Admins cannot edit staff accounts', 403));
+	}
+
+
+	/// Products for user page when cart/wishlist available
 
 	// const wishlistArr = userPage.wishlist.map(item => item.product);
 	// const products = await SpecProd.find({ _id: wishlistArr });
@@ -1691,6 +1852,7 @@ exports.getUserPage = catchAsync(async (req, res) => {
 
 		title: `Admin-User`,
 		userPage,
+		currentAdmin: req.user,
 		// products,
 		// cartProducts
 	})
@@ -1710,16 +1872,22 @@ exports.getNewUserPage = catchAsync(async (req, res) => {
 
 
 
-exports.getUserSearch = catchAsync(async (req, res) => {
+
+exports.getUserSearch = catchAsync(async (req, res, next) => {
 
 	const userEmail = req.query.userEmailSearch;
 
 	const userSearch = await User.findOne({ email: userEmail }).select('+active');
 
+
+	if (!userSearch) return next(new AppError('User not found', 404));
+
+
 	res.status(200).render('admin/be_user-search', {
 
 		title: `Admin-User-Results`,
-		userSearch
+		userSearch,
+		currentAdmin: req.user
 
 	})
 })
@@ -1777,7 +1945,7 @@ exports.getBarongsList = catchAsync(async (req, res) => {
 
 
 
-exports.getBarong = catchAsync(async (req, res) => {
+exports.getBarong = catchAsync(async (req, res, next) => {
 
 	const product = await SpecProd.findOne({ slug: req.params.slug }).populate(
 		{
@@ -1786,15 +1954,26 @@ exports.getBarong = catchAsync(async (req, res) => {
 		}
 	);
 
+	if (!product) return next(new AppError('Product not found', 404));
+
+
 	const categories = await Category.find().select('name');
 	const discounts = await Discount.find().select('code');
+
+	const colors = SpecProd.schema.path('color').enumValues;
+	const styles = SpecProd.schema.path('style').enumValues;
+	const sexes = SpecProd.schema.path('sex').enumValues;
 
 	res.status(200).render('admin/be_barong', {
 
 		title: `Admin-${product.name}`,
 		product,
 		categories,
-		discounts
+		discounts,
+		colors,
+		styles,
+		sexes
+
 	})
 })
 
@@ -1805,6 +1984,10 @@ exports.createBarongPage = catchAsync(async (req, res) => {
 	const categories = await Category.find().select('name');
 	const discounts = await Discount.find().select('code');
 
+	const colors = SpecProd.schema.path('color').enumValues;
+	const styles = SpecProd.schema.path('style').enumValues;
+	const sexes = SpecProd.schema.path('sex').enumValues;
+
 	const product = {};
 
 	res.status(200).render('admin/be_barong-create', {
@@ -1812,14 +1995,17 @@ exports.createBarongPage = catchAsync(async (req, res) => {
 		title: 'Admin- Create Product',
 		product,
 		categories,
-		discounts
+		discounts,
+		colors,
+		styles,
+		sexes
 	})
 })
 
 
 
 
-exports.getBarongSearch = catchAsync(async (req, res) => {
+exports.getBarongSearch = catchAsync(async (req, res, next) => {
 
 	const productSku = req.query.productSearch;
 
@@ -1828,6 +2014,8 @@ exports.getBarongSearch = catchAsync(async (req, res) => {
 			path: 'category',
 			select: 'name'
 		});
+
+	if (!product) return next(new AppError('Product not found', 404));
 
 	const categories = await Category.find().select('name');
 	const discounts = await Discount.find().select('code');
@@ -1867,7 +2055,7 @@ exports.getShoesList = catchAsync(async (req, res) => {
 
 
 
-exports.getShoe = catchAsync(async (req, res) => {
+exports.getShoe = catchAsync(async (req, res, next) => {
 
 	const product = await Shoe.findOne({ slug: req.params.slug }).populate(
 		{
@@ -1875,6 +2063,8 @@ exports.getShoe = catchAsync(async (req, res) => {
 			select: 'name'
 		}
 	);
+
+	if (!product) return next(new AppError('Product not found', 404));
 
 	const categories = await Category.find().select('name');
 	const discounts = await Discount.find().select('code');
@@ -1935,7 +2125,7 @@ exports.getBagList = catchAsync(async (req, res) => {
 
 
 
-exports.getBag = catchAsync(async (req, res) => {
+exports.getBag = catchAsync(async (req, res, next) => {
 
 	const product = await Bag.findOne({ slug: req.params.slug }).populate(
 		{
@@ -1943,6 +2133,8 @@ exports.getBag = catchAsync(async (req, res) => {
 			select: 'name'
 		}
 	);
+
+	if (!product) return next(new AppError('Product not found', 404));
 
 	const categories = await Category.find().select('name');
 	const discounts = await Discount.find().select('code');
@@ -1976,7 +2168,7 @@ exports.createBagPage = catchAsync(async (req, res) => {
 
 
 
-exports.getBagSearch = catchAsync(async (req, res) => {
+exports.getBagSearch = catchAsync(async (req, res, next) => {
 
 	const productSku = req.query.productSearch;
 
@@ -1985,6 +2177,8 @@ exports.getBagSearch = catchAsync(async (req, res) => {
 			path: 'category',
 			select: 'name'
 		});
+
+	if (!product) return next(new AppError('Product not found', 404));
 
 	const categories = await Category.find().select('name');
 	const discounts = await Discount.find().select('code');
@@ -2026,7 +2220,7 @@ exports.getAccessoriesList = catchAsync(async (req, res) => {
 
 
 
-exports.getAccessory = catchAsync(async (req, res) => {
+exports.getAccessory = catchAsync(async (req, res, next) => {
 
 	const product = await Accessory.findOne({ slug: req.params.slug }).populate(
 		{
@@ -2034,6 +2228,8 @@ exports.getAccessory = catchAsync(async (req, res) => {
 			select: 'name'
 		}
 	);
+
+	if (!product) return next(new AppError('Product not found', 404));
 
 	const categories = await Category.find().select('name');
 	const discounts = await Discount.find().select('code');
@@ -2067,7 +2263,7 @@ exports.createAccessoriesPage = catchAsync(async (req, res) => {
 
 
 
-exports.getAccessorySearch = catchAsync(async (req, res) => {
+exports.getAccessorySearch = catchAsync(async (req, res, next) => {
 
 	const productSku = req.query.productSearch;
 
@@ -2076,6 +2272,8 @@ exports.getAccessorySearch = catchAsync(async (req, res) => {
 			path: 'category',
 			select: 'name'
 		});
+
+	if (!product) return next(new AppError('Product not found', 404));
 
 	const categories = await Category.find().select('name');
 	const discounts = await Discount.find().select('code');
@@ -2126,14 +2324,22 @@ exports.getNewCategoryPage = catchAsync(async (req, res) => {
 
 
 
-exports.getCategoryPage = catchAsync(async (req, res) => {
+exports.getCategoryPage = catchAsync(async (req, res, next) => {
+
+	if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+
+		return next(new AppError('Invalid category ID', 400));
+	}
 
 	const categoryPage = await Category.findById(req.params.id);
+
+	if (!categoryPage) return next(new AppError('Category not found', 404));
+
+
 	const discounts = await Discount.find().select('code');
 
-	const selectedDiscount = categoryPage.discount
-		? categoryPage.discount._id.toString()
-		: '';
+	const selectedDiscount = categoryPage.discount ? categoryPage.discount.toString() : '';
+
 
 	res.status(200).render('admin/be_category-page', {
 
@@ -2226,22 +2432,37 @@ exports.getOrderPage = catchAsync(async (req, res, next) => {
 	let { shippingAddress } = order;
 
 	if (addressFilter.label && userAddresses) {
+
 		shippingAddress = userAddresses.addresses.find(address => address.label === addressFilter.label);
 	}
 
+
 	if (!shippingAddress) {
+
 		shippingAddress = order.shippingAddress;
 	}
 
+	if (!shippingAddress) {
+
+		return next(new AppError('Shipping address not found', 404));
+	}
+
+
 	const formattedAddress = `${shippingAddress.number} ${shippingAddress.street},${shippingAddress.city},${shippingAddress.state},${shippingAddress.postcode}`;
+
 	const renderedAddress = formattedAddress.replaceAll(",", "\n");
+
+	const shippingAddressData = JSON.stringify(shippingAddress);
+
+
 
 	res.status(200).render('admin/be_order-page', {
 		title: `Admin-Order`,
 		order,
 		renderedAddress,
 		addressFilter,
-		shippingAddress
+		shippingAddress,
+		shippingAddressData
 	});
 });
 
@@ -2294,7 +2515,7 @@ exports.getOrderSearch = catchAsync(async (req, res, next) => {
 
 			if (!guestAddresses || guestAddresses.length === 0) {
 
-				return next(new AppError('No User or Guest found with that email.'));
+				return next(new AppError('No User or Guest found with that email.', 404));
 			}
 
 			const guestOrderIds = guestAddresses
@@ -2311,7 +2532,7 @@ exports.getOrderSearch = catchAsync(async (req, res, next) => {
 
 		if (!orders || orders.length === 0) {
 
-			return next(new AppError('No orders found for that email.'));
+			return next(new AppError('No orders found for that email.', 404));
 		}
 	}
 
@@ -2349,10 +2570,14 @@ exports.getTransactionSearch = catchAsync(async (req, res, next) => {
 
 	const orderNum = req.query.transactionSearch;
 
-
 	const order = await Order.findOne({ orderNum })
 
+	if (!order) return next(new AppError('Order not found', 404));
+
+
 	const transaction = await Transaction.findById(order.transaction);
+
+	if (!transaction) return next(new AppError('Transaction not found', 404));
 
 
 	res.status(200).render('admin/be_transaction', {
@@ -2390,7 +2615,6 @@ exports.createDiscountPage = catchAsync(async (req, res, next) => {
 		title: `Admin-Discount Create`,
 
 	})
-
 })
 
 
@@ -2398,13 +2622,22 @@ exports.createDiscountPage = catchAsync(async (req, res, next) => {
 exports.updateDiscountPage = catchAsync(async (req, res, next) => {
 
 	function formatDateInput(date) {
+
 		if (!date) return '';
+
 		return new Date(date).toISOString().slice(0, 10);
 	}
 
 	const discountId = req.params.id;
 
+	if (!mongoose.Types.ObjectId.isValid(discountId)) {
+
+		return next(new AppError('Invalid discount ID', 400));
+	}
+
 	const discount = await Discount.findById(discountId);
+
+	if (!discount) return next(new AppError('Discount not found', 404));
 
 
 	res.status(200).render('admin/be_discount-update-page', {

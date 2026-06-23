@@ -82,12 +82,12 @@ router.post('/paypal/capture-order/:orderID',
 	orderController.capturePayPalOrder
 );
 
-router.get('/checkout-session',
+router.post('/checkout-session',
 	middlewareDisableCheckout,
 	orderController.buyCartItems
 );
 
-router.get('/checkout-session-bin/:product/:qty/:variant',
+router.post('/checkout-session-bin/:product/:qty/:variant',
 	middlewareDisableCheckout,
 	orderController.buyItNowItem
 );

@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const Category = require('./../models/categoryModel');
 
 const factory = require('./../controllers/handlerFactory')
@@ -5,6 +7,9 @@ const factory = require('./../controllers/handlerFactory')
 const catchAsync = require('./../utilities/catchAsync');
 const APIFeatures = require('./../utilities/apiFeatures');
 const AppError = require('./../utilities/appError');
+
+const filterObj = require('./../utilities/filterObject');
+
 
 
 //------------------ Image Uploading  -------------------//
@@ -32,7 +37,10 @@ const multerFilter = (req, file, cb) => {
 const upload = multer(
 	{
 		storage: multerStorage,
-		fileFilter: multerFilter
+		fileFilter: multerFilter,
+		limits: {
+			fileSize: 10 * 1024 * 1024
+		}
 	}
 );
 
@@ -79,7 +87,23 @@ exports.createCategory = catchAsync(async (req, res, next) => {
 
 	if (req.file) req.body.image = req.file.filename;
 
-	const newCategory = await Category.create(req.body);
+	if (req.body.discount === '') req.body.discount = null;
+
+	if (req.body.discount && !mongoose.Types.ObjectId.isValid(req.body.discount)) {
+
+		return next(new AppError('Invalid discount ID', 400));
+	}
+
+
+	const filteredBody = filterObj(
+		req.body,
+		'name',
+		'description',
+		'image',
+		'discount'
+	);
+
+	const newCategory = await Category.create(filteredBody);
 
 
 	res.status(200).json({
@@ -115,11 +139,24 @@ exports.updateCategory = catchAsync(async (req, res, next) => {
 
 	if (req.body.discount === '') req.body.discount = null;
 
+	if (req.body.discount && !mongoose.Types.ObjectId.isValid(req.body.discount)) {
+
+		return next(new AppError('Invalid discount ID', 400));
+	}
+
+
+	const filteredBody = filterObj(
+		req.body,
+		'name',
+		'description',
+		'image',
+		'discount'
+	);
 
 	const category = await Category.findByIdAndUpdate(
 
 		req.params.id,
-		req.body,
+		filteredBody,
 		{ new: true, runValidators: true }
 	)
 
@@ -141,15 +178,25 @@ exports.deleteCategory = factory.deleteOne(Category);
 
 
 
-
 exports.deactivateCategory = catchAsync(async (req, res, next) => {
 
-	await Category.findByIdAndUpdate(req.params.id, { active: false },
+	if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+
+		return next(new AppError('Invalid category ID', 400));
+	}
+
+
+	const category = await Category.findByIdAndUpdate(req.params.id, { active: false },
 		{
 			new: true,
 			runValidators: true
 		});
 
+
+	if (!category) {
+
+		return next(new AppError('Category not found', 404));
+	}
 
 	res.status(200).json({
 		status: 'success'

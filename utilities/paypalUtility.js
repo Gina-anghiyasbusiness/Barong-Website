@@ -12,6 +12,21 @@ function environment() {
 	let clientSecret = process.env.PAYPAL_SECRET_KEY;
 
 
+	/// Guard Rail
+
+
+	if (!clientId || !clientSecret) {
+
+		throw new Error('PayPal credentials are required');
+	}
+
+	if (!['sandbox', 'live'].includes(process.env.PAYPAL_MODE)) {
+
+		throw new Error('PAYPAL_MODE must be either sandbox or live');
+	}
+
+
+
 	/// Sandbox (testing) or live (real) depending on env variable
 
 

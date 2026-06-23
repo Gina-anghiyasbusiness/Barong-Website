@@ -8,7 +8,7 @@ const crypto = require('crypto');
 const AppError = require('../utilities/appError');
 const catchAsync = require('../utilities/catchAsync');
 
-const Email = require('./../utilities/email');
+const Email = require('./../utilities/emailClass');
 
 
 
@@ -35,7 +35,8 @@ const createSendToken = (user, statusCode, res) => {
 	const cookieOptions = {
 
 		expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
-		httpOnly: true
+		httpOnly: true,
+		sameSite: 'lax'
 	}
 
 	if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
@@ -46,7 +47,7 @@ const createSendToken = (user, statusCode, res) => {
 
 	res.status(statusCode).json({
 		status: 'success',
-		token,
+		// token,
 		data: { user }
 	})
 
@@ -64,9 +65,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 		name: req.body.name,
 		email: req.body.email,
 		password: req.body.password,
-		passwordConfirm: req.body.passwordConfirm,
-		passwordChangedAt: req.body.passwordChangedAt,
-		role: req.body.role
+		passwordConfirm: req.body.passwordConfirm
 	});
 
 
@@ -154,21 +153,41 @@ exports.isLoggedIn = async (req, res, next) => {
 
 /// logout
 
+/// safe version
+
+
+// exports.logout = (req, res) => {
+
+// 	res.cookie('jwt', 'loggedOutToken', {
+
+// 		expires: new Date(Date.now() + 10 * 1000),
+// 		httpOnly: true
+// 	});
+// 	res.status(200).json({
+// 		status: 'success'
+// 	})
+// }
+
+
+
+/// consistent version
+
 
 exports.logout = (req, res) => {
+	const cookieOptions = {
+		expires: new Date(Date.now() + 10 * 1000),
+		httpOnly: true,
+		sameSite: 'lax'
+	};
 
-	res.cookie('jwt', 'loggedOutToken', {
+	if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
-		expiresIn: new Date(Date.now() + 10 * 1000),
-		httpOnly: true
-	});
+	res.cookie('jwt', 'loggedOutToken', cookieOptions);
+
 	res.status(200).json({
 		status: 'success'
-	})
+	});
 }
-
-
-
 
 
 
@@ -212,6 +231,8 @@ exports.protectRoute = catchAsync(async (req, res, next) => {
 
 	req.user = existingUser;
 
+	res.set('Cache-Control', 'no-store');
+
 	next();
 })
 
@@ -241,13 +262,58 @@ exports.restrictTo = (...roles) => {
 
 
 
+// exports.forgotPassword = catchAsync(async (req, res, next) => {
+
+// 	const user = await User.findOne({ email: req.body.email });
+
+// 	if (!user) {
+
+// 		return next(new AppError('No user found with that email', 404));
+// 	}
+
+// 	const resetToken = user.createPasswordResetToken();
+
+// 	await user.save({ validateBeforeSave: false });
+
+// 	try {
+
+// 		const resetUrl = `${resetToken}`;
+
+// 		/// send email with data
+
+// 		await new Email(user, resetUrl).resetPassword();
+
+// 		res.status(200).json({
+
+// 			status: "success",
+// 			message: 'Token Sent'
+// 		})
+// 	}
+
+// 	catch (err) {
+
+// 		user.passwordResetToken = undefined;
+// 		user.passwordResetExpires = undefined;
+
+// 		await user.save({ validateBeforeSave: false });
+
+// 		return next(new AppError('Error sending email. Please try again', 500));
+// 	}
+// });
+
+
 exports.forgotPassword = catchAsync(async (req, res, next) => {
+
+	const resetResponse = {
+		status: 'success',
+		message: 'If an account exists for that email, a reset link has been sent'
+	};
 
 	const user = await User.findOne({ email: req.body.email });
 
 	if (!user) {
 
-		return next(new AppError('No user found with that email', 404));
+		return res.status(200).json(resetResponse);
 	}
 
 	const resetToken = user.createPasswordResetToken();
@@ -258,18 +324,11 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
 		const resetUrl = `${resetToken}`;
 
-		/// send email with data
-
 		await new Email(user, resetUrl).resetPassword();
 
-		res.status(200).json({
+		return res.status(200).json(resetResponse);
 
-			status: "success",
-			message: 'Token Sent'
-		})
-	}
-
-	catch (err) {
+	} catch (err) {
 
 		user.passwordResetToken = undefined;
 		user.passwordResetExpires = undefined;
@@ -279,9 +338,6 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 		return next(new AppError('Error sending email. Please try again', 500));
 	}
 });
-
-
-
 
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
@@ -295,7 +351,12 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
 	})
 
-	if (!user) { return next(new AppError('Invalid Token'), 400) };
+
+	if (!user) {
+
+		return next(new AppError('Invalid or expired password reset token', 400));
+	}
+
 
 	user.password = req.body.password;
 	user.passwordConfirm = req.body.passwordConfirm;

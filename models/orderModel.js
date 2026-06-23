@@ -31,7 +31,7 @@ const orderSchema = new mongoose.Schema({
 			productModel: {
 				type: String,
 				required: true,
-				enum: ['SpecProd', 'Shoe', 'Accessory']
+				enum: ['SpecProd', 'Shoe', 'Bag', 'Accessory']
 			},
 
 			quantity: {

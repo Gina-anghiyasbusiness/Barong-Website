@@ -23,7 +23,8 @@ block content
 				//- .user__form--group
 				//- 	+formRows('addresses','text')
 				.admin__form--group
-					+formRows('role','text')
+					+formSelect('role', ['admin', 'supervisor', 'owner'], 'admin')
+
 				.admin__form--group
 					+formRows('password','text')
 				.admin__form--group

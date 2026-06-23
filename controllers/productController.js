@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const SpecProd = require('../models/specProdModel');
 const Accessory = require('../models/accessoryModel');
 const Bag = require('../models/bagModel');
@@ -59,7 +61,10 @@ const multerFilter = (req, file, cb) => {
 const upload = multer(
 	{
 		storage: multerStorage,
-		fileFilter: multerFilter
+		fileFilter: multerFilter,
+		limits: {
+			fileSize: 10 * 1024 * 1024
+		}
 	}
 );
 
@@ -187,7 +192,91 @@ exports.resizeOtherImages = catchAsync(async (req, res, next) => {
 
 
 
+//----------- filter Objects ------------- //
 
+
+
+exports.filterProductUpdateBody = (req, res, next) => {
+
+	req.body = filterObj(req.body,
+		'name',
+		'description',
+		'originalPrice',
+		'imageCover',
+		'imageUrls',
+		'category',
+		'discount',
+		'tags',
+		'color',
+		'sex',
+		'style',
+		'variants'
+	);
+
+	next();
+};
+
+
+
+exports.filterSimpleProductUpdateBody = (req, res, next) => {
+
+	req.body = filterObj(req.body,
+		'name',
+		'description',
+		'originalPrice',
+		'imageCover',
+		'imageUrls',
+		'category',
+		'discount',
+		'tags',
+		'color'
+	);
+
+	next();
+};
+
+
+
+/// ID Validation for Discount and Category
+
+
+exports.validateProductRefs = (req, res, next) => {
+
+	if (Object.prototype.hasOwnProperty.call(req.body, 'category') && req.body.category === '') {
+		req.body.category = null;
+	}
+
+	if (Object.prototype.hasOwnProperty.call(req.body, 'discount') && req.body.discount === '') {
+		req.body.discount = null;
+	}
+
+	if (req.body.category && !mongoose.Types.ObjectId.isValid(req.body.category)) {
+		return next(new AppError('Invalid category ID', 400));
+	}
+
+	if (req.body.discount && !mongoose.Types.ObjectId.isValid(req.body.discount)) {
+		return next(new AppError('Invalid discount ID', 400));
+	}
+
+	next();
+};
+
+
+// exports.validateProductRefs = (req, res, next) => {
+
+
+// 	if (req.body.category && !mongoose.Types.ObjectId.isValid(req.body.category)) {
+
+// 		return next(new AppError('Invalid category ID', 400));
+// 	}
+
+// 	if (req.body.discount && !mongoose.Types.ObjectId.isValid(req.body.discount)) {
+
+// 		return next(new AppError('Invalid discount ID', 400));
+// 	}
+
+// 	next();
+// };
 
 
 //-------------  Factory function calls  -----------//
@@ -212,13 +301,23 @@ exports.createBarong = catchAsync(async (req, res, next) => {
 	if (req.body.category === '') req.body.category = null;
 
 
+
 	//----------------------- Variants ------------------------//
+
 
 	///	Can Leave if no variants are required for the Product	//
 
+
 	if (req.body.variants && typeof req.body.variants === 'string') {
 
-		req.body.variants = JSON.parse(req.body.variants);
+		try {
+
+			req.body.variants = JSON.parse(req.body.variants);
+
+		} catch (err) {
+
+			return next(new AppError('Invalid variants data', 400));
+		}
 	}
 
 
@@ -353,12 +452,22 @@ exports.createShoes = catchAsync(async (req, res, next) => {
 
 	//----------------------- Variants ------------------------//
 
+
 	///	Can Leave if no variants are required for the Product	//
+
 
 	if (req.body.variants && typeof req.body.variants === 'string') {
 
-		req.body.variants = JSON.parse(req.body.variants);
+		try {
+
+			req.body.variants = JSON.parse(req.body.variants);
+
+		} catch (err) {
+
+			return next(new AppError('Invalid variants data', 400));
+		}
 	}
+
 
 	///		//////////////////////////////////////////////////////
 

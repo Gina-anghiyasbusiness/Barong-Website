@@ -84,14 +84,28 @@ app.use((req, res, next) => {
 
 //-- Helmet --/
 
+app.use(
+
+	helmet({
+
+		contentSecurityPolicy: false,
+		crossOriginOpenerPolicy: {
+
+			policy: 'same-origin-allow-popups'
+		}
+	})
+);
+
 
 app.use(
 	helmet.contentSecurityPolicy({
 		useDefaults: false,
 		directives: {
+
 			defaultSrc: [
 				"'self'"
 			],
+
 			scriptSrc: [
 				"'self'",
 				"'sha256-GAjmaehDsJH2jDoKMtZaYsCWJI2Ugs8esNnVYk0k3f0='",
@@ -99,6 +113,7 @@ app.use(
 				'https://www.paypal.com',
 				'https://www.paypalobjects.com'   //  (PayPal needs it for widgets)
 			],
+
 			frameSrc: [
 				"'self'",
 				"https://js.stripe.com",
@@ -106,6 +121,7 @@ app.use(
 				"https://www.sandbox.paypal.com",
 				"https://www.paypalobjects.com"
 			],
+
 			connectSrc: [
 				"'self'",
 				"https://api.stripe.com",
@@ -114,26 +130,35 @@ app.use(
 				"https://www.paypalobjects.com",
 				"https://www.sandbox.paypal.com"
 			],
+
 			styleSrc: [
 				"'self'",
 				"https://fonts.googleapis.com",
 				"'unsafe-inline'"
 			],
+
 			fontSrc: [
 				"'self'",
 				'https://fonts.gstatic.com',
 				'data:',
 				'blob:'
 			],
+
 			imgSrc: [
 				"'self'",
 				'data:',
-				'https://cdn.example.com',
 				'https://www.paypal.com',
 				'https://www.paypalobjects.com'
 			],
+
+			// objectSrc: ["'none'"],
+			// upgradeInsecureRequests: []
+
 			objectSrc: ["'none'"],
-			upgradeInsecureRequests: []
+			baseUri: ["'self'"],
+			formAction: ["'self'"],
+			frameAncestors: ["'none'"],
+			upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
 
 
 		}
@@ -163,6 +188,19 @@ app.post('/webhook', express.raw({ type: 'application/json' }),
 
 
 
+//----------------  Render health check ---------------//
+
+
+app.get('/health', (req, res) => {
+
+	res.status(200).json({
+		status: 'ok'
+	});
+});
+
+
+
+
 //----  Morgan ----//
 
 app.use(morgan('dev'));
@@ -172,14 +210,45 @@ app.use(morgan('dev'));
 
 //---- render JSON to object ----///
 
-app.use(express.json());
+app.use(express.json({ limit: '50kb' }));
 
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '50kb' }));
+
 
 
 //---------  Cookie Parser  -------//
 
 app.use(cookieParser());
+
+
+
+//------------------- CSRF defense -------------------//
+
+//---- Reject cross-origin authenticated writes ----//
+
+
+app.use((req, res, next) => {
+
+	const writeMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
+
+	if (!writeMethods.includes(req.method) || !req.cookies.jwt) {
+
+		return next();
+	}
+
+	const origin = req.get('origin');
+
+	if (!origin) return next();
+
+	const expectedOrigin = `${req.protocol}://${req.get('host')}`;
+
+	if (origin !== expectedOrigin) {
+
+		return next(new AppError('Invalid request origin', 403));
+	}
+
+	next();
+});
 
 
 
@@ -189,8 +258,6 @@ app.use(cookieParser());
 app.use((req, res, next) => {
 
 	console.log(`API call logged at :${req.requestTime = new Date().toISOString()}`);
-
-	// console.log(req.cookies);
 
 	next();
 })
@@ -216,7 +283,52 @@ const limiter = rateLimit(
 	}
 )
 
-app.use('/api', limiter)
+app.use('/api', limiter);
+
+
+
+//---- Express login rate limiter ----//
+
+const authLimiter = rateLimit({
+
+	max: 10,
+	windowMs: 15 * 60 * 1000,
+	message: 'Too many login attempts from this IP. Please try again in 15 minutes'
+});
+
+
+app.use('/api/v1/users/login', authLimiter);
+
+
+
+//---- Express password reset rate limiter ----//
+
+
+const passwordResetLimiter = rateLimit({
+
+	max: 5,
+	windowMs: 60 * 60 * 1000,
+	message: 'Too many password reset requests from this IP. Please try again in 1 hour'
+});
+
+
+app.use('/api/v1/users/forgotPassword', passwordResetLimiter);
+
+
+
+
+//---- Express sign up rate limiter ----//
+
+
+const signupLimiter = rateLimit({
+
+	max: 5,
+	windowMs: 60 * 60 * 1000,
+	message: 'Too many signup attempts from this IP. Please try again in 1 hour'
+});
+
+
+app.use('/api/v1/users/signup', signupLimiter);
 
 
 

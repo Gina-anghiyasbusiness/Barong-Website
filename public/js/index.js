@@ -20,7 +20,7 @@ import { createCategoryDB, updateCategoryDB, deactivateCategoryDB } from './cate
 
 import { userUpdateSettings, userUpdateAddress, userNewAddress, userdeleteAddress } from './frontEndUsers';
 
-import { updateUserDB, createUserDB, deactivateUserDB, updateSettings, updateUserAddressDB } from './users';
+import { updateUserDB, createUserDB, deactivateUserDB, updateSettings, updateUserAddressDB, deleteUserDB } from './users';
 
 import { addProductToUser, removeProductFromCart, removeProductFromWishlist, updateCart, saveAddressCheckout, saveAddressCheckoutGuest, buyItNowCheckout, buyItNowGuestCheckout } from './shopping';
 
@@ -725,7 +725,9 @@ function enableRemoveFromCart() {
 
 	document.querySelectorAll('.remove-cart--item').forEach(btn => {
 
-		btn.addEventListener('click', () => {
+		// btn.addEventListener('click', () => {
+
+		btn.onclick = () => {
 
 			const removeItem = btn.dataset.remove;
 			const user = btn.dataset.user;
@@ -735,7 +737,8 @@ function enableRemoveFromCart() {
 				removeProductFromCart(removeItem, user);
 
 			}
-		});
+			// });
+		};
 	});
 }
 
@@ -781,7 +784,8 @@ function enableRemoveFromWishlist() {
 
 	document.querySelectorAll('.remove-wishlist--item').forEach(btn => {
 
-		btn.addEventListener('click', () => {
+		// btn.addEventListener('click', () => {
+		btn.onclick = () => {
 
 			const removeItem = btn.dataset.remove;
 			const user = btn.dataset.user;
@@ -791,7 +795,8 @@ function enableRemoveFromWishlist() {
 				removeProductFromWishlist(removeItem, user);
 
 			}
-		});
+			// });
+		};
 	});
 }
 
@@ -1049,6 +1054,8 @@ const updateUser = document.querySelector('.user__form--update');
 
 const deactivateUser = document.getElementById('deactivateUser');
 
+const deleteUser = document.getElementById('deleteUser');
+
 
 
 /// Products  
@@ -1157,8 +1164,7 @@ if (updateUser) {
 			name: document.getElementById('name').value,
 			email: document.getElementById('email').value,
 			phone: document.getElementById('phone').value,
-			role: document.getElementById('role').value,
-
+			role: document.getElementById('role')?.value
 
 		}
 
@@ -1222,11 +1228,38 @@ if (deactivateUser) {
 
 		e.preventDefault();
 
+		const confirmed = confirm('Are you sure you want to deactivate this user?');
+
+		if (!confirmed) return;
+
 		const userId = e.currentTarget.dataset.userId;
 
 		deactivateUserDB(userId);
-	})
+
+	});
 }
+
+
+
+/// Delete User
+
+
+if (deleteUser) {
+
+	deleteUser.addEventListener('click', e => {
+
+		e.preventDefault();
+
+		const confirmed = confirm('Are you sure you want to permanently delete this user? \nTHIS CANNOT BE UNDONE!!');
+
+		if (!confirmed) return;
+
+		const userId = e.currentTarget.dataset.userId;
+
+		deleteUserDB(userId);
+	});
+}
+
 
 
 ///--- Logged In User admin
@@ -1981,7 +2014,7 @@ if (updateOrderForm) {
 
 		const orderStatus = document.getElementById('admin-order-status').value;
 		const transStatus = document.getElementById('admin-transaction-status').value;
-		const addressObject = updateOrderForm.dataset.updateshipping;
+		const addressObject = encodeURIComponent(updateOrderForm.dataset.updateshipping);
 		const orderNum = updateOrderForm.dataset.ordernum;
 
 

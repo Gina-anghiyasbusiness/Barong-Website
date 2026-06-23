@@ -18,10 +18,15 @@ block content
 					+formRows('email','text',userPage.email)
 				.admin__form--group
 					+formRows('phone','text',userPage.phone)
-				.admin__form--group
-					+formRows('role','text',userPage.role)
-				.admin__form--buttons
-					button#user__form-submit Update
+					input#role(type='hidden', value=userPage.role)
+
+				if (currentAdmin.role !== 'admin' || userPage.role === 'user') && currentAdmin.id !== userPage.id
+					.admin__form--buttons
+						button#user__form-submit Update User
+					.admin__form--delete-user
+						button#deactivateUser(type='button'  data-user-id=`${userPage._id}`) Deactivate User
+						button#deleteUser(type='button'  data-user-id=`${userPage._id}`) Delete User
+
 					
 			if userPage.addresses.length > 0			
 				h4.admin-userPage--heading Addresses
@@ -37,12 +42,11 @@ block content
 									+formRowsLabels('state','text',address.state.toUpperCase())
 									+formRowsLabels('postcode','text',address.postcode)
 									+formRowsLabels('default','text',address.isDefault ? 'true' : 'false')
-									.admin__form--buttons
-										button#user__form-submit Update
-						
-						
-				.admin__form--buttons
-					button#deactivateUser(type='button'  data-user-id=`${userPage._id}`) Deactivate User
+									if currentAdmin.role !== 'admin' || userPage.role === 'user'
+										.admin__form--buttons
+											button#user__form-submit Update Address
+										
+
 						
 			
 

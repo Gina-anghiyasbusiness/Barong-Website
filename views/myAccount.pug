@@ -44,7 +44,7 @@ block content
 									
 								.myAccount__side-menu-logout
 									li.myAccount__side-menu--item 
-										button#my-account-logout.myAccount__side-menu--btn.logout--btn Logout
+										button#my-account-logout.myAccount__side-menu--btn Logout
 									
 				#my-account-main.myAccount__main-content 
 				
@@ -127,7 +127,7 @@ block content
 								each item in wishlist
 									.myAccount__cart--item
 											if item.product
-												- const productUrl = item.productType === 'shoe' ? 'shoe' : item.productType === 'accessory' ? 'accessory' : 'barong'
+												- const productUrl = item.productType
 												.myAccount__cart--img-box
 													a(href=`/${productUrl}/${item.product.slug}`)
 														img(src=`/img/product_imgs/${item.product.imageCover}`, alt="" , class='myAccount__cart--img' , width='450' , height='800')
@@ -166,7 +166,10 @@ block content
 														button.productPage__product-btn.wishlist-btns.wishlist-btn--bin(data-product-id=`${item.product.id}`,data-user-object=user , data-product-slug=`${item.product.slug}`) Buy now 													
 													
 											else
-												p Product no longer exists
+												.myAccount__missing-product
+													p Product no longer exists
+													button.remove-wishlist--item(data-remove=`${item._id}` data-user=`${user._id}`)
+														i(data-lucide='x' width="16" height="16")
 							.myAccount__cart--checkout 
 								if wishlist.length < 1
 									p.myAccount__checkout--empty Wishlist Empty									
@@ -180,7 +183,7 @@ block content
 								each item in cart
 									.myAccount__cart--item
 											if item.product
-												- const productUrl = item.productType === 'shoe' ? 'shoe' : item.productType === 'accessory' ? 'accessory' : 'barong'
+												- const productUrl = item.productType
 												.myAccount__cart--img-box
 													a(href=`/${productUrl}/${item.product.slug}`)
 														img(src=`/img/product_imgs/${item.product.imageCover}`, alt="" , class='myAccount__cart--img' , width='450' , height='800')
@@ -215,9 +218,12 @@ block content
 																p.myAccount__cart--cprice $#{item.discountPrice}							
 	
 											else
-												p Product no longer exists
+												.myAccount__missing-product
+													p Product no longer exists
+													button.remove-cart--item(data-remove=`${item._id}` data-user=`${user._id}`)
+														i(data-lucide='x' width="16" height="16")
 							.myAccount__cart--checkout
-								if cart.length > 0 
+								if cart.some(item => item.product)
 									a(href="/checkout-page" class='myAccount__checkout--link') Checkout Now!
 								else 
 									p.myAccount__checkout--empty Cart Empty

@@ -57,7 +57,7 @@ export const logout = async () => {
 
 		const res = await axios({
 
-			method: 'GET',
+			method: 'POST',
 			url: '/api/v1/users/logout'
 		})
 

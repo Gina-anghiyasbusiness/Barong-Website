@@ -24,7 +24,7 @@ const specProdSchema = new mongoose.Schema({
 
 	color: {
 		type: String,
-		enum: ['black', 'white', 'red', 'blue', 'green', 'yellow', 'pink', 'purple', 'orange', 'grey', 'brown']
+		enum: ['black', 'white', 'red', 'blue', 'green', 'yellow', 'pink', 'purple', 'orange', 'grey', 'brown', 'old rose', 'ethnic', 'champagne']
 	},
 
 

@@ -28,24 +28,28 @@ const productBaseSchema = {
 				return /^[\p{L}\p{N}][\p{L}\p{N}\s&'",.\-()]*$/u.test(val.trim());
 			},
 
-			message: 'Product name must only contain letters and spaces'
+			message: 'Product name contains unsupported characters'
 		}
 	},
 
 
 	description: {
-
 		type: String,
-		default: ''
+		trim: true,
+		default: '',
+		maxLength: [300, 'A product description must not be more than 300 characters long']
 	},
 
 	originalPrice: {
-
 		type: Number,
-		required: true
+		required: [true, 'A product must have an original price'],
+		min: [1, 'Price must be 0 or above']
 	},
 
-	currentPrice: Number,
+	currentPrice: {
+		type: Number,
+		min: [1, 'Price must be 0 or above']
+	},
 
 	imageCover: {
 
@@ -54,7 +58,10 @@ const productBaseSchema = {
 
 	},
 
-	imageUrls: [String],
+	imageUrls: {
+		type: [String],
+		default: []
+	},
 
 	category: {
 

@@ -47,7 +47,7 @@ export const updateUserDB = async (data, id) => {
 		const result = await axios({
 
 			method: "PATCH",
-			url: `/api/v1/users/${id}`,
+			url: `/api/v1/admin/users/${id}`,
 			data
 		})
 
@@ -66,7 +66,6 @@ export const updateUserDB = async (data, id) => {
 
 		showAlert('error', err.response.data.message);
 
-		console.log(err);
 	}
 }
 
@@ -78,14 +77,47 @@ export const deactivateUserDB = async (id) => {
 
 		const result = await axios({
 
-			method: "DELETE",
-			url: `/api/v1/admin/users/${id}`
+			method: "PATCH",
+			url: `/api/v1/admin/users/${id}/deactivate`
 		})
 
 
 		if (result.data.status === 'success') {
 
 			showAlert('success', 'User Deactivated Successfully');
+
+			setTimeout(() => {
+
+				window.location.href = "/admin/be_user-list";
+
+			}, 1500);
+
+		}
+
+
+	} catch (err) {
+
+		showAlert('error', err.response.data.message);
+
+
+	}
+
+}
+
+export const deleteUserDB = async (id) => {
+
+	try {
+
+		const result = await axios({
+
+			method: "DELETE",
+			url: `/api/v1/admin/users/${id}`
+		})
+
+
+		if (result.status === 204 || result.data.status === 'success') {
+
+			showAlert('success', 'User Deleted Successfully');
 
 			setTimeout(() => {
 

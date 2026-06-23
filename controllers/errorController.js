@@ -15,10 +15,18 @@ const handleCastErrorDB = (error) => {
 }
 
 
-const handleMongoErrorDB = (error) => {
+// const handleMongoErrorDB = (error) => {
 
-	return new AppError(`Duplicate field value: ${error.keyValue.name}. Please use another value`, 400);
-}
+// 	return new AppError(`Duplicate field value: ${error.keyValue.name}. Please use another value`, 400);
+// }
+
+
+const handleMongoErrorDB = error => {
+
+	const duplicateField = Object.keys(error.keyValue || {})[0] || 'field';
+
+	return new AppError(`Duplicate ${duplicateField}. Please use another value`, 400);
+};
 
 
 const handleValidationErrorDB = (error) => {
@@ -61,6 +69,7 @@ const sendErrorDev = (err, req, res) => {
 	const user = req.user || null;
 
 
+
 	if (!user) {
 
 		return res.status(err.statusCode || 500).render('error', {
@@ -78,9 +87,6 @@ const sendErrorDev = (err, req, res) => {
 			title: "Something went wrong....",
 			errMsg: err.message
 		})
-
-
-		/// Render back end error page		
 
 
 	} else {
@@ -109,6 +115,7 @@ const sendErrorProd = (err, req, res) => {
 			})
 		}
 
+
 		console.error('ERROR 💥', err);
 
 		return res.status(500).json({
@@ -117,41 +124,34 @@ const sendErrorProd = (err, req, res) => {
 		})
 	}
 
+	const user = req.user || null;
+
+	const isAdminRequest = req.originalUrl.startsWith('/admin/') ||
+		(user && user.role !== 'user');
+
 
 	if (err.isOperational) {
 
-		return res.status(err.statusCode).render('error', {
+		const errorView = isAdminRequest ? 'admin/be_error' : 'error';
+
+		return res.status(err.statusCode).render(errorView, {
 
 			title: "Something went wrong....",
 			errMsg: err.message
-		})
+		});
 	}
+
 
 	console.error('ERROR 💥', err);
 
 
-	/// Render front end error page
+	const errorView = isAdminRequest ? 'admin/be_error' : 'error';
 
+	return res.status(err.statusCode).render(errorView, {
 
-	if (req.user.role === 'user') {
-
-		return res.status(err.statusCode).render('error', {
-
-			title: "Something went wrong....",
-			errMsg: 'Please try again later'
-		})
-
-
-		/// Render back end error page		
-
-	} else {
-
-		return res.status(err.statusCode).render('admin/be_error', {
-
-			title: "Something went wrong....",
-			errMsg: 'Please try again later'
-		})
-	}
+		title: "Something went wrong....",
+		errMsg: 'Please try again later'
+	})
 }
 
 

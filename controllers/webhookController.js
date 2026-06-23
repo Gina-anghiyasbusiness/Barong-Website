@@ -1,20 +1,47 @@
+
+const mongoose = require('mongoose');
+
 const Order = require('../models/orderModel');
 const Transaction = require('../models/transactionModel');
 const User = require('../models/userModel');
 const Counter = require('../models/counterModel');
+
 const SpecProd = require('../models/specProdModel');
 const Accessory = require('../models/accessoryModel');
 const Shoe = require('../models/shoeModel');
+const Bag = require('../models/bagModel');
+
 const Discount = require('../models/discountModel');
 const GuestAddress = require('../models/guestAddressModel');
 
 
-const Email = require('./../utilities/email');
+const Email = require('./../utilities/emailClass');
 const priceAtPurchaseDiscount = require('../utilities/priceAtPurchase');
 const categoryDiscountPrice = require('../utilities/categoryDiscountOnPurchase');
 
+
+if (!process.env.STRIPE_SECRET_KEY) {
+
+	throw new Error('STRIPE_SECRET_KEY environment variable is required');
+}
+
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+
+
+const calculateTotals = (totalNet) => {
+
+	const delivery = totalNet < 50 ? 10 : 0;
+	const subtotal = totalNet + delivery;
+	const taxAmount = Math.round(subtotal * 0.1 * 100);
+
+	return {
+		delivery,
+		subtotal,
+		taxAmount
+	};
+}
 
 
 const updateStockLevels = async (productId, variantId, qty) => {
@@ -24,6 +51,10 @@ const updateStockLevels = async (productId, variantId, qty) => {
 
 	if (!product) {
 		product = await Shoe.findById(productId);
+	}
+
+	if (!product) {
+		product = await Bag.findById(productId);
 	}
 
 	if (!product) {
@@ -62,12 +93,19 @@ exports.handleStripeWebhook = async (req, res) => {
 
 	/// Declare All order variables for manipulation
 
-	let event, cart, product, qty, variant, userId, shippingAddress, price;
+	let event, cart, product, qty, variant, userId, shippingAddress;
+
 
 
 	/// 🧾 Get Stripe's signature from headers to verify the request
 
 	const sig = req.headers['stripe-signature'];
+
+	if (!process.env.STRIPE_WEBHOOK_SECRET) {
+
+		return res.status(500).send('Stripe webhook secret is not configured');
+	}
+
 
 
 	/// ✅ Verify the request body and signature are valid					
@@ -97,7 +135,48 @@ exports.handleStripeWebhook = async (req, res) => {
 
 		const session = event.data.object;
 
-		// Retrieve the actual payment method used
+
+		/// guard check
+
+
+		if (!session.payment_intent) {
+			return res.status(400).send('Missing payment intent');
+		}
+
+		const existingTransaction = await Transaction.findOne({
+			transactionId: session.payment_intent
+		});
+
+		if (existingTransaction) {
+			return res.status(200).json({
+				received: true,
+				duplicate: true
+			});
+		}
+
+		/// check if paid
+
+
+		if (session.payment_status !== 'paid') {
+			return res.status(400).send('Stripe session is not paid');
+		}
+
+
+
+		const paidAmount = Number(session.amount_total);
+
+
+
+		if (!Number.isInteger(paidAmount) || paidAmount <= 0) {
+			return res.status(400).send('Invalid Stripe payment amount');
+		}
+
+		if (!session.currency || session.currency.toUpperCase() !== 'AUD') {
+			return res.status(400).send('Invalid Stripe payment currency');
+		}
+
+
+		/// Retrieve the actual payment method used
 
 		let paymentMethod = 'Stripe';
 
@@ -112,27 +191,48 @@ exports.handleStripeWebhook = async (req, res) => {
 
 		/// ✅ Extract session data
 
-		userId = session.metadata.userId;
+		userId = session.metadata?.userId;
 
-
-		if (!session.metadata.product) {
-
-			/// Cart			
-
-			cart = session.metadata?.cart ? JSON.parse(session.metadata.cart) : null;
-
-		} else {
-
-			/// BuyItNow	
-
-			product = session.metadata.product;
-			qty = parseInt(session.metadata.qty, 10) || 1;
-			variant = session.metadata.variant;
+		if (!userId) {
+			return res.status(400).send('Missing metadata.userId');
 		}
 
+		try {
 
-		if (!session.metadata?.address) return res.status(400).send('Missing metadata.address');
-		shippingAddress = JSON.parse(session.metadata.address);
+			if (!session.metadata.product) {
+
+				/// Cart			
+
+				cart = session.metadata?.cart ? JSON.parse(session.metadata.cart) : null;
+
+			} else {
+
+				/// BuyItNow	
+
+				product = session.metadata.product;
+				qty = session.metadata.qty;
+				variant = session.metadata.variant;
+			}
+
+			if (!session.metadata?.address) return res.status(400).send('Missing metadata.address');
+
+			shippingAddress = JSON.parse(session.metadata.address);
+
+
+			if (!shippingAddress || typeof shippingAddress !== 'object') {
+
+				return res.status(400).send('Invalid shipping address');
+			}
+
+			if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.postcode) {
+				return res.status(400).send('Missing shipping address fields');
+			}
+
+
+		} catch (err) {
+
+			return res.status(400).send('Invalid Stripe metadata');
+		}
 
 
 
@@ -142,6 +242,7 @@ exports.handleStripeWebhook = async (req, res) => {
 		let user = null;
 
 		const isGuest = userId === 'guest';
+
 
 		if (!isGuest) {
 
@@ -153,6 +254,7 @@ exports.handleStripeWebhook = async (req, res) => {
 
 				return res.status(400).send('Invalid user ID');
 			}
+
 		}
 
 
@@ -167,14 +269,39 @@ exports.handleStripeWebhook = async (req, res) => {
 
 		if (cart) {
 
+			if (isGuest) {
+
+				return res.status(400).send('Guest cart checkout is not supported');
+			}
+
+			if (!Array.isArray(cart) || cart.length === 0) {
+
+				return res.status(400).send('Cart metadata is empty or invalid');
+			}
+
+
 			const orderProducts = await Promise.all(
 
 				cart.map(async item => {
 
+					/// mongoose check
+
+					if (!mongoose.Types.ObjectId.isValid(item.productId)) {
+
+						return null;
+					}
+
+
 					let productDoc = await SpecProd.findById(item.productId).populate('category');
+
+
 
 					if (!productDoc) {
 						productDoc = await Shoe.findById(item.productId).populate('category');
+					}
+
+					if (!productDoc) {
+						productDoc = await Bag.findById(item.productId).populate('category');
 					}
 
 					if (!productDoc) {
@@ -187,39 +314,100 @@ exports.handleStripeWebhook = async (req, res) => {
 					}
 
 
+					let itemPrice;
+
+
 					if (!productDoc.category && !productDoc.discount) {
 
-						price = productDoc.currentPrice;
+
+						itemPrice = productDoc.currentPrice;
 
 					} else if (!productDoc.category || productDoc.discount) {
 
-						price = await priceAtPurchaseDiscount(productDoc);
+						itemPrice = await priceAtPurchaseDiscount(productDoc);
 
 					} else if (!productDoc.category.discount) {
 
-						price = productDoc.currentPrice;
+						itemPrice = productDoc.currentPrice;
 
 					} else {
 
-						price = await categoryDiscountPrice(productDoc);
+						itemPrice = await categoryDiscountPrice(productDoc);
 					}
+
+
+
+					const qtyNum = Number(item.quantity);
+
+					if (!Number.isInteger(qtyNum) || qtyNum < 1) {
+						return null;
+					}
+
+
+
+					let selectedVariant = null;
+
+					if (productDoc.variants && productDoc.variants.length > 0) {
+
+						const variantId = item.variantId || null;
+
+						if (!variantId) {
+							return null;
+						}
+
+						selectedVariant = productDoc.variants.id(variantId);
+
+						if (!selectedVariant) {
+							return null;
+						}
+					}
+
+
 
 					return {
 
 						product: item.productId,
 						productModel: productDoc.constructor.modelName,
-						quantity: item.quantity,
-						priceAtPurchase: price,
-						selectedVariant: item.variantId || null
+						quantity: qtyNum,
+						priceAtPurchase: itemPrice,
+						selectedVariant: selectedVariant ? selectedVariant._id : null
+
 
 					};
 				}));
+
+
+
+			/// Expected total comparison
+
+
+			if (orderProducts.some(item => !item)) {
+				return res.status(400).send('Cart contains an invalid product');
+			}
+
+			const expectedNetTotal = orderProducts.reduce((sum, item) => {
+				return sum + item.priceAtPurchase * item.quantity;
+			}, 0);
+
+
+			if (!Number.isFinite(expectedNetTotal) || expectedNetTotal <= 0) {
+				return res.status(400).send('Invalid cart total');
+			}
+
+
+			const { delivery, taxAmount } = calculateTotals(expectedNetTotal);
+
+			const expectedAmount = Math.round((expectedNetTotal + delivery) * 100 + taxAmount);
+
+			if (paidAmount !== expectedAmount) {
+				return res.status(400).send('Stripe payment amount does not match cart total');
+			}
+
 
 			/// 							Create Order 								///
 
 
 			try {
-
 
 				await Promise.all(orderProducts.map(item =>
 
@@ -245,6 +433,7 @@ exports.handleStripeWebhook = async (req, res) => {
 
 
 
+
 				/// 💾 Save the Order to the Database
 
 
@@ -254,7 +443,7 @@ exports.handleStripeWebhook = async (req, res) => {
 					product: orderProducts,
 					shippingAddress,
 					status: 'Paid',
-					totalAmount: session.amount_total / 100,
+					totalAmount: paidAmount / 100,
 					paymentMethod,
 					currency: session.currency.toUpperCase(),
 					orderNum
@@ -311,6 +500,11 @@ exports.handleStripeWebhook = async (req, res) => {
 
 				console.error('❌ Failed to save order or transaction:', err);
 
+				if (['Product not found', 'Variant not found', 'Not enough stock'].includes(err.message)) {
+
+					return res.status(400).send(err.message);
+				}
+
 				return res.status(500).send('Webhook processing failed');
 			}
 		}
@@ -321,6 +515,13 @@ exports.handleStripeWebhook = async (req, res) => {
 
 		else if (product) {
 
+			/// mongoose check
+
+			if (!mongoose.Types.ObjectId.isValid(product)) {
+
+				return res.status(400).send('Invalid product ID');
+			}
+
 			let productDoc = await SpecProd.findById(product).populate('category');
 
 			let productModel = 'SpecProd';
@@ -328,6 +529,11 @@ exports.handleStripeWebhook = async (req, res) => {
 			if (!productDoc) {
 				productDoc = await Shoe.findById(product).populate('category');
 				if (productDoc) productModel = 'Shoe';
+			}
+
+			if (!productDoc) {
+				productDoc = await Bag.findById(product).populate('category');
+				if (productDoc) productModel = 'Bag';
 			}
 
 			if (!productDoc) {
@@ -342,6 +548,8 @@ exports.handleStripeWebhook = async (req, res) => {
 				return res.status(404).send('Product not found');
 			}
 
+
+			let price;
 
 
 			if (!productDoc.category && !productDoc.discount) {
@@ -361,20 +569,72 @@ exports.handleStripeWebhook = async (req, res) => {
 				price = await categoryDiscountPrice(productDoc);
 			}
 
+
+
+			/// qtyNum
+
+
+			const qtyNum = Number(qty);
+
+			if (!Number.isInteger(qtyNum) || qtyNum < 1) {
+				return res.status(400).send('Invalid quantity');
+			}
+
+
+
+			let selectedVariant = null;
+
+
+			if (productDoc.variants && productDoc.variants.length > 0) {
+
+				const variantId = variant && variant !== 'null' ? variant : null;
+
+				if (!variantId) {
+					return res.status(400).send('Missing product variant');
+				}
+
+				selectedVariant = productDoc.variants.id(variantId);
+
+				if (!selectedVariant) {
+					return res.status(400).send('Invalid product variant');
+				}
+			}
+
+
+
 			const orderProducts = [
 				{
 					product: product,
 					productModel: productModel,
-					quantity: qty,
+					quantity: qtyNum,
 					priceAtPurchase: price,
 
 					//------------- Variant -------------//
 
-					selectedVariant: variant && variant !== 'null' ? variant : null
+					selectedVariant: selectedVariant ? selectedVariant._id : null
 
 					//------------- ------- -------------//
 				}
 			]
+
+
+
+
+			const expectedNetTotal = price * qtyNum;
+
+			if (!Number.isFinite(expectedNetTotal) || expectedNetTotal <= 0) {
+				return res.status(400).send('Invalid order total');
+			}
+
+
+			const { delivery, taxAmount } = calculateTotals(expectedNetTotal);
+
+			const expectedAmount = Math.round((expectedNetTotal + delivery) * 100 + taxAmount);
+
+			if (paidAmount !== expectedAmount) {
+				return res.status(400).send('Stripe payment amount does not match order total');
+			}
+
 
 
 			/// 							Create Order 								///
@@ -383,7 +643,7 @@ exports.handleStripeWebhook = async (req, res) => {
 			try {
 
 
-				await updateStockLevels(product, variant && variant !== 'null' ? variant : null, qty);
+				await updateStockLevels(product, selectedVariant ? selectedVariant._id : null, qtyNum);
 
 
 				/// Create custom order number
@@ -398,8 +658,35 @@ exports.handleStripeWebhook = async (req, res) => {
 				const orderNum = String(counter.seq).padStart(4, '0');
 
 
+				/// Validate guest address before creating order
+
+
+				let guestAddress;
+
+				if (isGuest) {
+
+					if (!session.client_reference_id) {
+
+						return res.status(400).send('Missing guest address reference');
+					}
+
+					if (!mongoose.Types.ObjectId.isValid(session.client_reference_id)) {
+
+						return res.status(400).send('Invalid guest address reference');
+					}
+
+
+					guestAddress = await GuestAddress.findById(session.client_reference_id);
+
+					if (!guestAddress) {
+						return res.status(400).send('Guest address not found');
+					}
+				}
+
+
 
 				/// 💾 Save the Order to the Database
+
 
 				const order = await Order.create({
 
@@ -407,7 +694,7 @@ exports.handleStripeWebhook = async (req, res) => {
 					product: orderProducts,
 					shippingAddress,
 					status: 'Paid',
-					totalAmount: session.amount_total / 100,
+					totalAmount: paidAmount / 100,
 					paymentMethod,
 					currency: session.currency.toUpperCase(),
 					orderNum
@@ -415,20 +702,13 @@ exports.handleStripeWebhook = async (req, res) => {
 				});
 
 
-				let guestAddress;
-
 				if (isGuest) {
 
 					await GuestAddress.findByIdAndUpdate(session.client_reference_id, {
 
 						order: order._id
 					});
-
-					guestAddress = await GuestAddress.findById(session.client_reference_id);
-
 				}
-
-
 
 
 				/// 💳 Save the Transaction to the Database
@@ -475,6 +755,11 @@ exports.handleStripeWebhook = async (req, res) => {
 			} catch (err) {
 
 				console.error('❌ Failed to save order or transaction:', err);
+
+				if (['Product not found', 'Variant not found', 'Not enough stock'].includes(err.message)) {
+
+					return res.status(400).send(err.message);
+				}
 
 				return res.status(500).send('Webhook processing failed');
 			}

@@ -1,9 +1,10 @@
 const catchAsync = require('./../utilities/catchAsync');
 const APIFeatures = require('./../utilities/apiFeatures');
 const AppError = require('./../utilities/appError');
-const filterObject = require('./../utilities/filterObject');
 
-const mongoose = require('mongoose');
+
+// const filterObject = require('./../utilities/filterObject');
+// const mongoose = require('mongoose');
 
 
 //-------------- 	Create ---------------	///
@@ -102,22 +103,22 @@ exports.updateOne = (Model) => catchAsync(async (req, res, next) => {
 
 	///			CHECKS			///
 
-	if (req.body.category === '' || req.body.category === undefined) req.body.category = null;
-	if (req.body.discount === '' || req.body.discount === undefined) req.body.discount = null;
+	// if (req.body.category === '' || req.body.category === undefined) req.body.category = null;
+	// if (req.body.discount === '' || req.body.discount === undefined) req.body.discount = null;
 
-	if (req.file) {
+	// if (req.file) {
 
-		req.body.imageCover = req.file.filename;
-	}
+	// 	req.body.imageCover = req.file.filename;
+	// }
 
-	if (req.body.discount && req.body.discount.length === 24) {
+	// if (req.body.discount && req.body.discount.length === 24) {
 
-		req.body.discount = new mongoose.Types.ObjectId(req.body.discount);
+	// 	req.body.discount = new mongoose.Types.ObjectId(req.body.discount);
 
-	} else {
+	// } else {
 
-		req.body.discount = null;
-	}
+	// 	req.body.discount = null;
+	// }
 
 	///	////////////////////	///
 

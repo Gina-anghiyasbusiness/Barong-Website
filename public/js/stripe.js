@@ -3,8 +3,15 @@ import axios from 'axios';
 import { showAlert } from './alert';
 
 
-const stripe = Stripe('pk_test_51Sv7UbJGnb8O9t51PR8Y22riJBvEZBsuSnRnXqlNYCEYfNbWLr7FOs80Q2iG4dwxbvas5YnfAdjmj1EkAUizCXpo00gQwXLWxA');
+const getStripe = () => {
 
+	if (typeof Stripe !== 'function') {
+
+		throw new Error('Stripe.js failed to load');
+	}
+
+	return Stripe('pk_test_51Sv7UbJGnb8O9t51PR8Y22riJBvEZBsuSnRnXqlNYCEYfNbWLr7FOs80Q2iG4dwxbvas5YnfAdjmj1EkAUizCXpo00gQwXLWxA');
+};
 
 
 
@@ -13,9 +20,11 @@ export const buyCart = async () => {
 
 	try {
 
+		const stripe = getStripe();
+
 		/// create the checkout session on orderRoute which calls orderController.buyCartItem
 
-		const session = await axios(`/api/v1/orders/checkout-session`);
+		const session = await axios.post(`/api/v1/orders/checkout-session`);
 
 
 		/// store the result
@@ -45,9 +54,11 @@ export const buyItNow = async (product, qty, variant) => {
 
 	try {
 
+		const stripe = getStripe();
+
 		const variantParam = variant || 'null';
 
-		const session = await axios(`/api/v1/orders/checkout-session-bin/${product}/${qty}/${variantParam}`);
+		const session = await axios.post(`/api/v1/orders/checkout-session-bin/${product}/${qty}/${variantParam}`);
 
 		const result = await stripe.redirectToCheckout(
 			{
@@ -73,6 +84,8 @@ export const buyItNowGuest = async (product, qty, guestAddressId, variant) => {
 	const variantParam = variant || 'null';
 
 	try {
+
+		const stripe = getStripe();
 
 		const session = await axios(
 			{

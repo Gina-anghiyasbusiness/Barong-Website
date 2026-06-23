@@ -23,7 +23,7 @@ router.post('/signup', authController.signup);
 
 router.post('/login', authController.login);
 
-router.get('/logout', authController.logout);
+router.post('/logout', authController.logout);
 
 
 
@@ -54,7 +54,7 @@ router.patch('/updateMyPassword', authController.updatePassword);
 
 router.patch('/updateMyAddress/:addressId', userController.updateMyAddress);
 
-router.patch('/updateUserAddress/:addressId/:userId', userController.updateMyAddress);
+
 
 
 router.post('/createNewAddress', userController.createNewAddress);
@@ -77,13 +77,17 @@ router.delete('/deleteMe', userController.deleteMyAccount);
 
 
 
-
-
 //----------- User Routes -----------//
 
 
-//// Restrict Routes
 
+router.patch('/updateUserAddress/:addressId/:userId',
+	authController.restrictTo('admin', 'supervisor', 'owner'),
+	userController.preventStaffUserUpdate,
+	userController.updateMyAddress);
+
+
+//// Restrict Routes
 
 router.use(authController.restrictTo('supervisor', 'owner'));
 
@@ -94,8 +98,18 @@ router.route('/')
 
 router.route('/:id')
 	.get(userController.getUser)
-	.patch(userController.updateUser)
-	.delete(userController.deleteUser);
+	.patch(
+		userController.preventStaffUserUpdate,
+		userController.preventPasswordUpdate,
+		userController.preventOwnerRoleUpdate,
+		userController.filterAdminUserUpdateBody,
+		userController.updateUser)
+	.delete(
+		userController.preventSelfAdminAction,
+		userController.preventOwnerDelete,
+		userController.deleteUser
+	)
+
 
 
 

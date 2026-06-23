@@ -26,10 +26,15 @@ const userSchema = new mongoose.Schema({
 
 
 	phone: {
-
 		type: String,
-		validate: [validator.isMobilePhone, 'Please enter a valid phone number']
-	},
+		validate: {
+			validator: function (value) {
+				return !value || validator.isMobilePhone(value, 'en-AU');
+			},
+			message: 'Please enter a valid phone number'
+		}
+	}
+	,
 
 	role: {
 
@@ -131,7 +136,7 @@ const userSchema = new mongoose.Schema({
 			productModel: {
 				type: String,
 				required: true,
-				enum: ['SpecProd', 'Shoe', 'Accessory']
+				enum: ['SpecProd', 'Shoe', 'Bag', 'Accessory']
 			},
 
 			variant: {
@@ -163,7 +168,7 @@ const userSchema = new mongoose.Schema({
 			productModel: {
 				type: String,
 				required: true,
-				enum: ['SpecProd', 'Shoe', 'Accessory']
+				enum: ['SpecProd', 'Shoe', 'Bag', 'Accessory']
 			},
 
 			variant: {

@@ -292,6 +292,9 @@ block content
 										data-qty=qty || ''
 										data-variant=(variant && variant.id) || ''
 									)
-
-		script(src=`https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=AUD`)
-		script(src="/js/paypal.js")
+		if !sitePreview && paypalClientId
+			script(src=`https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=AUD`)
+			script(src="/js/paypal.js")
+			
+block paymentScripts
+	script(src="https://js.stripe.com/v3/")

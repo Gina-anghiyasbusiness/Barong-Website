@@ -5,7 +5,7 @@ const catchAsync = require('./../utilities/catchAsync');
 
 exports.createEnquiry = catchAsync(async (req, res, next) => {
 
-	const newEnquiry = await Enquiry.create({
+	await Enquiry.create({
 
 		name: req.body.name,
 		phone: req.body.phone,
@@ -25,7 +25,7 @@ exports.createEnquiry = catchAsync(async (req, res, next) => {
 
 exports.createCustomizationEnquiry = catchAsync(async (req, res, next) => {
 
-	const newEnquiry = await CustomizationEnquiry.create({
+	await CustomizationEnquiry.create({
 
 		name: req.body.name,
 		phone: req.body.phone,

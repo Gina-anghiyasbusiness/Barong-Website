@@ -260,7 +260,10 @@ router.get('/admin/be_user-list', viewController.getUserList);
 
 router.get('/admin/be_user-page/:id', viewController.getUserPage);
 
-router.get('/admin/be_new-user-page', viewController.getNewUserPage);
+router.get('/admin/be_new-user-page',
+	authController.restrictTo('supervisor', 'owner'),
+	viewController.getNewUserPage
+);
 
 router.get('/my-details', viewController.getMyDetails)
 
