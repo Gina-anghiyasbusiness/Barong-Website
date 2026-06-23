@@ -16,6 +16,21 @@ const viewController = require('./../controllers/viewController.js');
 router.use(authController.isLoggedIn);
 
 
+
+/// block admin staff from front end pages
+
+
+router.use((req, res, next) => {
+
+	if (req.user && req.user.role !== 'user' && !req.originalUrl.startsWith('/admin')) {
+
+		return res.redirect('/admin/be_home');
+	}
+
+	next();
+});
+
+
 //// Auth
 
 router.get('/', viewController.getHomePage);
