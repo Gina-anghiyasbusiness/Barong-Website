@@ -198,6 +198,11 @@ exports.resizeOtherImages = catchAsync(async (req, res, next) => {
 
 exports.filterProductUpdateBody = (req, res, next) => {
 
+	if (req.body.features && typeof req.body.features === 'string') {
+
+		req.body.features = JSON.parse(req.body.features);
+	}
+
 	req.body = filterObj(req.body,
 		'name',
 		'description',
@@ -210,7 +215,8 @@ exports.filterProductUpdateBody = (req, res, next) => {
 		'color',
 		'sex',
 		'style',
-		'variants'
+		'variants',
+		'features'
 	);
 
 	next();
@@ -328,6 +334,11 @@ exports.createBarong = catchAsync(async (req, res, next) => {
 
 	if (req.file) req.body.imageCover = req.file.filename;
 
+	if (req.body.features && !Array.isArray(req.body.features)) {
+		req.body.features = [req.body.features];
+	}
+
+
 	const data = filterObj(req.body,
 
 		'name',
@@ -343,7 +354,8 @@ exports.createBarong = catchAsync(async (req, res, next) => {
 		'color',
 		'sex',
 		'style',
-		'variants'
+		'variants',
+		'features'
 
 		//---------------------- ------- -----------------------//
 	);
@@ -383,6 +395,7 @@ exports.getProduct = factory.getOne(SpecProd, [
 
 
 exports.updateProduct = factory.updateOne(SpecProd);
+
 exports.deleteProduct = factory.deleteOne(SpecProd);
 
 

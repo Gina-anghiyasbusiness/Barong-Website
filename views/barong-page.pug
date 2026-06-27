@@ -41,9 +41,7 @@ block content
 											aria-pressed=isWishlisted
 										)
 											i.productPage__product--star(data-lucide='star')
-								//- .productPage-wishlist--box
-								//- 	button#add-to-wishlist.productPage__wishlist--btn(data-product-id=`${product.id}`,data-user=user.id , data-product-slug=`${product.slug}`) 
-								//- 		i.productPage__product--star(data-lucide='star')
+
 						p.productPage_sku Product No. #{product.productSku}
 					
 					.productPage__price--box 
@@ -56,12 +54,23 @@ block content
 								p.productPage__price--current $#{product.originalPrice}
 
 					.productPage__product-details 
+					
 						h4.productPage__product-details-heading Details
+						
 					.productPage__text-price--box
 					
 						.productPage__product--text-box
 							.productPage__product-description
 								p.productPage__product--p #{product.description}
+								
+							if product.features && product.features.length
+								.productPage__product-details--list-box
+									ul.productPage__product-details--ul
+										each feature in product.features
+											li.productPage__product-details--li 	
+												img(src="/img/icons/check-gold.svg", alt="")
+												p.productPage__product-details--p #{feature}
+								
 							.productPage__product-style
 								p.productPage__product--p Collection: #{product.category && product.category.name ? product.category.name : 'N/A'}
 								p.productPage__product--p Color: #{product.color}

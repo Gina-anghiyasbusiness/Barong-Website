@@ -27,6 +27,7 @@ block content
 				p.admin-productList_head Image
 				p.admin-productList_head Name
 				p.admin-productList_head Description
+				p.admin-productList_head Features
 				p.admin-productList_head Categories
 				p.admin-productList_head Discounts
 				p.admin-productList_head Tags
@@ -45,6 +46,12 @@ block content
 						h4.admin-product__heading #{product.name}
 						p.admin-product__text #{product.description}
 						p.admin-product__text #{categoryName}
+						if product.features && product.features.length
+							ul.admin-product__features
+								each feature in product.features
+									li.admin-product__text #{feature}
+						else
+							p.admin-product__text No features
 						p.admin-product__text #{discountCode}
 						p.admin-product__text #{product.tags}
 						p.admin-product__text #{product.originalPrice}

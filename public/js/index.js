@@ -1338,6 +1338,15 @@ if (productFormCreate) {
 		form.append('style', document.getElementById('style').value);
 
 
+		/// Add features array
+
+		const selectedFeatures = document.querySelectorAll('input[name="features"]:checked');
+
+		selectedFeatures.forEach(feature => {
+			form.append('features', feature.value);
+		});
+
+
 		/// ✅ Image Cover
 
 
@@ -1398,6 +1407,10 @@ if (productForm) {
 		const id = productForm.dataset.id;
 		const slug = productForm.dataset.slug;
 
+		const selectedFeatures = Array.from(
+			document.querySelectorAll('input[name="features"]:checked')
+		).map(feature => feature.value);
+
 		const form = new FormData();
 
 		form.append('name', document.getElementById('name').value);
@@ -1410,6 +1423,8 @@ if (productForm) {
 		form.append('sex', document.getElementById('sex').value);
 		form.append('color', document.getElementById('color').value);
 		form.append('style', document.getElementById('style').value);
+
+		form.append('features', JSON.stringify(selectedFeatures));
 
 
 		/// ✅ Image Cover

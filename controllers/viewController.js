@@ -90,8 +90,8 @@ exports.getHomePage = catchAsync(async (req, res, next) => {
 
 	res.status(200).render('home-page', {
 
-		pageTitle: 'Home',
-		pageDescription: 'Home Page for your website',
+		pageTitle: 'Anghiyas | Filipino Clothing',
+		pageDescription: 'Barong and filiniana Customization, rentals and Sales, ready to wear. Traditional filipino clothing',
 		canonicalUrl: `${process.env.CANONICAL_URL}`,
 		products
 
@@ -219,26 +219,40 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 		'purple',
 		'orange',
 		'grey',
-		'brown'
+		'brown',
+		'champagne',
+		'old rose',
+		'ethnic'
 	];
 
 	const colorList = await formFields('color', desiredColorOrder);
+
+	///			Display Sex in dropdown			///
+
+
+	const desiredSexOrder = [
+		'male',
+		'female',
+		'boy',
+		'girl',
+		'unisex',
+		'unisex-kids'
+
+	];
+
+	const sexList = await formFields('sex', desiredSexOrder);
 
 
 
 	///			Display Category in dropdown			///
 
-	const desiredCategory = ['Premium', 'Standard'];
-
-	const categoryDocs = await Category.find({
-		name: { $in: desiredCategory }
-	}).select('name').lean();
-
-	const categoryList = desiredCategory
-		.map(name => categoryDocs.find(category => category.name === name))
-		.filter(Boolean);
 
 
+	const categoryIds = await SpecProd.distinct('category');
+
+	const categoryList = await Category.find({
+		_id: { $in: categoryIds }
+	}).select('name').sort({ name: 1 }).lean();
 
 
 	///			 Filtering			///
@@ -285,6 +299,7 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 		canonicalUrl: `${process.env.CANONICAL_URL}`,
 		productlist,
 		sizeList,
+		sexList,
 		categoryList,
 		colorList,
 		selectedColor,
@@ -528,16 +543,21 @@ exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 
 	/// Display Category in dropdown ///
 
-	const desiredCategory = ['Premium', 'Standard'];
+	// const desiredCategory = ['Premium', 'Standard'];
 
-	const categoryDocs = await Category.find({
-		name: { $in: desiredCategory }
-	}).select('name').lean();
+	// const categoryDocs = await Category.find({
+	// 	name: { $in: desiredCategory }
+	// }).select('name').lean();
 
-	const categoryList = desiredCategory
-		.map(name => categoryDocs.find(category => category.name === name))
-		.filter(Boolean);
+	// const categoryList = desiredCategory
+	// 	.map(name => categoryDocs.find(category => category.name === name))
+	// 	.filter(Boolean);
 
+	const categoryIds = await Accessory.distinct('category');
+
+	const categoryList = await Category.find({
+		_id: { $in: categoryIds }
+	}).select('name').sort({ name: 1 }).lean();
 
 	/// Filtering ///
 
@@ -668,15 +688,26 @@ exports.getBagListPage = catchAsync(async (req, res, next) => {
 
 	const colorList = await formFieldsBags('color', desiredColorOrder);
 
-	const desiredCategory = ['Premium', 'Standard'];
 
-	const categoryDocs = await Category.find({
-		name: { $in: desiredCategory }
-	}).select('name').lean();
 
-	const categoryList = desiredCategory
-		.map(name => categoryDocs.find(category => category.name === name))
-		.filter(Boolean);
+	// const desiredCategory = ['Premium', 'Standard'];
+
+	// const categoryDocs = await Category.find({
+	// 	name: { $in: desiredCategory }
+	// }).select('name').lean();
+
+	// const categoryList = desiredCategory
+	// 	.map(name => categoryDocs.find(category => category.name === name))
+	// 	.filter(Boolean);
+
+	const categoryIds = await Bag.distinct('category');
+
+	const categoryList = await Category.find({
+		_id: { $in: categoryIds }
+	}).select('name').sort({ name: 1 }).lean();
+
+
+
 
 	const selectedColor = req.query.color;
 	const selectedcategory = req.query.category;
@@ -1963,6 +1994,7 @@ exports.getBarong = catchAsync(async (req, res, next) => {
 	const colors = SpecProd.schema.path('color').enumValues;
 	const styles = SpecProd.schema.path('style').enumValues;
 	const sexes = SpecProd.schema.path('sex').enumValues;
+	const features = SpecProd.schema.path('features').caster.enumValues;
 
 	res.status(200).render('admin/be_barong', {
 
@@ -1972,7 +2004,8 @@ exports.getBarong = catchAsync(async (req, res, next) => {
 		discounts,
 		colors,
 		styles,
-		sexes
+		sexes,
+		features
 
 	})
 })
@@ -1987,6 +2020,7 @@ exports.createBarongPage = catchAsync(async (req, res) => {
 	const colors = SpecProd.schema.path('color').enumValues;
 	const styles = SpecProd.schema.path('style').enumValues;
 	const sexes = SpecProd.schema.path('sex').enumValues;
+	const features = SpecProd.schema.path('features').caster.enumValues;
 
 	const product = {};
 
@@ -1998,7 +2032,8 @@ exports.createBarongPage = catchAsync(async (req, res) => {
 		discounts,
 		colors,
 		styles,
-		sexes
+		sexes,
+		features
 	})
 })
 

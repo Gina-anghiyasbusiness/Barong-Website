@@ -24,13 +24,37 @@ const specProdSchema = new mongoose.Schema({
 
 	color: {
 		type: String,
-		enum: ['black', 'white', 'red', 'blue', 'green', 'yellow', 'pink', 'purple', 'orange', 'grey', 'brown', 'old rose', 'ethnic', 'champagne']
+		enum: [
+			'black',
+			'white',
+			'red',
+			'blue',
+			'green',
+			'yellow',
+			'pink',
+			'purple',
+			'orange',
+			'grey',
+			'brown',
+			'old rose',
+			'ethnic',
+			'champagne']
 	},
 
 
 	style: {
 		type: String,
-		enum: ['Crew-Neck', 'V-neck', 'Polo', 'Tank', 'Singlet', 'Slim-fit', 'Fitted', 'Relaxed-fit', 'Crop-top', 'Slim-fit']
+		enum: [
+			'Crew-Neck',
+			'V-neck',
+			'Polo',
+			'Tank',
+			'Singlet',
+			'Slim-fit',
+			'Fitted',
+			'Relaxed-fit',
+			'Crop-top',
+			'Slim-fit']
 	},
 
 
@@ -40,12 +64,32 @@ const specProdSchema = new mongoose.Schema({
 		default: 'unisex'
 	},
 
+	features: {
+		type: [String],
+		enum: [
+			'Hand Crafted',
+			'Quality Cotton',
+			'Lightweight Fabric',
+			'Traditional Embroidery',
+			'Formal Occasion',
+			'Wedding Appropriate',
+			'Embroidered Front Panel',
+			'Delicate Sleeve Detail',
+			'Comfort Fit'],
+		default: [],
+
+		validate: {
+			validator: function (features) {
+				return features.length <= 5;
+			},
+			message: 'A Barong/filipinina can have no more than 5 features'
+		}
+	},
 
 	variants: [
 		{
 			size: {
 				type: String,
-				// enum: ['6', '8', '10', '12', '14', '16', '18', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
 				enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL'],
 				required: true
 			},

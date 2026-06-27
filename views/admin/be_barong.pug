@@ -42,6 +42,23 @@ block content
 				.product__form--group
 					+formRows('tags','text',product.tags)
 					
+				//- Feature Check Boxes
+				
+				.product__form--group--checkbox
+					label.product__form--label FEATURES
+					.product__form--group--checkbox-grid
+						each feature in features
+							.product__form--checkbox-row
+								input(
+									type="checkbox"
+									name="features"
+									value=feature
+									id=`feature-${feature.replace(/\s+/g, '-').toLowerCase()}`
+									checked=product.features && product.features.includes(feature)
+								)
+								label(for=`feature-${feature.replace(/\s+/g, '-').toLowerCase()}`) #{feature}
+									
+					
 
 				////---------- Variants  ---------//
 							

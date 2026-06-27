@@ -38,18 +38,10 @@ block content
 						.barong-list__filter--btn-box
 							button#barong__filter-btn--gender.barong-list__filter-btn(type='button') Gender
 						ul.barong-list--ul-gender
-							li
-								a(
-								href=`?productSort=${selectedOption || 'newest'}&productSize=${selectedSize || ''}&color=${selectedColor || ''}&sex=male&category=${selectedcategory || ''}`	class=selectedSex === 'male' ? 'active' : ''
-								) Mens
-							li
-								a(
-									href=`?productSort=${selectedOption || 'newest'}&productSize=${selectedSize || ''}&color=${selectedColor || ''}&sex=female&category=${selectedcategory || ''}`	class=selectedSex === 'female' ? 'active' : ''
-								) Womens
-							li
-								a(
-									href=`?productSort=${selectedOption || 'newest'}&productSize=${selectedSize || ''}&color=${selectedColor || ''}&sex=boy&category=${selectedcategory || ''}`	class=selectedSex === 'boy' ? 'active' : ''
-								) Boys
+							each sex in sexList
+								li
+									a(href=`?productSort=${selectedOption || 'newest'}&productSize=${selectedSize || ''}&color=${selectedColor || ''}&sex=${sex}&category=${selectedcategory || ''}` class=selectedSex === sex ? 'active' : '') #{sex.replace('-', ' ').replace(/\b\w/g, letter => letter.toUpperCase())}
+
 								
 									
 								
