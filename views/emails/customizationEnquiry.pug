@@ -1,14 +1,12 @@
-extends baseEmail 
+extends baseEmail
 
 block content
 
-	header	
-		.orderConfirm_header--img		
+	header
+		.orderConfirm_header--img
 			img(src=logoUrl, alt="company-logo")
 
-
 	main.container
-	
 		.email_enquiry
 			p Name: #{enquiry.name}
 			p Email: #{enquiry.email}
