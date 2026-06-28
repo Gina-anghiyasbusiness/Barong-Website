@@ -1,11 +1,12 @@
 const Enquiry = require('./../models/enquiryModel');
+const Email = require('./../utilities/emailClass');
 const CustomizationEnquiry = require('./../models/customizationEnquiryModel');
 const catchAsync = require('./../utilities/catchAsync');
 
 
 exports.createEnquiry = catchAsync(async (req, res, next) => {
 
-	await Enquiry.create({
+	const enquiry = await Enquiry.create({
 
 		name: req.body.name,
 		phone: req.body.phone,
@@ -13,7 +14,11 @@ exports.createEnquiry = catchAsync(async (req, res, next) => {
 		enquiry: req.body.enquiry,
 		preferredContactMethod: req.body.preferredContactMethod,
 		message: req.body.message
+
 	});
+
+
+	await new Email({ email: req.body.email, name: req.body.name }).sendEnquiryEmail(enquiry);
 
 
 	res.redirect(303, '/enquiry-success');
@@ -36,7 +41,6 @@ exports.createCustomizationEnquiry = catchAsync(async (req, res, next) => {
 		preferredContactMethod: req.body.preferredContactMethod,
 
 	});
-
 
 	res.redirect(303, '/enquiry-success');
 

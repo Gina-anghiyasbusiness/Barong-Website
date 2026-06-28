@@ -46,7 +46,8 @@ module.exports = class Email {
 				'SMTP_LOGIN',
 				'SMTP_PASSWORD',
 				'EMAIL_FROM',
-				'EMAIL_FROM_NAME'
+				'EMAIL_FROM_NAME',
+				'ENQUIRY_TO'
 			];
 
 			const missingSmtpVars = requiredSmtpVars.filter(envVar => !process.env[envVar]);
@@ -74,6 +75,7 @@ module.exports = class Email {
 	}
 
 
+	/// Send from Mail
 
 	async send(template, subject, throwOnError = false) {
 
@@ -108,6 +110,42 @@ module.exports = class Email {
 
 
 
+	/// Read Enquiry from mail
+
+
+	async sendEnquiry(template, subject, enquiryData, throwOnError = false) {
+
+		const html = pug.renderFile(`${__dirname}/../views/emails/${template}.pug`, {
+			subject,
+			enquiry: enquiryData,
+			logoUrl: `${process.env.CANONICAL_URL}img/logo/default-logo.png`
+		});
+
+		const mailOptions = {
+
+			from: this.from,
+			to: process.env.ENQUIRY_TO,
+			cc: process.env.ENQUIRY_CC || undefined,
+			replyTo: enquiryData.email,
+			subject,
+			html,
+			text: convert(html)
+
+		};
+
+		try {
+
+			await this.newTransport().sendMail(mailOptions);
+
+		} catch (err) {
+
+			console.error('Email failed:', err.response || err);
+
+			if (throwOnError) throw err;
+
+		}
+	}
+
 
 	/// Template send functions
 
@@ -134,4 +172,15 @@ module.exports = class Email {
 
 		await this.send('accountChanges', 'Your account has been updated');
 	}
+
+
+	/// Template send enquiry functions
+
+	async sendEnquiryEmail(enquiryData) {
+
+		await this.sendEnquiry('enquiry', 'New website enquiry', enquiryData, true);
+	}
+
+
 }
+
