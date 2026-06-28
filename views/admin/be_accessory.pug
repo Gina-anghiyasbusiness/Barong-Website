@@ -32,9 +32,14 @@ block content
 				.product__form--group
 					+formRows('description','text',product.description)
 				.product__form--group
-					+formRowsReadOnly('original-price','number',product.originalPrice)
+					label.product__form--label(for="original-price") PRICE
+					input#original-price.product__form--input(
+						type="number"
+						name="original-price"
+						value=product.originalPrice
+					)
 				.product__form--group
-					+formRows('current-price','number',product.currentPrice)
+					+formRowsReadOnly('current-price','number',product.currentPrice)
 				.product__form--group
 					+formSelect('color', ['black', 'white', 'red', 'blue', 'green', 'yellow', 'pink', 'purple', 'orange', 'grey', 'brown'], product.color)
 				.product__form--group

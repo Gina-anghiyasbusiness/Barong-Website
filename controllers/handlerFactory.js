@@ -1,6 +1,8 @@
 const catchAsync = require('./../utilities/catchAsync');
 const APIFeatures = require('./../utilities/apiFeatures');
 const AppError = require('./../utilities/appError');
+const Category = require('./../models/categoryModel');
+const Discount = require('./../models/discountModel');
 
 
 // const filterObject = require('./../utilities/filterObject');
@@ -97,52 +99,35 @@ exports.getOne = (Model, popOptions) => catchAsync(async (req, res, next) => {
 
 //-----------------	Update ------------------//
 
-
-
 exports.updateOne = (Model) => catchAsync(async (req, res, next) => {
 
-	///			CHECKS			///
+	const existingDoc = await Model.findById(req.params.id);
 
-	// if (req.body.category === '' || req.body.category === undefined) req.body.category = null;
-	// if (req.body.discount === '' || req.body.discount === undefined) req.body.discount = null;
+	if (!existingDoc) return next(new AppError('Document not found', 404));
 
-	// if (req.file) {
+	const shouldSyncCurrentPrice =
+		Model.schema.path('originalPrice') &&
+		Model.schema.path('currentPrice') &&
+		req.body.originalPrice !== undefined;
 
-	// 	req.body.imageCover = req.file.filename;
-	// }
-
-	// if (req.body.discount && req.body.discount.length === 24) {
-
-	// 	req.body.discount = new mongoose.Types.ObjectId(req.body.discount);
-
-	// } else {
-
-	// 	req.body.discount = null;
-	// }
-
-	///	////////////////////	///
+	if (shouldSyncCurrentPrice) {
+		req.body.currentPrice = Number(req.body.originalPrice);
+	}
 
 	const doc = await Model.findByIdAndUpdate(
-
 		req.params.id,
 		req.body,
 		{
 			new: true,
 			runValidators: true
 		}
-	)
-
-	if (!doc) return next(new AppError('Document not found', 404))
+	);
 
 	res.status(200).json({
-
 		status: "success",
 		doc
-	})
-})
-
-
-
+	});
+});
 
 
 

@@ -19,7 +19,11 @@ block content
 				.product__form--group
 					+formRows('description','text','')
 				.product__form--group
-					+formRows('original-price','text','')
+					label.product__form--label(for="original-price") PRICE
+					input#original-price.product__form--input(
+						type="number"
+						name="original-price"
+					)
 				.product__form--group
 					+formSelectCodeNone('category', categories, null)
 				.product__form--group

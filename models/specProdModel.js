@@ -180,8 +180,6 @@ specProdSchema.pre('save', async function (next) {
 
 	if (this.isModified('name')) {
 
-		// this.slug = slugify(this.name, { lower: true, strict: true });
-
 		this.slug = slugify(`${this.name}-${this.productSku}`, { lower: true, strict: true });
 	}
 

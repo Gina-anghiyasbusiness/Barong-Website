@@ -1416,7 +1416,6 @@ if (productForm) {
 		form.append('name', document.getElementById('name').value);
 		form.append('description', document.getElementById('description').value);
 		form.append('originalPrice', document.getElementById('original-price').value);
-		form.append('currentPrice', document.getElementById('current-price').value);
 		form.append('tags', document.getElementById('tags').value);
 		form.append('discount', document.getElementById('discount').value);
 		form.append('category', document.getElementById('category').value);
@@ -1585,7 +1584,6 @@ if (shoeForm) {
 		form.append('name', document.getElementById('name').value);
 		form.append('description', document.getElementById('description').value);
 		form.append('originalPrice', document.getElementById('original-price').value);
-		form.append('currentPrice', document.getElementById('current-price').value);
 		form.append('tags', document.getElementById('tags').value);
 		form.append('discount', document.getElementById('discount').value);
 		form.append('category', document.getElementById('category').value);
@@ -1729,7 +1727,6 @@ if (bagForm) {
 		form.append('name', document.getElementById('name').value);
 		form.append('description', document.getElementById('description').value);
 		form.append('originalPrice', document.getElementById('original-price').value);
-		form.append('currentPrice', document.getElementById('current-price').value);
 		form.append('tags', document.getElementById('tags').value);
 		form.append('discount', document.getElementById('discount').value);
 		form.append('category', document.getElementById('category').value);
@@ -1860,7 +1857,6 @@ if (accsForm) {
 		form.append('name', document.getElementById('name').value);
 		form.append('description', document.getElementById('description').value);
 		form.append('originalPrice', document.getElementById('original-price').value);
-		form.append('currentPrice', document.getElementById('current-price').value);
 		form.append('tags', document.getElementById('tags').value);
 		form.append('discount', document.getElementById('discount').value);
 		form.append('category', document.getElementById('category').value);
