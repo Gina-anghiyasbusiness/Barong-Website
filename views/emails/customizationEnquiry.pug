@@ -2,16 +2,59 @@ extends baseEmail
 
 block content
 
-	header
-		.orderConfirm_header--img
-			img(src=logoUrl, alt="company-logo")
+  main.email-wrapper
 
-	main.container
-		.email_enquiry
-			p Name: #{enquiry.name}
-			p Email: #{enquiry.email}
-			p Phone: #{enquiry.phone}
-			p Outfit: #{enquiry.outfit}
-			p Event: #{enquiry.event}
-			p Message: #{enquiry.message}
-			p Preferred Contact: #{enquiry.preferredContactMethod}
+    .email-card
+
+      .email-header
+        img.email-logo(src=logoUrl, alt="Ang Hiyas logo")
+        h1 New Website Enquiry
+        p.email-subtitle A customer has submitted an enquiry through the Ang Hiyas website.
+
+      .email-actions
+        if enquiry.email
+          a.email-btn(href=`mailto:${enquiry.email}`) Reply by Email
+
+        if enquiry.phone
+          a.email-btn.secondary(href=`tel:${enquiry.phone}`) Call Customer
+
+      .details-box
+
+        .detail-row
+          .detail-label Name
+          .detail-value #{enquiry.name}
+
+        .detail-row
+          .detail-label Email
+          .detail-value
+            a.detail-link(href=`mailto:${enquiry.email}`) #{enquiry.email}
+
+        if enquiry.phone
+          .detail-row
+            .detail-label Phone
+            .detail-value
+              a.detail-link(href=`tel:${enquiry.phone}`) #{enquiry.phone}
+
+        if enquiry.outfit
+          .detail-row
+            .detail-label Outfit
+            .detail-value #{enquiry.outfit}
+
+        if enquiry.event
+          .detail-row
+            .detail-label Event
+            .detail-value #{enquiry.event}
+
+        if enquiry.preferredContactMethod
+          .detail-row
+            .detail-label Preferred Contact
+            .detail-value #{enquiry.preferredContactMethod}
+
+      if enquiry.message
+        .message-box
+          h2 Message
+          p #{enquiry.message}
+
+      .email-footer
+        p Ang Hiyas QLD, Australia
+        p This enquiry was sent from the Ang Hiyas website.
