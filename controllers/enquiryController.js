@@ -30,7 +30,7 @@ exports.createEnquiry = catchAsync(async (req, res, next) => {
 
 exports.createCustomizationEnquiry = catchAsync(async (req, res, next) => {
 
-	await CustomizationEnquiry.create({
+	const customizationEnquiry = await CustomizationEnquiry.create({
 
 		name: req.body.name,
 		phone: req.body.phone,
@@ -42,7 +42,7 @@ exports.createCustomizationEnquiry = catchAsync(async (req, res, next) => {
 
 	});
 
-	await new Email({ email: req.body.email, name: req.body.name }).sendCustomizationEnquiryEmail(enquiry);
+	await new Email({ email: req.body.email, name: req.body.name }).sendCustomizationEnquiryEmail(customizationEnquiry);
 
 	res.redirect(303, '/enquiry-success');
 
