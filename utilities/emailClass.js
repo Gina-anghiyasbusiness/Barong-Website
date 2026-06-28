@@ -178,7 +178,12 @@ module.exports = class Email {
 
 	async sendEnquiryEmail(enquiryData) {
 
-		await this.sendEnquiry('enquiry', 'New website enquiry', enquiryData, true);
+		await this.sendEnquiry('enquiry', 'New Enquiry', enquiryData, true);
+	}
+
+	async sendCustomizationEnquiryEmail(enquiryData) {
+
+		await this.sendEnquiry('enquiry', 'New Customization Enquiry', enquiryData, true);
 	}
 
 

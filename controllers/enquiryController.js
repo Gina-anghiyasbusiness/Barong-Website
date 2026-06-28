@@ -42,6 +42,8 @@ exports.createCustomizationEnquiry = catchAsync(async (req, res, next) => {
 
 	});
 
+	await new Email({ email: req.body.email, name: req.body.name }).sendCustomizationEnquiryEmail(enquiry);
+
 	res.redirect(303, '/enquiry-success');
 
 });
