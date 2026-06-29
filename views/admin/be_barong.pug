@@ -39,7 +39,7 @@ block content
 						value=product.originalPrice
 					)
 				.product__form--group
-					+formRowsReadOnly('current-price','number',product.currentPrice)
+					+formRowsReadOnly('current-price','number', Number.isInteger(product.discountPrice) ? product.discountPrice : product.discountPrice.toFixed(2) || product.currentPrice)
 				.product__form--group
 					+formSelectCodeNone('category', categories, product.category ?  product.category._id.toString() : '')
 				.product__form--group

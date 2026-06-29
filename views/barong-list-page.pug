@@ -88,7 +88,7 @@ block content
 									.productList__group--box.muted-text
 										if product.discountPrice && product.discountPrice < product.originalPrice
 											p.price--old $#{product.originalPrice}
-											p.price--new $#{product.discountPrice}
+											p.price--new $#{Number.isInteger(product.discountPrice) ? product.discountPrice : product.discountPrice.toFixed(2)}
 										else 
 											p.price--single $#{product.originalPrice}
 				

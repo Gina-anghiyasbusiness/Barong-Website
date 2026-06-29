@@ -48,7 +48,7 @@ block content
 						if product.discountPrice && product.discountPrice < product.originalPrice
 							.productPage__price--box-flex
 								p.price--old.productPage__price--old $#{product.originalPrice}
-								p.price--new $#{product.discountPrice}
+								p.price--new $#{Number.isInteger(product.discountPrice) ? product.discountPrice : product.discountPrice.toFixed(2)}
 						else
 							.productPage__price--box-flex 
 								p.productPage__price--current $#{product.originalPrice}

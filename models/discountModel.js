@@ -22,20 +22,6 @@ const discountSchema = new mongoose.Schema(
 		amount: Number,
 
 
-		// appliesToProducts: [
-		// 	{
-		// 		type: mongoose.Schema.Types.ObjectId,
-		// 		ref: 'Product'
-		// 	}
-		// ],
-
-		appliesToCategories: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				ref: 'Category'
-			}
-		],
-
 		startDate: {
 
 			type: Date,

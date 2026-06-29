@@ -55,7 +55,7 @@ block content
 						p.admin-product__text #{discountCode}
 						p.admin-product__text #{product.tags}
 						p.admin-product__text #{product.originalPrice}
-						p.admin-product__text #{product.currentPrice}
+						p.admin-product__text #{Number.isInteger(product.discountPrice) ? product.discountPrice : product.discountPrice.toFixed(2) || product.currentPrice}
 					
 				
 						a(href=`/admin/be_barong-item/${product.slug}` class='admin_edit--arrow') ➡️

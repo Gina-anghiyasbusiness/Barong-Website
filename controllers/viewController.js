@@ -1958,15 +1958,22 @@ exports.getProductsDashboard = catchAsync(async (req, res) => {
 
 
 
+
 exports.getBarongsList = catchAsync(async (req, res) => {
 
 	const productList = await SpecProd.find()
 		.populate('discount')
 		.populate({
 			path: 'category',
-			select: 'name'
+			select: 'name discount'
 		})
 		.sort({ createdAt: -1 });
+
+
+	await Promise.all(productList.map(async product => {
+
+		await missingDiscountCheck(product);
+	}));
 
 	res.status(200).render('admin/be_barongs-list', {
 		title: 'Admin-Barong-Products',
@@ -1981,11 +1988,13 @@ exports.getBarong = catchAsync(async (req, res, next) => {
 	const product = await SpecProd.findOne({ slug: req.params.slug }).populate(
 		{
 			path: 'category',
-			select: 'name'
+			select: 'name discount'
 		}
 	);
 
 	if (!product) return next(new AppError('Product not found', 404));
+
+	await missingDiscountCheck(product);
 
 
 	const categories = await Category.find().select('name');
@@ -2047,10 +2056,14 @@ exports.getBarongSearch = catchAsync(async (req, res, next) => {
 	const product = await SpecProd.findOne({ productSku }).populate(
 		{
 			path: 'category',
-			select: 'name'
-		});
+			select: 'name discount'
+		}
+	);
 
 	if (!product) return next(new AppError('Product not found', 404));
+
+	await missingDiscountCheck(product);
+
 
 	const categories = await Category.find().select('name');
 	const discounts = await Discount.find().select('code');
