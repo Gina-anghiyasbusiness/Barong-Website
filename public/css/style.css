@@ -3880,7 +3880,7 @@ background-color: #fff;
 	
 	font-size: var(--text-small);
 
-	font-weight: 300;
+	font-weight: 400;
 }
 
 	.contactPage--btn-box{
@@ -3896,7 +3896,7 @@ background-color: #fff;
 	
 		font-family: "Cairo", serif;
 		
-	font-weight: 300;
+	font-weight: 400;
 
 }
 
@@ -3954,7 +3954,7 @@ background-color: #fff;
 	.contactPage__form-row-method{
 		
 		
-		font-weight: 300;
+		font-weight: 400;
 	}
 	.contactPage__form-row-method label{
 		
@@ -4206,7 +4206,7 @@ padding-top: 4rem;
 
 .customContactPage__form-row label {
 	font-size: var(--text-small);
-	font-weight: 300;
+	font-weight: 400;
 }
 
 .contactPage--btn-box {
@@ -4217,12 +4217,12 @@ padding-top: 4rem;
 
 .customContactPage__form-row select {
 	font-family: "Cairo", serif;
-	font-weight: 300;
+	font-weight: 400;
 }
 
 .customContactPage__form-row option {
 	font-family: "Cairo", serif;
-	font-weight: 300;
+	font-weight: 400;
 }
 
 .customizationPage__text-sm{
@@ -4268,7 +4268,7 @@ padding-top: 4rem;
 }
 
 .customContactPage__form-row-method {
-	font-weight: 300;
+	font-weight: 400;
 }
 
 .customContactPage__form-row-method label {
