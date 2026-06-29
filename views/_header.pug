@@ -58,7 +58,39 @@ header.main_header
 				.header__user--login-button 
 					a(href="/login-page" class='header__login--link login--btn') Login/Signup
 			
+		.header__hamburger-menu 
+			button.header__mobile-menu-btn(type="button" aria-label="Open menu")
+				i(data-lucide="menu")
 				
+	.header__mobile-overlay
+		.header__mobile-overlay-top
+			a(href="/")
+				img(src="/img/logo/default-logo.png", alt="image", class="header__mobile-logo")
+			button.header__mobile-close(type="button" aria-label="Close menu")
+				i(data-lucide="x")
+
+		nav.header__mobile-nav
+			.header__mobile-group
+				a.header__mobile-link(href="/static/sales") Shop
+				a.header__mobile-sublink(href="/barong-list") Barong and Filipiniana
+				a.header__mobile-sublink(href="/bag-list") Bags
+				a.header__mobile-sublink(href="/accessories-list") Accessories
+
+			.header__mobile-group
+				a.header__mobile-link(href="/static/services") Services
+				a.header__mobile-sublink(href="/static/custom") Customization
+				a.header__mobile-sublink(href="/static/rentals") Rentals
+
+			a.header__mobile-link(href="/static/about") About
+			a.header__mobile-link(href="/static/contact") Contact
+
+			if user
+				a.header__mobile-link(href=`/my-account/${user.id}`) My Account
+				a.header__mobile-link(href=`/my-account/${user.id}?show=my-account-wishlist`) Wishlist
+				a.header__mobile-link(href=`/my-account/${user.id}?show=my-account-cart`) Cart
+			else
+				a.header__mobile-link(href="/login-page") Login/Signup	
+					
 .header__banner--preview 
 	.header__banner--text 
 		p Website Preview — This site is currently under development

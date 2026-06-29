@@ -29234,6 +29234,17 @@
       signUpUser(data);
     });
   }
+  var mobileMenuBtn = document.querySelector(".header__mobile-menu-btn");
+  var mobileMenuClose = document.querySelector(".header__mobile-close");
+  var mobileOverlay = document.querySelector(".header__mobile-overlay");
+  if (mobileMenuBtn && mobileMenuClose && mobileOverlay) {
+    mobileMenuBtn.addEventListener("click", () => {
+      mobileOverlay.classList.add("is-open");
+    });
+    mobileMenuClose.addEventListener("click", () => {
+      mobileOverlay.classList.remove("is-open");
+    });
+  }
   if (resetPasswordForm) {
     resetPasswordForm.addEventListener("submit", (e) => {
       e.preventDefault();

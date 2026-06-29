@@ -130,6 +130,21 @@ if (signupForm) {
 }
 
 
+const mobileMenuBtn = document.querySelector('.header__mobile-menu-btn');
+const mobileMenuClose = document.querySelector('.header__mobile-close');
+const mobileOverlay = document.querySelector('.header__mobile-overlay');
+
+if (mobileMenuBtn && mobileMenuClose && mobileOverlay) {
+	mobileMenuBtn.addEventListener('click', () => {
+		mobileOverlay.classList.add('is-open');
+	});
+
+	mobileMenuClose.addEventListener('click', () => {
+		mobileOverlay.classList.remove('is-open');
+	});
+}
+
+
 ///--------------	 Reset Password via email	 --------------///
 
 
