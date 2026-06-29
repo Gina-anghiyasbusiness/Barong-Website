@@ -1,4 +1,6 @@
-extends base 
+extends base
+
+include ../mixins/_breadcrumbs
 
 
 block content 
@@ -12,6 +14,7 @@ block content
 				.productList_sort-box
 				
 					h2.productList--sub-heading  Bags
+					+breadcrumbs(breadcrumbs)
 					form#form-product-sort.product-sort-form(action="/bag-list" method="GET") 						
 						input(type='hidden' name='color' value=selectedColor || '')
 						input(type='hidden' name='category' value=selectedcategory || '')

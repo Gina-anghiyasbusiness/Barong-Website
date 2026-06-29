@@ -262,6 +262,45 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 	const selectedSex = req.query.sex;
 	const selectedcategory = req.query.category;
 
+	const formatBreadcrumbLabel = value => {
+
+		return value
+			.split('-')
+			.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(' ');
+	};
+
+
+	const selectedCategoryDoc = categoryList.find(category => {
+
+		return category._id.toString() === selectedcategory;
+	});
+
+
+	const breadcrumbs = [
+		{ label: 'Home', href: '/' },
+		{ label: 'Barong and Filipiniana', href: '/barong-list' }
+	];
+
+
+	if (selectedSex) {
+		breadcrumbs.push({ label: formatBreadcrumbLabel(selectedSex) });
+	}
+
+	if (selectedColor) {
+		breadcrumbs.push({ label: formatBreadcrumbLabel(selectedColor) });
+	}
+
+	if (size) {
+		breadcrumbs.push({ label: size });
+	}
+
+	if (selectedCategoryDoc) {
+		breadcrumbs.push({ label: selectedCategoryDoc.name });
+	}
+
+
+
 	const queryObj = {};
 
 	if (selectedColor) {
@@ -302,6 +341,7 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 		sexList,
 		categoryList,
 		colorList,
+		breadcrumbs,
 		selectedColor,
 		selectedOption,
 		selectedcategory,
@@ -543,15 +583,6 @@ exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 
 	/// Display Category in dropdown ///
 
-	// const desiredCategory = ['Premium', 'Standard'];
-
-	// const categoryDocs = await Category.find({
-	// 	name: { $in: desiredCategory }
-	// }).select('name').lean();
-
-	// const categoryList = desiredCategory
-	// 	.map(name => categoryDocs.find(category => category.name === name))
-	// 	.filter(Boolean);
 
 	const categoryIds = await Accessory.distinct('category');
 
@@ -563,6 +594,35 @@ exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 
 	const selectedColor = req.query.color;
 	const selectedcategory = req.query.category;
+
+
+	const formatBreadcrumbLabel = value => {
+
+		return value
+			.split('-')
+			.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(' ');
+	};
+
+	const selectedCategoryDoc = categoryList.find(category => {
+		return category._id.toString() === selectedcategory;
+	});
+
+	const breadcrumbs = [
+		{ label: 'Home', href: '/' },
+		{ label: 'Accessories', href: '/accessories-list' }
+	];
+
+	if (selectedColor) {
+		breadcrumbs.push({ label: formatBreadcrumbLabel(selectedColor) });
+	}
+
+	if (selectedCategoryDoc) {
+		breadcrumbs.push({ label: selectedCategoryDoc.name });
+	}
+
+
+
 
 	const queryObj = {};
 
@@ -589,6 +649,7 @@ exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 		productlist,
 		colorList,
 		categoryList,
+		breadcrumbs,
 		selectedColor,
 		selectedcategory,
 		selectedOption
@@ -689,17 +750,6 @@ exports.getBagListPage = catchAsync(async (req, res, next) => {
 	const colorList = await formFieldsBags('color', desiredColorOrder);
 
 
-
-	// const desiredCategory = ['Premium', 'Standard'];
-
-	// const categoryDocs = await Category.find({
-	// 	name: { $in: desiredCategory }
-	// }).select('name').lean();
-
-	// const categoryList = desiredCategory
-	// 	.map(name => categoryDocs.find(category => category.name === name))
-	// 	.filter(Boolean);
-
 	const categoryIds = await Bag.distinct('category');
 
 	const categoryList = await Category.find({
@@ -711,6 +761,36 @@ exports.getBagListPage = catchAsync(async (req, res, next) => {
 
 	const selectedColor = req.query.color;
 	const selectedcategory = req.query.category;
+
+
+	const formatBreadcrumbLabel = value => {
+
+		return value
+			.split('-')
+			.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(' ');
+	};
+
+	const selectedCategoryDoc = categoryList.find(category => {
+		return category._id.toString() === selectedcategory;
+	});
+
+	const breadcrumbs = [
+		{ label: 'Home', href: '/' },
+		{ label: 'Bags', href: '/bag-list' }
+	];
+
+	if (selectedColor) {
+		breadcrumbs.push({ label: formatBreadcrumbLabel(selectedColor) });
+	}
+
+	if (selectedCategoryDoc) {
+		breadcrumbs.push({ label: selectedCategoryDoc.name });
+	}
+
+
+
+
 
 	const queryObj = {};
 
@@ -737,6 +817,7 @@ exports.getBagListPage = catchAsync(async (req, res, next) => {
 		productlist,
 		colorList,
 		categoryList,
+		breadcrumbs,
 		selectedColor,
 		selectedcategory,
 		selectedOption

@@ -1,5 +1,6 @@
 extends base 
 
+include ../mixins/_breadcrumbs
 
 block content 
 
@@ -12,6 +13,7 @@ block content
 				.productList_sort-box
 				
 					h2.productList--sub-heading  Barong and Filipiniana
+					+breadcrumbs(breadcrumbs)
 					form#form-product-sort.product-sort-form(action="/barong-list" method="GET") 
 						input(type='hidden' name='productSize' value=selectedSize || '')
 						input(type='hidden' name='color' value=selectedColor || '')

@@ -1,0 +1,10 @@
+mixin breadcrumbs(items)
+	nav.product-breadcrumbs(aria-label="Breadcrumb")
+		each item, index in items
+			if item.href
+				a.product-breadcrumbs__link(href=item.href)= item.label
+			else
+				span.product-breadcrumbs__current= item.label
+
+			if index < items.length - 1
+				span.product-breadcrumbs__separator /
