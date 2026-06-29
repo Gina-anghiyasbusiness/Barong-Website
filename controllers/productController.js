@@ -214,7 +214,6 @@ exports.filterProductUpdateBody = (req, res, next) => {
 		'tags',
 		'color',
 		'sex',
-		'style',
 		'variants',
 		'features'
 	);
@@ -267,22 +266,6 @@ exports.validateProductRefs = (req, res, next) => {
 	next();
 };
 
-
-// exports.validateProductRefs = (req, res, next) => {
-
-
-// 	if (req.body.category && !mongoose.Types.ObjectId.isValid(req.body.category)) {
-
-// 		return next(new AppError('Invalid category ID', 400));
-// 	}
-
-// 	if (req.body.discount && !mongoose.Types.ObjectId.isValid(req.body.discount)) {
-
-// 		return next(new AppError('Invalid discount ID', 400));
-// 	}
-
-// 	next();
-// };
 
 
 //-------------  Factory function calls  -----------//
@@ -353,7 +336,6 @@ exports.createBarong = catchAsync(async (req, res, next) => {
 
 		'color',
 		'sex',
-		'style',
 		'variants',
 		'features'
 

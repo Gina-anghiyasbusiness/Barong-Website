@@ -1335,7 +1335,6 @@ if (productFormCreate) {
 		form.append('category', document.getElementById('category').value);
 		form.append('sex', document.getElementById('sex').value);
 		form.append('color', document.getElementById('color').value);
-		form.append('style', document.getElementById('style').value);
 
 
 		/// Add features array
@@ -1421,7 +1420,6 @@ if (productForm) {
 		form.append('category', document.getElementById('category').value);
 		form.append('sex', document.getElementById('sex').value);
 		form.append('color', document.getElementById('color').value);
-		form.append('style', document.getElementById('style').value);
 
 		form.append('features', JSON.stringify(selectedFeatures));
 

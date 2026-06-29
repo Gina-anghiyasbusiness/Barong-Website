@@ -1992,7 +1992,6 @@ exports.getBarong = catchAsync(async (req, res, next) => {
 	const discounts = await Discount.find().select('code');
 
 	const colors = SpecProd.schema.path('color').enumValues;
-	const styles = SpecProd.schema.path('style').enumValues;
 	const sexes = SpecProd.schema.path('sex').enumValues;
 	const features = SpecProd.schema.path('features').caster.enumValues;
 
@@ -2003,7 +2002,6 @@ exports.getBarong = catchAsync(async (req, res, next) => {
 		categories,
 		discounts,
 		colors,
-		styles,
 		sexes,
 		features
 
@@ -2018,7 +2016,6 @@ exports.createBarongPage = catchAsync(async (req, res) => {
 	const discounts = await Discount.find().select('code');
 
 	const colors = SpecProd.schema.path('color').enumValues;
-	const styles = SpecProd.schema.path('style').enumValues;
 	const sexes = SpecProd.schema.path('sex').enumValues;
 	const features = SpecProd.schema.path('features').caster.enumValues;
 
@@ -2031,7 +2028,6 @@ exports.createBarongPage = catchAsync(async (req, res) => {
 		categories,
 		discounts,
 		colors,
-		styles,
 		sexes,
 		features
 	})
@@ -2043,6 +2039,10 @@ exports.createBarongPage = catchAsync(async (req, res) => {
 exports.getBarongSearch = catchAsync(async (req, res, next) => {
 
 	const productSku = req.query.productSearch;
+
+	const colors = SpecProd.schema.path('color').enumValues;
+	const sexes = SpecProd.schema.path('sex').enumValues;
+	const features = SpecProd.schema.path('features').caster.enumValues;
 
 	const product = await SpecProd.findOne({ productSku }).populate(
 		{
@@ -2061,7 +2061,10 @@ exports.getBarongSearch = catchAsync(async (req, res, next) => {
 		title: `Admin-Barong`,
 		product,
 		categories,
-		discounts
+		discounts,
+		colors,
+		sexes,
+		features
 	})
 })
 

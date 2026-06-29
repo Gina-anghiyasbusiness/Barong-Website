@@ -29776,7 +29776,6 @@
       form.append("category", document.getElementById("category").value);
       form.append("sex", document.getElementById("sex").value);
       form.append("color", document.getElementById("color").value);
-      form.append("style", document.getElementById("style").value);
       const selectedFeatures = document.querySelectorAll('input[name="features"]:checked');
       selectedFeatures.forEach((feature) => {
         form.append("features", feature.value);
@@ -29822,7 +29821,6 @@
       form.append("category", document.getElementById("category").value);
       form.append("sex", document.getElementById("sex").value);
       form.append("color", document.getElementById("color").value);
-      form.append("style", document.getElementById("style").value);
       form.append("features", JSON.stringify(selectedFeatures));
       const cover = document.getElementById("product-image-cover");
       if (cover && cover.files[0]) {

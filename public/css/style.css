@@ -99,6 +99,7 @@
 	--container-md: 120rem; /* main */
 	--container-lg: 130rem;
 	--container-xl: 150rem;
+	--container-xxl: 164rem;
 
   --pad-page: 2.4rem;
   --radius: 1.2rem;
@@ -501,7 +502,8 @@ h1, h2, h3,h4{
 .sm-container,
 .container,
 .med-container,
-.wide-container {
+.wide-container,
+.ex-wide-container {
 	
   margin: 0 auto;	
 }
@@ -513,6 +515,8 @@ h1, h2, h3,h4{
 .med-container{ max-width: var(--container-lg); }
 
 .wide-container{ max-width: var(--container-xl); }
+
+.ex-wide-container{ max-width: var(--container-xxl); }
 
 
 /*/------------	 Helpers  -----------/*/
@@ -2175,7 +2179,7 @@ font-size: 2.4rem;
 }
 
 .salesPage--heading-box{
-	gap: 2.4rem;
+	gap: 2.6rem;
 	
 	
 }
@@ -2222,6 +2226,11 @@ font-size: 2.4rem;
 	font-weight: 500;
 }
 
+.salesPage__tagline,.salesPage__benefits{
+	
+	margin-bottom: 1.2rem;
+}
+
 .salesPage__text , .rentalGuidePage__text  , .rentalsPage__text , .servicesPage__text  {
 	font-size: 1.6rem;
 	line-height: 1.6;
@@ -2257,7 +2266,7 @@ font-size: 2.4rem;
 	box-shadow: 0 2px 8px rgba(184, 134, 11, 0.25);
 	
 	transition: all 0.3s ease;
-	margin-top: 2rem;
+
 }
 
 .salesPage__cta:hover,
@@ -2334,6 +2343,14 @@ font-size: 2.4rem;
 	width: 1.4rem;
 	height: 1.4rem;
 }
+
+
+	.salesPage__actions{
+		
+		display: flex;
+		align-items: center;
+		justify-content: space-evenly;
+	}
 
 
 /* //--------------				Services Main Page 				-----------// */
@@ -6896,10 +6913,11 @@ section.admin__home--grid {
 	
 	display: grid;
 	
-	grid-template-columns:2fr 1fr 3fr 2fr 2fr 2fr 3fr 3fr 2fr 2fr 1fr;
+	grid-template-columns:2fr 1fr 3fr 3fr 3fr 2fr 3fr 3fr 2fr 2fr 1fr;
 	text-align: center;
-	padding: 2rem .5rem;
+	padding: 1.6rem 0;
 	border-bottom: 2px solid var(--color-dk-bg);	
+	gap: .25rem;
 	
 }
 

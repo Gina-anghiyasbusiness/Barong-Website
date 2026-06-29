@@ -174,12 +174,16 @@ module.exports = class Email {
 	}
 
 
+
+
 	/// Template send enquiry functions
+
 
 	async sendEnquiryEmail(enquiryData) {
 
 		await this.sendEnquiry('enquiry', 'New Enquiry', enquiryData, true);
 	}
+
 
 	async sendCustomizationEnquiryEmail(enquiryData) {
 

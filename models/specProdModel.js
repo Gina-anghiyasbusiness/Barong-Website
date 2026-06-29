@@ -42,22 +42,6 @@ const specProdSchema = new mongoose.Schema({
 	},
 
 
-	style: {
-		type: String,
-		enum: [
-			'Crew-Neck',
-			'V-neck',
-			'Polo',
-			'Tank',
-			'Singlet',
-			'Slim-fit',
-			'Fitted',
-			'Relaxed-fit',
-			'Crop-top',
-			'Slim-fit']
-	},
-
-
 	sex: {
 		type: String,
 		enum: ['unisex', 'male', 'female', 'boy', 'girl', 'unisex-kids'],
