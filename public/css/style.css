@@ -2232,7 +2232,8 @@ font-size: 2.4rem;
 
 .servicesPage--heading-box{
 	
-	gap: 2rem;
+	gap: 2.4rem;
+	padding: 0 3rem;
 	
  }
 
@@ -2259,6 +2260,7 @@ font-size: 2.4rem;
 	
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	gap: 4rem;
 }
 
@@ -4124,7 +4126,7 @@ gap: 1rem;
 .customContactPage{
 	max-width: 112rem;
 	margin: 0 auto;
-	padding: 2.6rem 5rem 6rem;
+	padding: 2.6rem 1.2rem 6rem;
 	display: flex;
 	flex-direction: column;
 	gap: 1.4rem;
@@ -8555,6 +8557,12 @@ html{
 	font-size: 46.5%;
 }
 
+
+.customContactPage__grid{
+  
+   
+    padding-top: 6.4rem;
+}
 .productList--heading-box {
     padding: 2rem 0 3rem;
 }
@@ -8623,7 +8631,14 @@ ul.header__nav--list {
 }
 
 
-	
+.contactPage__form-heading h1 {
+    font-size:3.2rem;
+}
+
+	.servicesPage__benefits{
+		
+		padding-left: 2rem;
+	}
 
 	.customizationPage__grid, .salesPage__grid{
   
@@ -8711,6 +8726,17 @@ ul.header__nav--list {
 
 @media (max-width: 44.37em) {
 	
+	
+	.customContactPage__grid {
+   
+    grid-template-columns: 1fr;
+   
+    padding-top: 2rem;
+}
+	
+    .contactPage__form-heading h1 {
+        text-align: center;
+    }
 
   .productList--home {
    	grid-template-columns: repeat(auto-fit, minmax(20rem, 28.5rem));
@@ -9146,6 +9172,17 @@ ul.header__nav--list {
 /* /// 425px */
 
 @media (max-width: 26.56em) {
+	
+	.customContactPage {
+ 
+    padding: 1.2rem 1.2rem 6rem;
+  
+}
+	
+	    .customContactPage__grid {
+       
+        padding-top: 0;
+    }
 	
 	.aboutPage--heading-box {
         font-size: 3rem;
