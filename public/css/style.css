@@ -8460,6 +8460,62 @@ html{
 
 }
 
+
+/* /// 850px */
+
+@media (max-width: 53.15em) {
+	
+	.aboutPage-grid {
+    
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr ;
+    align-items: center;
+    row-gap: 0;
+}
+
+.abouPage-left {
+    grid-column: 2/3;
+    grid-row: unset;
+    z-index: 1000;
+}
+
+.aboutPage-right {
+    grid-column: 1/2;
+    grid-row: 1/2;
+		padding: 2.4rem;
+		
+		display: flex;
+		justify-content: center;
+
+}
+
+.aboutPage-right-text {
+    grid-column: 1/3;
+    grid-row: unset;
+padding: 0 4rem;
+}
+
+.aboutPage--image-box {
+}
+
+.aboutPage-img {
+	
+  
+    transform: scale(1);
+    
+}
+.aboutPage--image-box {
+    width: 65%;
+    aspect-ratio: 1 / 1;
+
+}
+	
+	
+}
+
+
+
+
 /* /// 810px */
 
 @media (max-width: 50.63em) {
@@ -8541,6 +8597,7 @@ ul.header__nav--list {
 		
 		grid-template-columns: 1fr;
 	
+	
 	}
 
 	.salesPage__grid--image {
@@ -8563,6 +8620,12 @@ ul.header__nav--list {
 		justify-content: center;
 		padding: 0 2rem;
 	}
+	
+.servicesPage__actions{
+	padding: 2rem 0 0;
+	
+	justify-content: center;
+}
   
 	
 }
@@ -8763,6 +8826,11 @@ ul.header__nav--list {
 
 	}
 	
+	.aboutPage--heading-box {
+    font-size: 3.8rem;
+    letter-spacing: .2rem;
+}
+	
 
 
     .homePage__services--grid {
@@ -8818,11 +8886,30 @@ ul.header__nav--list {
 	
 }
 
+/* /// 520px */
+
+@media (max-width: 32.5em) {
+	
+
+  .aboutPage-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 2fr;
+    align-items: center;
+    row-gap: 2rem;
+}
+
+	
+}
 
 
 /* /// 485px */
 
 @media (max-width: 30.32em) {
+	
+	.aboutPage--heading-box {
+        font-size: 3.2rem;
+       
+    }
 	
 	.productList--sub-heading {
     font-size: 2.4rem;
@@ -8854,7 +8941,7 @@ ul.header__nav--list {
 		 row-gap: 2rem;
 }
 	
-	.salesPage
+	.salesPage, .servicesPage
  {
     padding: 4.8rem 0 3.2rem;
 }
@@ -8870,6 +8957,31 @@ ul.header__nav--list {
 /* /// 425px */
 
 @media (max-width: 26.56em) {
+	
+	.aboutPage--heading-box {
+        font-size: 3rem;
+       
+    }
+		
+		    .aboutPage-grid {
+     
+        row-gap: 1.2rem;
+				grid-template-rows: 1fr 3fr;
+    }
+
+
+.aboutPage--heading-box {
+        font-size: 2.6rem;
+				padding: 0 1.4rem 0 0;
+    }
+	
+	
+ .servicesPage__tagline {
+	
+    font-size: 1.8rem;
+		line-height: 1.4;
+  
+}
 	
 .productList--sub-heading {
     font-size: 2.2rem;
@@ -8982,4 +9094,15 @@ padding: 0 2.4rem 0 6.4rem;
 		font-size: 1.8rem;
    
 }
+
+    .aboutPage--image-box {
+        width: 75%;
+        aspect-ratio: 1 / 1;
+    }
+
+    .aboutPage-grid{
+			
+        row-gap: 1.2rem;
+        grid-template-rows: 1fr 4fr;
+    }
 }
