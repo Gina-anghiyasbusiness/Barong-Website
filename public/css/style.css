@@ -8824,6 +8824,18 @@ ul.header__nav--list {
 
 @media (max-width: 30.32em) {
 	
+	.productList--sub-heading {
+    font-size: 2.4rem;
+		font-weight: 600;
+   
+}
+	.barong-list__filter-btn {
+  
+    font-size: 1.8rem;
+  
+}
+
+	
 	.barong-page--list {
 
     grid-template-columns: repeat(auto-fit, minmax(14rem, 17.5rem));
@@ -8860,13 +8872,14 @@ ul.header__nav--list {
 @media (max-width: 26.56em) {
 	
 .productList--sub-heading {
-    font-size: 2rem;
+    font-size: 2.2rem;
+		font-weight: 600;
    
 }
 	
 .barong-list__filter-btn {
   
-    font-size: var(--text-lg);
+    font-size: 1.6rem;
   
 }
 
@@ -8947,6 +8960,11 @@ padding: 0 2.4rem 0 6.4rem;
         width: 70%;
        
     }
+		
+.homePage-contact--cta p {
+	
+ padding: 0 1rem;
+}
 	
 	
 }
