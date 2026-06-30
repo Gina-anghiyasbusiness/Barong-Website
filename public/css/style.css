@@ -8495,9 +8495,15 @@ html{
 padding: 0 4rem;
 }
 
-.aboutPage--image-box {
-}
+.login {
+	
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 6.4rem;
+    padding: 10rem 8rem;
 
+}
 .aboutPage-img {
 	
   
@@ -8984,6 +8990,13 @@ ul.header__nav--list {
     row-gap: 2rem;
 }
 
+.login {
+   
+    gap: 4rem;
+    padding: 6rem 4rem;
+
+}
+
 	
 }
 
@@ -9184,7 +9197,29 @@ padding: 0 2.4rem 0 6.4rem;
 	
  padding: 0 1rem;
 }
+
+
+.signup__form {
+  
+    grid-template-columns: 1fr;
+    padding: 0;
+  
+    column-gap: 2.4rem;
+    row-gap: 1.8rem;
+}
+
+    .login {
+        gap: 6rem;
+        padding: 4rem 2rem
+    }
+.login , .conatiner{
 	
+	margin: 0 2rem;
+}
+
+.signup__form--group-submit{
+ justify-content: center;
+}
 	
 }
 		/* /// 350px */
