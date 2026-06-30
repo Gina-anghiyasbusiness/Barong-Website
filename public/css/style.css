@@ -8626,13 +8626,27 @@ ul.header__nav--list {
 	
 	justify-content: center;
 }
+
+.contactPage__card-details p {
+    font-size:1.4rem;
+  
+    font-weight: 500;
+}
+
+.contactPage__grid {
+  
+    grid-template-columns: 8fr 9fr;
+    gap: 2rem;
+   
+}
+
   
 	
 }
 
 
 
-/* /// 730px */
+/* /// 710px */
 
 @media (max-width: 44.37em) {
 	
@@ -8668,6 +8682,43 @@ ul.header__nav--list {
 		
 		height: 4rem;
 	}
+	
+	.contactPage__card-details p {
+    font-size:1.2rem;
+  
+   
+}
+
+
+.contactPage__form {
+     width: 90%;
+ 
+}
+
+.contactPage__form-section {
+    padding: 2.4rem 2.4rem 4rem;
+}
+
+.contactPage__card-icon img {
+    width: 4rem;
+    height: 4rem;
+   
+}
+
+.contactPage__card-heading h4 {
+   
+    font-size: 1.8rem;
+   
+}
+
+.contactPage__card {
+   
+    height: 17rem;
+    gap: 1rem;
+    padding: 1rem .6rem;
+  
+}
+  
 
 }
 
@@ -8676,6 +8727,41 @@ ul.header__nav--list {
 /* /// 600px */
 
 @media (max-width: 37.5em) {
+	
+	.contactPage{
+		
+		
+		display: grid;
+		
+		gap: 2rem;
+		
+	}
+	
+	 .contactPage__grid {
+        grid-template-columns: 1fr;
+        
+    }
+		
+		
+.contactPage__textbox {
+    padding:2rem 4.8rem;
+   
+    gap: 2.4rem;
+    
+}
+
+.contactPage__form-text {
+   
+    gap: 1.6rem;
+}
+	
+	
+	.contactPage__cards--box{
+		
+		grid-row: 2/3;
+		
+		grid-template-columns: 1fr 1fr;
+	}
 	
 	
 	.product-breadcrumbs {
@@ -8950,7 +9036,28 @@ ul.header__nav--list {
        width: 20rem;
 			 text-align: center;
     }
-	
+		
+ .contactPage__card {
+    height: 14rem;
+    gap: 1rem;
+    padding: 1rem .6rem;
+}
+
+    .contactPage__textbox{
+        padding: 1.6rem 2.4rem;
+        gap: 1.2rem;
+    }
+
+		    .contactPage {
+       
+        gap: .5rem;
+    }
+			.contactPage__form-box {
+ 
+    gap: 1.2rem;
+    padding: .25rem 2rem;
+  
+}
 	
 }
 
