@@ -9486,11 +9486,52 @@ ul.header__nav--list {
 @media (max-width: 26.56em) {
 	
 	
+	    .myAccount__flex--layout {
+        grid-template-columns: 1fr;
+        
+    }
+		
+		.myAccount__side-menu-main {
+    display: grid;
+		grid-template-columns: repeat(3,1fr);
+		grid-template-rows: repeat(2,1fr);
+		gap:0;
+}
+
+.myAccount__side-menu {
+    
+    padding: 1rem;
+   
+}
+
+    .myAccount {
+        padding: 0 1.2rem 4.8rem;
+    }
+	
+.myAccount__side-menu--btn {
+  
+    text-align: left;
+    padding: .75rem;
+    font-size: 1.5rem;
+   
+  
+}
+	
+ul.myAccount__side-menu--ul {
+   
+    gap: 0;
+}
 	    .myAccount-form--group--row {
         grid-template-columns: 1fr;
         gap: 1rem;
         margin-bottom: 1.2rem;
     }
+		
+		
+		#my-account-logout{
+			
+			text-align: center;
+		}
 .productPage-box--right {
    row-gap: 2.4rem;
 }
