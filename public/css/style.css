@@ -4600,7 +4600,7 @@ h2.productPage__reviews--heading{
 
 .myAccount{
 	
-	 padding: 4.8rem 0 8rem;
+	 padding: 4.8rem 2rem 8rem;
 }
 
 .myAccount__flex--layout {		
@@ -8671,6 +8671,38 @@ ul.header__nav--list {
 	font-size: 50%;
 }
 
+.myAccount__main-address--row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    justify-content: start;
+}
+
+.myAccount__main-address {
+   
+    gap: 0.6rem;
+}
+
+.myAccount-form--group--row {
+
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.myAccount__main-profile--grid {
+
+    gap: 2.4rem;
+   
+}
+
+.myAccount__flex--layout {
+   
+    gap: 4rem;
+    
+}
+
 	.productPage-box--img {
     width: 100%;
    
@@ -8798,6 +8830,43 @@ ul.header__nav--list {
 
 @media (max-width: 44.37em) {
 	
+	.myAccount {
+    padding: 0 2rem 4.8rem;
+}
+	
+.myAccount__page-heading {
+    padding: 3.2rem 2rem 2rem;
+}
+.myAccount__page-heading h2 {
+    
+		margin-bottom: 1rem;
+}
+	
+	    .myAccount__main-profile--grid {
+        gap: 1.6rem;
+    }
+	
+	.myAccount-form--group.myAccount-form--group--column {
+   
+    gap: 0;
+   
+}
+	
+	    .myAccount__main-address {
+        gap: 0;
+    }
+	
+	.myAccount__main-address--box {
+    grid-column: 1/3;
+    grid-row: 2/3;
+		padding: 1.2rem;
+}
+
+.myAccount__main-password--box {
+    grid-column: 1/3;
+    grid-row: 3;
+}
+	
 	
 	.productPage-box--right {
   
@@ -8903,6 +8972,25 @@ ul.header__nav--list {
 /* /// 650px */
 
 @media (max-width: 40.62em) {
+	
+	.myAccount-form--group {
+   
+    grid-template-columns: 6rem 1fr;
+
+    margin-bottom: 1rem;
+}
+	
+	p.myAccount__main--name {
+  
+    margin-bottom: 1.2rem;
+}
+	
+	.myAccount__main--details-container {
+   gap:0;
+	 
+	 display: grid;
+	 grid-template-columns: 1fr;
+}
 	
 	.productPage-box--left-left {
     display: none;
@@ -9213,6 +9301,24 @@ ul.header__nav--list {
 
 @media (max-width: 32.5em) {
 	
+	.myAccount__flex--layout {
+   
+    grid-template-columns: 2fr 3fr;
+    gap: 2.4rem;
+   
+}
+	
+	form.myAccount__main--user-form {
+   gap: 1rem;
+}
+	
+	    .myAccount-form--group {
+        grid-template-columns:1fr;
+				row-gap: .5rem;
+				margin-bottom: .25rem;
+    }
+}
+	
 	    .productPage__product--btn-box{
 				
 				grid-row: 2/3;
@@ -9379,6 +9485,12 @@ ul.header__nav--list {
 
 @media (max-width: 26.56em) {
 	
+	
+	    .myAccount-form--group--row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+    }
 .productPage-box--right {
    row-gap: 2.4rem;
 }
