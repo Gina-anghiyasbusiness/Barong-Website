@@ -2806,6 +2806,8 @@ font-size: 1.2rem;
 	
 	cursor: pointer;
 	
+	color: var(--color-text);
+	
 }
 
 
@@ -9231,6 +9233,7 @@ ul.header__nav--list {
 	.header__mobile-menu-btn svg {
 	width: 4.8rem;
 	height: 4.8rem;
+	stroke:var(--color-secondary);
 }
 
 
@@ -9616,10 +9619,17 @@ ul.myAccount__side-menu--ul {
    row-gap: 1.4rem;
 }
 
+.productPage__product--heading-box {
+   
+    margin-bottom: 2rem;
+   
+}
+
     .productPage__price--box-flex {
        
         padding:0;
-        font-size: 2.2rem;
+        font-size: 2.8rem;
+				margin-bottom: 1rem;
     }
 	
   .productPage__product--btn-box {
@@ -9793,6 +9803,11 @@ padding: 0 2.4rem 0 6.4rem;
 .customizationPage__grid--text--box {
         padding: 0 3.2rem;
     }
+		
+		.main_barong-list {
+  
+    column-gap: 0.2rem;
+}
 }
 
 
