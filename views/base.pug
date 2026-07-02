@@ -3,8 +3,16 @@ doctype html
 html 
 	head
 	
-		//-- Google Tag Manager (early load)
+		//-- Google tag (gtag.js)
 		
+		script(async src="https://www.googletagmanager.com/gtag/js?id=G-TZKL05LR9K")
+		script.
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'G-TZKL05LR9K');
+	
 		
 		meta(charset='UTF-8')
 		meta(name='viewport' content='width=device-width, initial-scale=1.0')
