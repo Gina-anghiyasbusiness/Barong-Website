@@ -43,27 +43,28 @@ block content
 										i.productPage__product--star(data-lucide='star')
 						p.productPage_sku Product No. #{product.productSku}
 					
-					.productPage__product-details 
-						h4.productPage__product-details-heading Details
 					.productPage__text-price--box
-					
-						.productPage__product--text-box
-							.productPage__product-description
-								p.productPage__product--p #{product.description}
-							.productPage__product-style
-								p.productPage__product--p Collection: #{product.sex}
-								p.productPage__product--p Color: #{product.color}
-							
 						.productPage__product--price-box
 						
 							if product.discountPrice < product.currentPrice
-								p.productPage__product--p  Original Price
+								
 								p.productPage__product--p  $#{product.currentPrice}
-								p.productPage__product--p  Sale Price
+						
 								p.checkout__price $#{product.discountPrice}
 							else 
-								p.productPage__product--p  Current Price
+						
 								p.checkout__price $#{product.currentPrice}
+								
+					.productPage__product-details 
+						h4.productPage__product-details-heading Details
+					
+					.productPage__product--text-box
+						.productPage__product-description
+							p.productPage__product--p #{product.description}
+						.productPage__product-style
+							p.productPage__product--p Collection: #{product.sex}
+							p.productPage__product--p Color: #{product.color}
+							
 											
 
 					

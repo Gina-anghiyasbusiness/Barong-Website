@@ -3101,8 +3101,8 @@ font-size: 1.2rem;
 	
 	display: flex;
 	flex-direction: column;
-	gap: 1.2rem;
-	padding: 1.4rem 0 0 2.4rem;	
+	gap: 1.6rem;
+	padding: 1.4rem 2.4rem;	
 }
 
 
@@ -3111,7 +3111,7 @@ font-size: 1.2rem;
 	display: grid;
 	grid-template-columns: 1fr;
 	align-items: center;	
-	/* margin-bottom: 2.8rem; */
+	margin-bottom: 1rem;
 	row-gap: 1rem;
 }
 
@@ -3239,6 +3239,7 @@ justify-content: center;
 	align-items: center;
 	justify-content: space-between;
 	padding-right: 3.2rem;
+	margin-bottom: 2.4rem;
 }
 
 
@@ -3247,7 +3248,7 @@ justify-content: center;
 	display: flex;
 	flex-direction: column;
 	gap: 1.2rem;
-	align-items:center;
+
 }
 
 	.productPage__product-description{
@@ -6226,7 +6227,7 @@ p.checkout__price{
 	padding: 0;
 	margin: 0;
 
-	font-size: 2.8rem;
+	font-size: 3rem;
 	font-weight: 900;
 	letter-spacing: 0.3px;
 }
@@ -9315,6 +9316,12 @@ ul.header__nav--list {
 @media (max-width: 32.5em) {
 	
 	
+	.size_guide-img {
+    width: 100%;
+  
+}
+	
+	
 	.productPage-heading-flex {
    justify-content: space-between;
 	 margin-right: 2.4rem;
@@ -9368,6 +9375,8 @@ ul.header__nav--list {
 				
 			flex-direction: unset;
 				align-items: center;
+				
+				margin-bottom: 2rem;
     
     }
 		
@@ -9398,13 +9407,15 @@ ul.header__nav--list {
 		
 		.productPage__price--current {
     padding: 1.6rem 0;
+		font-weight: 900;
 }
 	
 	
 	.productPage-box--right {
        display: grid;
 			 grid-template-columns: 4fr 3fr;
-			 padding: 0 4rem;
+			 padding: 0 4.8rem;
+			 gap: 1.2rem;
     }
 		
 
@@ -9442,7 +9453,7 @@ ul.header__nav--list {
 
 .productPage-box {
     grid-template-columns: 1fr;
-    
+    gap: 6.4rem;
     padding: 4rem 0 2.4rem;
 }
 
@@ -9462,6 +9473,12 @@ ul.header__nav--list {
 /* /// 485px */
 
 @media (max-width: 30.32em) {
+	
+	.productPage__variant-size--flex {
+   
+    margin-bottom: .25rem;
+  
+}
 	
 	.aboutPage--heading-box {
         font-size: 3.2rem;
@@ -9545,6 +9562,10 @@ ul.header__nav--list {
 
 @media (max-width: 26.56em) {
 	
+    .productPage__product--text-box {
+       grid-column:span 2;
+    }
+	
 
 .productPage__quantity {
  
@@ -9621,7 +9642,7 @@ ul.myAccount__side-menu--ul {
 
 .productPage__product--heading-box {
    
-    margin-bottom: 2rem;
+    margin-bottom: 1.2rem;
    
 }
 

@@ -8,11 +8,37 @@ html
 		
 		meta(charset='UTF-8')
 		meta(name='viewport' content='width=device-width, initial-scale=1.0')
-		meta(name="description" content=pageDescription)
-		meta(name="keywords" content="filipino barong filipiniana clothing")
-		meta(name="robots" content="index, follow")
+		meta(name='description' content=pageDescription || 'filipino barong filipiniana clothing')
+				
 		
-		link(rel="canonical", href=canonicalUrl)
+		if noIndex
+			meta(name="robots" content="noindex, nofollow")
+		else
+			meta(name="robots" content="index, follow")
+			link(rel="canonical" href=canonicalUrl)
+		
+		//-- Open Graph / Social Share
+
+		- const defaultOgTitle = pageTitle || 'Barong Tagalog & Filipiniana Australia | Ang Hiyas'
+		- const defaultOgDescription = pageDescription || 'Barong Tagalog, Filipiniana, custom tailoring, rentals, and Filipino formalwear across Australia.'
+		- const defaultOgImage = `${process.env.CANONICAL_URL}img/seo/ang-hiyas-og-default.jpg`
+
+		meta(property="og:type" content=ogType || "website")
+		meta(property="og:site_name" content="Ang Hiyas")
+		meta(property="og:url" content=canonicalUrl || process.env.CANONICAL_URL)
+		meta(property="og:title" content=ogTitle || defaultOgTitle)
+		meta(property="og:description" content=ogDescription || defaultOgDescription)
+		meta(property="og:image" content=ogImage || defaultOgImage)
+		meta(property="og:image:width" content="1200")
+		meta(property="og:image:height" content="630")
+		meta(property="og:image:type" content="image/jpeg")
+
+		//-- Twitter / X Card
+
+		meta(name="twitter:card" content="summary_large_image")
+		meta(name="twitter:title" content=ogTitle || defaultOgTitle)
+		meta(name="twitter:description" content=ogDescription || defaultOgDescription)
+		meta(name="twitter:image" content=ogImage || defaultOgImage)
 		
 		
 		link(rel='stylesheet', href='/css/style.css?v=1.1')
@@ -26,12 +52,99 @@ html
 		//-- Preloads (critical assets)		
 		
 			
-		link(rel='icon' type='image/png' href=favicon || '/img/favicons/defaultfavicon.png')
+		link(rel='icon' type='image/png' sizes='32x32' href='/img/favicons/defaultfavicon.png')
 		
-		title= typeof pageTitle !== 'undefined' ? pageTitle : `WebsiteName | ${title}`
+		title= pageTitle || 'Ang Hiyas | Filipino Clothing Australia'
 		
-		
-		
+		if !noIndex
+			script(type="application/ld+json").
+				{
+					"@context": "https://schema.org",
+					"@type": "ClothingStore",
+					"@id": "https://www.anghiyas.com.au/#business",
+					"name": "Ang Hiyas",
+					"description": "Ang Hiyas offers Barong Tagalog, Filipiniana, custom tailoring, rentals, and Filipino formal wear across Queensland and Australia.",
+					"url": "https://www.anghiyas.com.au/",
+					"telephone": "+61403542521",
+					"email": "info@anghiyas.com.au",
+					"image": "https://www.anghiyas.com.au/img/seo/ang-hiyas-og-default.jpg",
+					"logo": "https://www.anghiyas.com.au/img/logo/default-logo.png",
+					"priceRange": "$$",
+					"address": {
+						"@type": "PostalAddress",
+						"addressRegion": "Queensland",
+						"addressCountry": "AU"
+					},
+					"areaServed": [
+						{
+							"@type": "AdministrativeArea",
+							"name": "Queensland"
+						},
+						{
+							"@type": "Country",
+							"name": "Australia"
+						}
+					],
+					"openingHoursSpecification": [
+						{
+							"@type": "OpeningHoursSpecification",
+							"dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+							"opens": "09:00",
+							"closes": "17:00"
+						},
+						{
+							"@type": "OpeningHoursSpecification",
+							"dayOfWeek": "Saturday",
+							"opens": "10:00",
+							"closes": "16:00"
+						},
+						{
+							"@type": "OpeningHoursSpecification",
+							"dayOfWeek": "Sunday",
+							"opens": "13:00",
+							"closes": "16:00"
+						}
+					],
+					"hasOfferCatalog": {
+						"@type": "OfferCatalog",
+						"name": "Ang Hiyas services",
+						"itemListElement": [
+							{
+								"@type": "Offer",
+								"itemOffered": {
+									"@type": "Service",
+									"name": "Custom Barong Tagalog",
+									"serviceType": "Custom tailoring"
+								}
+							},
+							{
+								"@type": "Offer",
+								"itemOffered": {
+									"@type": "Service",
+									"name": "Custom Filipiniana",
+									"serviceType": "Custom tailoring"
+								}
+							},
+							{
+								"@type": "Offer",
+								"itemOffered": {
+									"@type": "Service",
+									"name": "Barong Tagalog and Filipiniana rentals",
+									"serviceType": "Clothing rental"
+								}
+							},
+							{
+								"@type": "Offer",
+								"itemOffered": {
+									"@type": "Service",
+									"name": "Filipino formal wear sales",
+									"serviceType": "Retail clothing"
+								}
+							}
+						]
+					}
+				}
+
 	body
 		// Header
 		include _header

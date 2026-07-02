@@ -38,6 +38,8 @@ const viewRouter = require('./routes/viewRoutes');
 
 const enquiryRouter = require('./routes/enquiryRoute');
 
+const seoRouter = require('./routes/seoRoutes');
+
 //-------------------  Controllers ------------------ //
 
 const webhookController = require('./controllers/webhookController');
@@ -364,6 +366,7 @@ app.use(hpp(
 /// Dynamic Routes Commented Out
 
 
+
 app.use('/api/v1/discounts', discountRouter);
 
 app.use('/api/v1/orders', orderRouter);
@@ -382,6 +385,10 @@ app.use('/api/v1/admin', adminRouter);
 
 app.use('/api/v1/enquiries', enquiryRouter);
 
+
+/// SEO route
+
+app.use('/', seoRouter);
 
 app.use('/', viewRouter);
 

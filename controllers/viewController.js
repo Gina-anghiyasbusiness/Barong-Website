@@ -33,9 +33,10 @@ exports.loginPage = (req, res) => {
 
 	res.status(200).render('login', {
 
-		pageTitle: 'Login/Signup',
-		pageDescription: 'Login Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}login`
+		pageTitle: 'Login or Sign Up | Ang Hiyas',
+		pageDescription: 'Log in or create an Ang Hiyas account to manage orders, saved details, wishlist items and your Filipino clothing purchases.',
+		canonicalUrl: `${process.env.CANONICAL_URL}login-page`,
+		noIndex: true
 	})
 }
 
@@ -47,9 +48,10 @@ exports.resetPasswordPage = (req, res) => {
 
 	res.status(200).render('reset-password', {
 
-		pageTitle: 'Reset Your Password',
-		pageDescription: 'Reset Password Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}reset-password`
+		pageTitle: 'Reset Password | Ang Hiyas',
+		pageDescription: 'Reset your Ang Hiyas account password securely to regain access to your orders, wishlist and account details.',
+		canonicalUrl: `${process.env.CANONICAL_URL}reset-password-page`,
+		noIndex: true
 	})
 }
 
@@ -64,9 +66,10 @@ exports.setNewPasswordPage = (req, res) => {
 
 	res.status(200).render('set-new-password', {
 
-		pageTitle: 'Set New Password',
-		pageDescription: 'Set New Password Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}set-new-password`
+		pageTitle: 'Set New Password | Ang Hiyas',
+		pageDescription: 'Create a new password for your Ang Hiyas account and securely regain access to your customer profile.',
+		canonicalUrl: `${process.env.CANONICAL_URL}set-new-password-page`,
+		noIndex: true
 	})
 }
 
@@ -90,14 +93,13 @@ exports.getHomePage = catchAsync(async (req, res, next) => {
 
 	res.status(200).render('home-page', {
 
-		pageTitle: 'Anghiyas | Filipino Clothing',
-		pageDescription: 'Barong and filiniana Customization, rentals and Sales, ready to wear. Traditional filipino clothing',
+		pageTitle: 'Barong Tagalog & Filipiniana Australia | Ang Hiyas',
+		pageDescription: 'Discover authentic Filipino clothing in Australia, including custom-made Barong Tagalog, Filipiniana dresses, wedding attire, rentals and ready-to-wear styles.',
 		canonicalUrl: `${process.env.CANONICAL_URL}`,
 		products
 
 	});
 })
-
 
 
 
@@ -333,9 +335,11 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 	}));
 
 	res.status(200).render('barong-list-page', {
-		pageTitle: 'Product List',
-		pageDescription: 'Home Page for your website',
-		canonicalUrl: `${process.env.CANONICAL_URL}`,
+
+		pageTitle: 'Buy Barong Tagalog & Filipiniana Online Australia | Ang Hiyas',
+		pageDescription: 'Shop Barong Tagalog and Filipiniana online at Ang Hiyas, a Filipino clothing store in Australia offering wedding attire, premium fabrics and authentic Filipino craftsmanship.',
+		canonicalUrl: `${process.env.CANONICAL_URL}barong-list`,
+
 		productlist,
 		sizeList,
 		sexList,
@@ -366,6 +370,10 @@ exports.getBarongPage = catchAsync(async (req, res, next) => {
 	}).populate('category');
 
 	if (!product) return next(new AppError('Product not found', 404));
+
+	const productDescription = product.description ||
+		`Shop ${product.name} from Ang Hiyas. Explore Barong Tagalog, Filipiniana and Filipino formal wear for weddings, events and special occasions in Australia.`;
+
 
 	///			Discount Price			///
 
@@ -404,12 +412,18 @@ exports.getBarongPage = catchAsync(async (req, res, next) => {
 
 	res.status(200).render('barong-page', {
 
-		pageTitle: `${product.name} | Template Website`,
-		pageDescription: 'Product Page for your website',
-		canonicalUrl: `${process.env.CANONICAL_URL}product-page/${product.slug}`,
+		pageTitle: `${product.name} | Barong Tagalog & Filipiniana Australia | Ang Hiyas`,
+		pageDescription: productDescription,
+		canonicalUrl: `${process.env.CANONICAL_URL}barong/${product.slug}`,
+
+		ogType: 'product',
+		ogTitle: `${product.name} | Ang Hiyas`,
+		ogDescription: productDescription,
+
 		product,
 		hasReviewed,
 		hasPurchased
+
 	});
 })
 
@@ -466,8 +480,8 @@ exports.getShoeListPage = catchAsync(async (req, res, next) => {
 	}));
 
 	res.status(200).render('shoe-list-page', {
-		pageTitle: 'Shoe List',
-		pageDescription: 'List os Shoes',
+		pageTitle: 'Filipino Formal Shoes & Accessories | Ang Hiyas Australia',
+		pageDescription: 'Shop formal shoes from Ang Hiyas Australia to complete your Barong Tagalog, Filipiniana or Filipino formal wear outfit for weddings and special occasions.',
 		canonicalUrl: `${process.env.CANONICAL_URL}shoe-list`,
 		productlist,
 		sizeList,
@@ -643,8 +657,8 @@ exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 	}));
 
 	res.status(200).render('accessories-list-page', {
-		pageTitle: 'Accessories List',
-		pageDescription: 'List of Accessories',
+		pageTitle: 'Philippine-Made Accessories | Ang Hiyas Australia',
+		pageDescription: 'Shop Philippine-made accessories from Ang Hiyas Australia to complement your Barong Tagalog, Filipiniana dress or Filipino formal wear for weddings and special occasions.',
 		canonicalUrl: `${process.env.CANONICAL_URL}accessories-list`,
 		productlist,
 		colorList,
@@ -666,6 +680,10 @@ exports.getAccessoryPage = catchAsync(async (req, res, next) => {
 	}).populate('category');
 
 	if (!product) return next(new AppError('Product not found', 404));
+
+
+	const productDescription = product.description ||
+		`Shop ${product.name} from Ang Hiyas Australia, part of our Philippine-made accessories collection for Barong Tagalog, Filipiniana and Filipino formal wear.`;
 
 	///			Discount Price			///
 
@@ -705,12 +723,18 @@ exports.getAccessoryPage = catchAsync(async (req, res, next) => {
 
 	res.status(200).render('accessories-page', {
 
-		pageTitle: `${product.name} | Template Website`,
-		pageDescription: 'Product Page for your website',
-		canonicalUrl: `${process.env.CANONICAL_URL}product-page/${product.slug}`,
+		pageTitle: `${product.name} | Filipino Accessories | Ang Hiyas Australia`,
+		pageDescription: productDescription,
+		canonicalUrl: `${process.env.CANONICAL_URL}accessories/${product.slug}`,
+
+		ogType: 'product',
+		ogTitle: `${product.name} | Ang Hiyas`,
+		ogDescription: productDescription,
+
 		product,
 		hasReviewed,
 		hasPurchased
+
 	});
 })
 
@@ -811,9 +835,9 @@ exports.getBagListPage = catchAsync(async (req, res, next) => {
 	}));
 
 	res.status(200).render('bag-list-page', {
-		pageTitle: 'Bags List',
-		pageDescription: 'List of Bags',
-		canonicalUrl: `${process.env.CANONICAL_URL}bags-list`,
+		pageTitle: 'Filipino Formal Bags | Ang Hiyas Australia',
+		pageDescription: 'Shop formal bags from Ang Hiyas Australia to complete your Barong Tagalog, Filipiniana dress or Filipino formal wear outfit for weddings and special occasions.',
+		canonicalUrl: `${process.env.CANONICAL_URL}bag-list`,
 		productlist,
 		colorList,
 		categoryList,
@@ -835,6 +859,9 @@ exports.getBagPage = catchAsync(async (req, res, next) => {
 	}).populate('category');
 
 	if (!product) return next(new AppError('Product not found', 404));
+
+	const productDescription = product.description ||
+		`Shop ${product.name} from Ang Hiyas Australia, part of our formal bag collection for Barong Tagalog, Filipiniana and Filipino formal wear outfits.`;
 
 	await missingDiscountCheck(product);
 
@@ -866,9 +893,14 @@ exports.getBagPage = catchAsync(async (req, res, next) => {
 
 	res.status(200).render('bag-page', {
 
-		pageTitle: `${product.name} | Template Website`,
-		pageDescription: 'Product Page for your website',
-		canonicalUrl: `${process.env.CANONICAL_URL}product-page/${product.slug}`,
+		pageTitle: `${product.name} | Filipino Formal Bags | Ang Hiyas Australia`,
+		pageDescription: productDescription,
+		canonicalUrl: `${process.env.CANONICAL_URL}bag/${product.slug}`,
+
+		ogType: 'product',
+		ogTitle: `${product.name} | Ang Hiyas`,
+		ogDescription: productDescription,
+
 		product,
 		hasReviewed,
 		hasPurchased
@@ -949,9 +981,9 @@ exports.getSalesPage = (req, res) => {
 
 	res.status(200).render('sales', {
 
-		pageTitle: 'Sales',
-		pageDescription: 'Sales Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}sales`
+		pageTitle: 'Buy Barong Tagalog & Filipiniana Online Australia | Ang Hiyas',
+		pageDescription: 'Shop Barong Tagalog and Filipiniana online at Ang Hiyas, a Filipino clothing store in Australia offering ready-to-wear styles, premium fabrics and authentic Filipino craftsmanship.',
+		canonicalUrl: `${process.env.CANONICAL_URL}static/sales`,
 	})
 }
 
@@ -964,9 +996,9 @@ exports.getServicesPage = (req, res) => {
 
 	res.status(200).render('services', {
 
-		pageTitle: 'Services',
-		pageDescription: 'Services Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}services`
+		pageTitle: 'Custom Tailoring & Rentals | Ang Hiyas Australia',
+		pageDescription: 'Explore Ang Hiyas custom tailoring and rentals for Barong Tagalog, Filipiniana dresses and Filipino formal wear for weddings, events and special occasions.',
+		canonicalUrl: `${process.env.CANONICAL_URL}static/services`,
 	})
 }
 
@@ -980,9 +1012,9 @@ exports.getCustomizationPage = (req, res) => {
 
 	res.status(200).render('custom', {
 
-		pageTitle: 'Customizations',
-		pageDescription: 'Customizations Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}custom`
+		pageTitle: 'Custom Barong Tagalog & Filipiniana Australia | Ang Hiyas',
+		pageDescription: 'Order custom made Barong Tagalog and bespoke Filipiniana dresses in Australia for weddings, graduations, oath taking ceremonies and formal Filipino events.',
+		canonicalUrl: `${process.env.CANONICAL_URL}static/custom`,
 	})
 }
 
@@ -991,9 +1023,9 @@ exports.getCustomContactPage = (req, res) => {
 
 	res.status(200).render('custom-contact', {
 
-		pageTitle: 'Customizations Enquiry',
-		pageDescription: 'Customizations Enquiry Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}custom-contact`
+		pageTitle: 'Custom Barong & Filipiniana Enquiry | Ang Hiyas Australia',
+		pageDescription: 'Send a custom tailoring enquiry for Barong Tagalog, Filipiniana dresses, wedding attire and made-to-measure Filipino formal wear from Ang Hiyas Australia.',
+		canonicalUrl: `${process.env.CANONICAL_URL}static/contact-custom`,
 	})
 }
 
@@ -1006,9 +1038,9 @@ exports.getRentalsPage = (req, res) => {
 
 	res.status(200).render('rentals', {
 
-		pageTitle: 'Rentals',
-		pageDescription: 'Rentals Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}rentals`
+		pageTitle: 'Barong Tagalog & Filipiniana Rentals Australia | Ang Hiyas',
+		pageDescription: 'Rent Barong Tagalog and Filipiniana outfits in Australia for weddings, graduations, oath taking ceremonies, cultural events and special occasions.',
+		canonicalUrl: `${process.env.CANONICAL_URL}static/rentals`,
 	})
 }
 
@@ -1017,9 +1049,9 @@ exports.getRentalGuidePage = (req, res) => {
 
 	res.status(200).render('rental-guide', {
 
-		pageTitle: 'Rental Guide',
-		pageDescription: 'Rentals Guide Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}rental-guide`
+		pageTitle: 'Barong & Filipiniana Rental Guide | Ang Hiyas Australia',
+		pageDescription: 'Read the Ang Hiyas rental guide for Barong Tagalog and Filipiniana hire, including bookings, sizing and special occasion rental details.',
+		canonicalUrl: `${process.env.CANONICAL_URL}static/rental-guidelines`,
 	})
 }
 
@@ -1050,9 +1082,9 @@ exports.getAboutPage = (req, res) => {
 
 	res.status(200).render('about', {
 
-		pageTitle: 'About',
-		pageDescription: 'About Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}about`
+		pageTitle: 'About Ang Hiyas | Filipino Clothing Australia',
+		pageDescription: 'Learn about Ang Hiyas, a Filipino fashion boutique in Australia offering authentic Barong Tagalog, Filipiniana, handcrafted Filipino clothing and heritage craftsmanship.',
+		canonicalUrl: `${process.env.CANONICAL_URL}static/about`,
 	})
 }
 
@@ -1066,9 +1098,9 @@ exports.getContactPage = (req, res) => {
 
 	res.status(200).render('contact', {
 
-		pageTitle: 'Contact',
-		pageDescription: 'Contact Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}contact`
+		pageTitle: 'Contact Ang Hiyas | Filipino Clothing Australia',
+		pageDescription: 'Contact Ang Hiyas Australia for Barong Tagalog, Filipiniana, custom clothing enquiries, wedding attire consultations and Australia-wide Filipino formal wear support.',
+		canonicalUrl: `${process.env.CANONICAL_URL}static/contact`,
 	})
 }
 
@@ -1289,9 +1321,10 @@ exports.getAccountPage = catchAsync(async (req, res, next) => {
 	if (user.wishlist) await updatePrice(user.wishlist);
 
 	res.status(200).render('myAccount', {
-		pageTitle: 'My Account',
-		pageDescription: 'Account Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}myAccount`,
+		pageTitle: 'My Account | Ang Hiyas',
+		pageDescription: 'View and manage your Ang Hiyas account details, orders, wishlist, cart and saved addresses.',
+		canonicalUrl: `${process.env.CANONICAL_URL}my-account`,
+		noIndex: true,
 		cart: user.cart,
 		wishlist: user.wishlist,
 		addresses: user.addresses,
@@ -1313,9 +1346,10 @@ exports.getEmptyAddressFormPage = async (req, res, next) => {
 
 	res.status(200).render('address-form-page', {
 
-		pageTitle: 'Address Form',
-		pageDescription: 'Add or update delievry and billing addresses',
-		canonicalUrl: `${process.env.CANONICAL_URL}address-form-page`,
+		pageTitle: 'Add Address | Ang Hiyas',
+		pageDescription: 'Add a delivery or billing address to your Ang Hiyas account.',
+		canonicalUrl: `${process.env.CANONICAL_URL}address-form--user`,
+		noIndex: true,
 		selectedAddress
 	})
 }
@@ -1339,9 +1373,10 @@ exports.getAddressFormPage = async (req, res, next) => {
 
 	res.status(200).render('address-form-page', {
 
-		pageTitle: 'Address Form',
-		pageDescription: 'Add or update delievry and billing addresses',
-		canonicalUrl: `${process.env.CANONICAL_URL}address-form-page`,
+		pageTitle: 'Update Address | Ang Hiyas',
+		pageDescription: 'Update a saved delivery or billing address in your Ang Hiyas account.',
+		canonicalUrl: `${process.env.CANONICAL_URL}address-form--user`,
+		noIndex: true,
 		selectedAddress
 	})
 }
@@ -1584,9 +1619,10 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 
 		res.status(200).render('checkout', {
 
-			pageTitle: 'Checkout',
-			pageDescription: 'Checkout Page',
-			canonicalUrl: `${process.env.CANONICAL_URL}checkout`,
+			pageTitle: 'Checkout | Ang Hiyas',
+			pageDescription: 'Review your Ang Hiyas order, delivery details and payment options before completing your purchase.',
+			canonicalUrl: `${process.env.CANONICAL_URL}checkout-page`,
+			noIndex: true,
 			cart,
 			totalNet,
 			delivery,
@@ -1602,9 +1638,10 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 
 		res.status(200).render('checkout', {
 
-			pageTitle: 'Checkout',
-			pageDescription: 'Checkout Page',
-			canonicalUrl: `${process.env.CANONICAL_URL}checkout`,
+			pageTitle: 'Checkout | Ang Hiyas',
+			pageDescription: 'Review your Ang Hiyas order, delivery details and payment options before completing your purchase.',
+			canonicalUrl: `${process.env.CANONICAL_URL}checkout-page`,
+			noIndex: true,
 			product,
 			variant,
 			qty,
@@ -1735,9 +1772,10 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 
 	res.status(200).render('checkout', {
 
-		pageTitle: 'Checkout',
-		pageDescription: 'Checkout Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}checkout`,
+		pageTitle: 'Guest Checkout | Ang Hiyas',
+		pageDescription: 'Complete your Ang Hiyas guest checkout securely and review your selected item, delivery details and payment options.',
+		canonicalUrl: `${process.env.CANONICAL_URL}checkout-page/buy-it-now-guest`,
+		noIndex: true,
 		product,
 		variant,
 		qty,
@@ -1761,9 +1799,10 @@ exports.getSuccessfulPaymentPage = (req, res) => {
 
 	res.status(200).render('payment-success', {
 
-		pageTitle: 'Successful Payment',
-		pageDescription: 'Successful Payment Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}payment-success`
+		pageTitle: 'Order Confirmed | Ang Hiyas',
+		pageDescription: 'Your Ang Hiyas order has been confirmed. View your order confirmation and next steps.',
+		canonicalUrl: `${process.env.CANONICAL_URL}order-success`,
+		noIndex: true
 	})
 }
 
@@ -1773,9 +1812,10 @@ exports.getSuccessfulPaymentPageGuest = (req, res) => {
 
 	res.status(200).render('payment-success-guest', {
 
-		pageTitle: 'Successful Payment',
-		pageDescription: 'Successful Payment Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}payment-success-guest`
+		pageTitle: 'Guest Order Confirmed | Ang Hiyas',
+		pageDescription: 'Your Ang Hiyas guest order has been confirmed. View your order confirmation and next steps.',
+		canonicalUrl: `${process.env.CANONICAL_URL}order-success-guest`,
+		noIndex: true
 	})
 }
 
@@ -1824,9 +1864,10 @@ exports.getUserOrderPage = catchAsync(async (req, res, next) => {
 	if (!transaction) return next(new AppError('Transaction not found', 404));
 
 	res.status(200).render('order-page', {
-		pageTitle: 'Order Page',
-		pageDescription: 'Successful Payment Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}order-page`,
+		pageTitle: 'Order Details | Ang Hiyas',
+		pageDescription: 'View your Ang Hiyas order details, purchased items, delivery information and transaction summary.',
+		canonicalUrl: `${process.env.CANONICAL_URL}user-order-number`,
+		noIndex: true,
 		order,
 		products: order.product,
 		transaction
@@ -1859,9 +1900,10 @@ exports.getGuestOrderPage = catchAsync(async (req, res, next) => {
 
 	res.status(200).render('guest-order-page', {
 
-		pageTitle: 'Order Page',
-		pageDescription: 'Successful Payment Page',
-		canonicalUrl: `${process.env.CANONICAL_URL}guest-order-page`,
+		pageTitle: 'Guest Order Details | Ang Hiyas',
+		pageDescription: 'View your Ang Hiyas guest order details, purchased items, delivery information and transaction summary.',
+		canonicalUrl: `${process.env.CANONICAL_URL}guest-order-number`,
+		noIndex: true,
 		order,
 		products,
 		transaction
@@ -1876,9 +1918,9 @@ exports.getEnquirySuccess = catchAsync(async (req, res, next) => {
 
 	res.status(200).render('enquirySuccess', {
 
-		pageTitle: 'Enquiry Sent | Widebay Web Wise',
-		pageDescription: 'Your enquiry has been sent successfully. Widebay Web Wise will be in touch soon.',
-		canonicalUrl: `${process.env.CANONICAL_URL}/enquiry-success`,
+		pageTitle: 'Enquiry Sent | Ang Hiyas',
+		pageDescription: 'Your Ang Hiyas enquiry has been sent successfully. We will be in touch soon to discuss your request.',
+		canonicalUrl: `${process.env.CANONICAL_URL}enquiry-success`,
 		noIndex: true
 	});
 });
