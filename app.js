@@ -16,7 +16,7 @@ const cookieParser = require('cookie-parser');
 
 const AppError = require('./utilities/appError')
 
-
+const compression = require('compression');
 
 
 
@@ -66,6 +66,12 @@ app.set('trust proxy', 1);
 app.set('view engine', 'pug');
 
 app.set('views', path.join(__dirname, 'views'));
+
+
+/// Compression
+
+
+app.use(compression());
 
 
 /// static file server
