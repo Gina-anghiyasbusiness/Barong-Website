@@ -77,12 +77,12 @@ app.use(compression());
 /// static file server
 
 
-// app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(express.static(path.join(__dirname, 'public'), {
-	maxAge: '30d',
-	immutable: true
-}));
+// app.use(express.static(path.join(__dirname, 'public'), {
+// 	maxAge: '30d',
+// 	immutable: true
+// }));
 
 
 

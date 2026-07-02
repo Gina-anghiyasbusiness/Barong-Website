@@ -9636,11 +9636,13 @@ ul.header__nav--list {
 /* /// 425px */
 
 @media (max-width: 26.56em) {
+
+
 	
-    .productPage__product--text-box {
-       grid-column:span 2;
-    }
-	
+.productPage__product--text-box {
+   grid-column:span 2;
+}
+
 
 .productPage__quantity {
  
