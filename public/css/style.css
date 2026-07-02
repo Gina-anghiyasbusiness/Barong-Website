@@ -52,7 +52,8 @@
 	
   --color-text: #282008;
 	--color-text-primary:#141004;
-	--color-text-primary-light:#faf6e9;
+	/* --color-text-primary-light:#faf6e9; */
+	--color-text-primary-light:#fefcf5;
 	--color-text-secondary: #060c09;
   --color-text-white: #fff;
   --color-text-muted: #7A664A;
@@ -1404,7 +1405,8 @@ margin-bottom: 6rem;
 	content: '';
 	position: absolute;
 	inset: 0;
-	background: rgba(0, 0, 0, 0.17);
+	/* background: rgba(0, 0, 0, 0.17); */
+	background: rgba(0, 0, 0, 0.22);
 }
 
 .homePage__hero--box{
@@ -1418,11 +1420,11 @@ margin-bottom: 6rem;
 	
 	display: flex;
 	flex-direction: column;
-	gap: 2.4rem;	
+	gap: 2.2rem;	
 	
 	text-align: center;
 	
-	padding-bottom: 21.6rem;
+	padding-bottom: 21rem;
 	
 	color: var(--color-text-primary-light); 
 	
@@ -1540,7 +1542,7 @@ margin-bottom: 6rem;
 
   font-size: 2.4rem;
   font-weight: 500;	
-	margin: 0 auto 4rem;
+	margin: 0 auto 2.4rem;
 	line-height: 1.3;
  
 }
@@ -2192,9 +2194,14 @@ font-size: 2.4rem;
 
  .customizationPage--heading-box{
 
-	gap: 2.4rem;
+	gap: 2rem;
 	
 	
+}
+
+.customizationPage__benefits--form {
+    margin-bottom: 2.2rem;
+		padding: 1.6rem 0;
 }
 
 	.customizationPage__grid--image--box{
@@ -2225,7 +2232,7 @@ font-size: 2.4rem;
 }
 
 .salesPage--heading-box{
-	gap: 2.6rem;
+	gap: 1.6rem;
 	
 	
 }
@@ -2241,9 +2248,18 @@ font-size: 2.4rem;
 .salesPage__benefits , .customizationPage__benefits , .customizationPage__benefits--form,  .rentalsPage__benefits , .servicesPage__benefits {
 	display: flex;
 	flex-direction: column;
-	gap: 1.2rem;
+	gap: 1.1rem;
 	
 	list-style: none;
+}
+
+.salesPage__tagline {
+    /* margin-bottom: 1.2rem; */
+		padding: 1.8rem 0;
+}
+.salesPage__benefits, .rentalsPage__benefits {
+    /* margin-bottom: 1.2rem; */
+		padding: 1.8rem 0 2.2rem ;
 }
 
  .servicesPage__actions {
@@ -2265,28 +2281,30 @@ font-size: 2.4rem;
 }
 
 .salesPage--heading,  .customizationPage--heading , .rentalsPage--heading, .rentalGuidePage--heading  , .servicesPage--heading {
-	font-size: 3.6rem;
+	font-size: 3.8rem;
 	font-weight: 600;
+	line-height: .95;
 }
 
 .salesPage__tagline, .rentalGuidePage__tagline , .customizationPage__tagline , .rentalsPage__tagline , .servicesPage__tagline  {
-	font-size: 2rem;
+	font-size: 2.2rem;
 	font-weight: 500;
 }
 
-.salesPage__tagline,.salesPage__benefits{
-	
-	margin-bottom: 1.2rem;
-}
+
 
 .salesPage__text , .rentalGuidePage__text  , .rentalsPage__text , .servicesPage__text  {
 	font-size: 1.6rem;
-	line-height: 1.6;
+	line-height: 1.5;
 	
 }
 
 .salesPage__benefit,  .rentalsPage__benefit , .servicesPage__benefit  {
 	font-size: 1.6rem;
+}
+
+.salesPage__tagline{
+	line-height: 1.2;
 }
 
 
@@ -2643,6 +2661,28 @@ font-size: 2.4rem;
 	
 }
 
+.productList__intro {
+	max-width: 82rem;
+margin-bottom: 1.6rem;
+	
+}
+
+.productList__eyebrow {
+	font-size: 1.2rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .12em;
+	color: var(--color-gold-dark);
+	margin-bottom: .8rem;
+}
+
+.productList__intro-text {
+	max-width: 78rem;
+	font-size: 1.6rem;
+	line-height: 1.5;
+	color: #4a4a4a;
+	margin-top: 1rem;
+}
 
 .barong-page--list	{
 	
@@ -2663,11 +2703,26 @@ font-size: 2.4rem;
    
     line-height: 1.3;
 		
+		padding: 1.2rem 0 ;
+	
+		flex:0 0 20%;
+		
+	}
+	
+.productList--sub-heading--intro {
+	
+	   font-size: 2.4rem;
+    font-weight: 500;
+   
+    line-height: 1.3;
+		
 		padding: 2rem 0 ;
 	
 		flex:0 0 20%;
 		
 	}
+	
+	
 	
 	
 	.product-breadcrumbs{
@@ -2791,7 +2846,7 @@ font-size: 1.2rem;
 		
 		margin-bottom: 1.8rem;
 		
-		border-bottom: 1px solid var(--color-primary-darkest);
+		border-bottom: 1px solid rgba(168, 122, 24, 0.35);
 	}
 
 	
@@ -2936,6 +2991,9 @@ font-size: 1.2rem;
 		align-items: center;
 		justify-content: space-between;
 		gap: 6.4rem;
+		border-top: 1px solid rgba(168, 122, 24, 0.35);
+		
+		padding: 3rem 0 1.8rem;
 		
 	
 	
@@ -3124,7 +3182,7 @@ font-size: 1.2rem;
 }
 
 
-h4.productPage__product-name {	
+h1.productPage__product-name {	
 	
 	font-size: var(--text-xxxlg);
 
@@ -3616,7 +3674,7 @@ background-image:
 
 .aboutPage--heading-box{
 	
-	font-size: 4.2rem;	
+	font-size: 3.2rem;	
 	letter-spacing: .35rem;
 
 
@@ -3672,7 +3730,7 @@ background-image:
 	
 	gap: 1.1rem;
 }
-.aboutPage-right-text-right h4{
+.aboutPage-right-text-right h2{
 	
 	font-size: 1.6rem;
 	margin-top: .15rem;
@@ -3748,7 +3806,7 @@ background-image:
 
 
 
-.contactPage__card-heading h4{
+.contactPage__card-heading{
 	
 	/* font-family: 'Rubik' , serif; */
 	
@@ -3839,9 +3897,9 @@ padding: 2.4rem 5rem 4rem;
 
 }
 
-.contactPage__form-text p:first-child{
+.contactPage__form-text h2{
 	font-size: 2.3rem;
-	font-weight: 400;
+	font-weight: 500;
 	line-height: 1.35;
 	margin-bottom: 1.4rem;
 }
@@ -3887,7 +3945,7 @@ background-color: #fff;
 
 
 
-.contactPage__form-heading h2{
+.contactPage__form-heading h1{
 	
 	font-size: var(--text-h2);
 	margin-bottom: .75rem;
@@ -6227,8 +6285,8 @@ p.checkout__price{
 	padding: 0;
 	margin: 0;
 
-	font-size: 3rem;
-	font-weight: 900;
+	font-size: 2.9rem;
+	font-weight: 700;
 	letter-spacing: 0.3px;
 }
 
@@ -8631,7 +8689,7 @@ html{
 .product-breadcrumbs {
     flex: 0 0 37.5%;
 		display: flex;
-		justify-content: center;
+		
 }
 
  .productList_sort-box {
@@ -9030,9 +9088,9 @@ ul.header__nav--list {
 
 @media (max-width: 37.5em) {
 	
-	h4.productPage__product-name {
+	h1.productPage__product-name {
 		
-    font-size: 2.8rem;
+    font-size: 3rem;
 }
 
 
@@ -9108,8 +9166,8 @@ ul.header__nav--list {
 	
   .productList--sub-heading {
     font-size: 2.4rem;
-    padding: 2.4rem 0;
-    flex: 0 0 50%;
+    padding: 1.2rem 0;
+    /* flex: 0 0 50%; */
 }
 
 	
@@ -9252,7 +9310,7 @@ ul.header__nav--list {
 	}
 	
 	.aboutPage--heading-box {
-    font-size: 3.8rem;
+    font-size: 3rem;
     letter-spacing: .2rem;
 }
 	
@@ -9345,7 +9403,7 @@ ul.header__nav--list {
 }
 
 	
-.productPage__product--title-box{
+.productPage__product--title-box, .productPage__product--heading-box{
 	grid-column: 1/3;
 }
 	
@@ -9407,7 +9465,7 @@ ul.header__nav--list {
 		
 		.productPage__price--current {
     padding: 1.6rem 0;
-		font-weight: 900;
+		font-weight: 700;
 }
 	
 	
@@ -9474,14 +9532,18 @@ ul.header__nav--list {
 
 @media (max-width: 30.32em) {
 	
+	.salesPage--heading-box {
+        gap: .25rem;
+    }
+	
 	.productPage__variant-size--flex {
    
-    margin-bottom: .25rem;
+    margin-bottom: .5rem;
   
 }
 	
 	.aboutPage--heading-box {
-        font-size: 3.2rem;
+        font-size: 2.6rem;
        
     }
 	
@@ -9686,7 +9748,7 @@ ul.myAccount__side-menu--ul {
 
 
 .aboutPage--heading-box {
-        font-size: 2.6rem;
+        font-size: 2.2rem;
 				padding: 0 1.4rem 0 0;
     }
 	
@@ -9853,7 +9915,7 @@ padding: 0 2.4rem 0 6.4rem;
     padding: 0rem 0 1.6rem;
 }
 	
-	    h4.productPage__product-name {
+	    h1.productPage__product-name {
         font-size: 2.6rem;
     }
 	

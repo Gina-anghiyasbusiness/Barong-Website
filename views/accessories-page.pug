@@ -28,7 +28,7 @@ block content
 				.productPage-box--right
 					.productPage__product--heading-box
 						.productPage-heading-flex
-							h4.productPage__product-name #{product.name}
+							h1.productPage__product-name #{product.name}
 							if user
 								- const isWishlisted = user.wishlist.some(item => item.product && item.product.toString() === product.id)
 								.productPage-wishlist--box
@@ -56,7 +56,7 @@ block content
 								p.checkout__price $#{product.currentPrice}
 								
 					.productPage__product-details 
-						h4.productPage__product-details-heading Details
+						h2.productPage__product-details-heading Details
 					
 					.productPage__product--text-box
 						.productPage__product-description

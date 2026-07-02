@@ -10,10 +10,13 @@ block content
 		section.homePage-productList
 		
 			.productList--heading-box
-				
+				.productList__intro
+					p.productList__eyebrow Accessories & Giftware
+					h1.productList--sub-heading Accessories
+					p.productList__intro-text Explore accessories and selected Filipino-inspired pieces for gifting, cultural celebrations, weddings, special occasions, and everyday use.
+							
 				.productList_sort-box
-				
-					h2.productList--sub-heading  Accessories
+
 					+breadcrumbs(breadcrumbs)
 					form#form-product-sort.product-sort-form(action="/accessories-list" method="GET") 						
 						input(type='hidden' name='color' value=selectedColor || '')
@@ -65,7 +68,7 @@ block content
 								- const category = 	product.category ? product.category.name : "";
 								.productList-box--img 
 									
-									img(src=`/img/product_imgs/${product.imageCover}`, alt='image',width="800",height="800", class='accsListPage__img' fetchpriority="high")
+									img(src=`/img/product_imgs/${product.imageCover}`,alt=`${product.name}`,width="800",height="800", class='accsListPage__img')
 								.productList-box
 									.productList-box--heading
 										h4 #{product.name}

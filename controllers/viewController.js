@@ -717,8 +717,8 @@ exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 	}));
 
 	res.status(200).render('accessories-list-page', {
-		pageTitle: 'Philippine-Made Accessories | Ang Hiyas Australia',
-		pageDescription: 'Shop Philippine-made accessories from Ang Hiyas Australia to complement your Barong Tagalog, Filipiniana dress or Filipino formal wear for weddings and special occasions.',
+		pageTitle: 'Accessories & Giftware | Ang Hiyas Australia',
+		pageDescription: 'Shop accessories, giftware and selected Filipino-inspired pieces from Ang Hiyas Australia for everyday use, gifting, cultural celebrations and special occasions.',
 		canonicalUrl: `${process.env.CANONICAL_URL}accessories-list`,
 		productlist,
 		colorList,

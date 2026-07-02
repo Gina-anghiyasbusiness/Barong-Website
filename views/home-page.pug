@@ -12,7 +12,7 @@ block content
 				.homePage__hero-flex
 		
 					h1.homePage--heading Celebrating Filipino Heritage Through Fashion 
-					p.homePage--sub-heading Your One-Stop Shop for Filipiniana and Barong 
+					p.homePage--sub-heading Your one-stop shop for Barong Tagalog, Filipiniana, custom tailoring, and rentals.
 
 					.hero__cta-box
 						a(href="/static/custom" class='homePage__hero-cta') Custom Tailoring
@@ -35,7 +35,7 @@ block content
 							- const category = 	product.category ? product.category.name : "";
 							.productList-box--img 
 								
-								img(src=`/img/product_imgs/${product.imageCover}`, alt='image',width="800",height="450", class='productList__img' fetchpriority="high")
+								img(src=`/img/product_imgs/${product.imageCover}`, alt=`${product.name}`,width="800",height="450", class='productList__img')
 							.productList-box
 								.productList-box--heading
 									h4 #{product.name}
@@ -60,7 +60,7 @@ block content
 						.services--heading-box
 							h3 Made-to-Measure
 						.services--text-box
-							p Custom-fitted barongs tailored for weddings and formal occasions.
+							p Custom-made Barong Tagalog and Filipiniana tailored for weddings, formal events, and cultural occasions.
 						
 				a.home-services--link(href="/static/custom") 
 					.homePage__services--grid-box 
@@ -69,7 +69,7 @@ block content
 						.services--heading-box
 							h3 Quality Craftsmanship
 						.services--text-box
-							p Premium fabrics and traditional embroidery with refined modern finishing.
+							p Premium fabrics, traditional embroidery, and Filipino craftsmanship with refined modern finishing.
 				
 				a.home-services--link(href="/static/custom") 
 					.homePage__services--grid-box 
@@ -78,7 +78,7 @@ block content
 						.services--heading-box
 							h3 Clear Process & Timelines
 						.services--text-box
-							p Straightforward ordering, transparent timelines, and guided support throughout.
+							p Straightforward ordering, clear timelines, and guided support for custom orders, rentals, sizing, and availability.
 				
 		hr.section-divider
 		
@@ -131,8 +131,8 @@ block content
 			
 				.homePage-contact--cta
 					.cta-heading
-						h2.homePage--sub-heading Ready to start your Custom Barong or Filipiniana?
-					p Get in touch to discuss tailoring, measurements, and availability.
+						h2.homePage--sub-heading Ready to start your custom Barong Tagalog or Filipiniana?
+					p Get in touch to discuss custom tailoring, measurements, rentals, and availability.
 						
 						.hero__cta-box
 							a(href="/static/contact-custom" class='homePage__hero-cta homePage_contact-cta') Enquire Now

@@ -30,7 +30,7 @@ block content
 					
 						.productPage__product--heading-box
 							.productPage-heading-flex
-								h4.productPage__product-name #{product.name}
+								h1.productPage__product-name #{product.name}
 								if user
 									- const isWishlisted = user.wishlist.some(item => item.product && item.product.toString() === product.id)
 										.productPage-wishlist--box
@@ -61,7 +61,7 @@ block content
 					
 					.productPage__product-details 
 					
-						h4.productPage__product-details-heading Details
+						h2.productPage__product-details-heading Details
 						
 					.productPage__text-price--box
 					
@@ -95,9 +95,9 @@ block content
 						button(type='button' class='productPage__variant-size--btn size-guide--btn') Size Guide 
 							.productPage__variant-size-guide--box
 								if product.sex === 'male'
-									img(src="/img/sizeChart_imgs/mensSizeChart.png", class='size_guide-img' alt="")
+									img(src="/img/sizeChart_imgs/mensSizeChart.png", class='size_guide-img' alt="Men's Barong Tagalog size chart")
 								else
-									img(src="/img/sizeChart_imgs/womensSizeChart.png", class='size_guide-img' alt="")
+									img(src="/img/sizeChart_imgs/womensSizeChart.png", class='size_guide-img' alt="Women's Filipiniana size chart")
 							
 					////-- ------------------- --// 
 					
