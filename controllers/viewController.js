@@ -392,11 +392,15 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 		await missingDiscountCheck(product);
 	}));
 
+	const hasFilters = Object.keys(req.query).length > 0;
+
+
 	res.status(200).render('barong-list-page', {
 
 		pageTitle: 'Buy Barong Tagalog & Filipiniana Online Australia | Ang Hiyas',
 		pageDescription: 'Shop Barong Tagalog and Filipiniana online at Ang Hiyas, a Filipino clothing store in Australia offering wedding attire, premium fabrics and authentic Filipino craftsmanship.',
 		canonicalUrl: `${process.env.CANONICAL_URL}barong-list`,
+		noIndex: hasFilters,
 
 		productlist,
 		sizeList,
@@ -716,10 +720,16 @@ exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 		await missingDiscountCheck(product);
 	}));
 
+
+	const hasFilters = Object.keys(req.query).length > 0;
+
 	res.status(200).render('accessories-list-page', {
 		pageTitle: 'Accessories & Giftware | Ang Hiyas Australia',
 		pageDescription: 'Shop accessories, giftware and selected Filipino-inspired pieces from Ang Hiyas Australia for everyday use, gifting, cultural celebrations and special occasions.',
 		canonicalUrl: `${process.env.CANONICAL_URL}accessories-list`,
+		noIndex: hasFilters,
+
+
 		productlist,
 		colorList,
 		categoryList,
@@ -896,10 +906,15 @@ exports.getBagListPage = catchAsync(async (req, res, next) => {
 		await missingDiscountCheck(product);
 	}));
 
+
+	const hasFilters = Object.keys(req.query).length > 0;
+
 	res.status(200).render('bag-list-page', {
-		pageTitle: 'Filipino Formal Bags | Ang Hiyas Australia',
-		pageDescription: 'Shop formal bags from Ang Hiyas Australia to complete your Barong Tagalog, Filipiniana dress or Filipino formal wear outfit for weddings and special occasions.',
+		pageTitle: 'Bags for Every Occasion | Ang Hiyas Australia',
+		pageDescription: 'Shop bags from Ang Hiyas Australia for everyday use, gifting, cultural celebrations, weddings and special occasions, with styles selected to complement Filipino clothing and events.',
 		canonicalUrl: `${process.env.CANONICAL_URL}bag-list`,
+		noIndex: hasFilters,
+
 		productlist,
 		colorList,
 		categoryList,
