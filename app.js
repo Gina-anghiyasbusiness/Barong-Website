@@ -121,7 +121,9 @@ app.use(
 
 			scriptSrc: [
 				"'self'",
+				(req, res) => `'nonce-${res.locals.nonce}'`,
 				"'sha256-GAjmaehDsJH2jDoKMtZaYsCWJI2Ugs8esNnVYk0k3f0='",
+				'https://www.googletagmanager.com',
 				'https://js.stripe.com',
 				'https://www.paypal.com',
 				'https://www.paypalobjects.com'   //  (PayPal needs it for widgets)
@@ -139,6 +141,8 @@ app.use(
 				"'self'",
 				"https://api.stripe.com",
 				"https://js.stripe.com",
+				"https://www.google-analytics.com",
+				"https://region1.google-analytics.com",
 				"https://www.paypal.com",
 				"https://www.paypalobjects.com",
 				"https://www.sandbox.paypal.com"

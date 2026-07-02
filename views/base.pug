@@ -5,8 +5,8 @@ html
 	
 		//-- Google tag (gtag.js)
 		
-		script(async src="https://www.googletagmanager.com/gtag/js?id=G-TZKL05LR9K")
-		script.
+		script(async src="https://www.googletagmanager.com/gtag/js?id=G-TZKL05LR9K" nonce=nonce)
+		script(nonce=nonce).
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());
