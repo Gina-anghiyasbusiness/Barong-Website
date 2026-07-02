@@ -154,6 +154,8 @@ exports.getHomePage = catchAsync(async (req, res, next) => {
 		pageTitle: 'Barong Tagalog & Filipiniana Australia | Ang Hiyas',
 		pageDescription: 'Discover authentic Filipino clothing in Australia, including custom-made Barong Tagalog, Filipiniana dresses, wedding attire, rentals and ready-to-wear styles.',
 		canonicalUrl: `${process.env.CANONICAL_URL}`,
+		currentPage: 'home',
+
 		products
 
 	});
@@ -400,6 +402,7 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 		pageTitle: 'Buy Barong Tagalog & Filipiniana Online Australia | Ang Hiyas',
 		pageDescription: 'Shop Barong Tagalog and Filipiniana online at Ang Hiyas, a Filipino clothing store in Australia offering wedding attire, premium fabrics and authentic Filipino craftsmanship.',
 		canonicalUrl: `${process.env.CANONICAL_URL}barong-list`,
+
 		noIndex: hasFilters,
 
 		productlist,
@@ -477,6 +480,8 @@ exports.getBarongPage = catchAsync(async (req, res, next) => {
 		pageTitle: `${product.name} | Barong Tagalog & Filipiniana Australia | Ang Hiyas`,
 		pageDescription: productDescription,
 		canonicalUrl: `${process.env.CANONICAL_URL}barong/${product.slug}`,
+		currentPage: 'product',
+		productPreloadImage: `/img/product_imgs/${product.imageCover}`,
 
 		ogType: 'product',
 		ogTitle: `${product.name} | Ang Hiyas`,
@@ -797,6 +802,9 @@ exports.getAccessoryPage = catchAsync(async (req, res, next) => {
 		pageDescription: productDescription,
 		canonicalUrl: `${process.env.CANONICAL_URL}accessories/${product.slug}`,
 
+		currentPage: 'product',
+		productPreloadImage: `/img/product_imgs/${product.imageCover}`,
+
 		ogType: 'product',
 		ogTitle: `${product.name} | Ang Hiyas`,
 		ogDescription: productDescription,
@@ -973,6 +981,9 @@ exports.getBagPage = catchAsync(async (req, res, next) => {
 		pageTitle: `${product.name} | Filipino Formal Bags | Ang Hiyas Australia`,
 		pageDescription: productDescription,
 		canonicalUrl: `${process.env.CANONICAL_URL}bag/${product.slug}`,
+
+		currentPage: 'product',
+		productPreloadImage: `/img/product_imgs/${product.imageCover}`,
 
 		ogType: 'product',
 		ogTitle: `${product.name} | Ang Hiyas`,

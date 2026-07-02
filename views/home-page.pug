@@ -29,13 +29,13 @@ block content
 			
 			.productList.productList--home 		
 			
-				each product in products
+				each product,i in products
 					.productList__product 	
 						a(href=`/barong/${product.slug}` class='productList__page--link') 
 							- const category = 	product.category ? product.category.name : "";
 							.productList-box--img 
 								
-								img(src=`/img/product_imgs/${product.imageCover}`, alt=`${product.name}`,width="800",height="450", class='productList__img')
+								img(src=`/img/product_imgs/${product.imageCover}`, alt=`${product.name}`,width="800",height="450", class='productListPage__img' , loading=i < 4 ? "eager" : "lazy" , fetchpriority=i === 0 ? "high" : "auto" )
 							.productList-box
 								.productList-box--heading
 									h4 #{product.name}

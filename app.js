@@ -71,7 +71,12 @@ app.set('views', path.join(__dirname, 'views'));
 /// static file server
 
 
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(express.static(path.join(__dirname, 'public'), {
+	maxAge: '30d',
+	immutable: true
+}));
 
 
 

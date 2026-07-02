@@ -340,6 +340,14 @@
 @font-face {
   font-family: 'Cairo';
   font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/img/fonts/cairo/Cairo-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
   font-weight: 700;
   font-display: swap;
   src: url('/img/fonts/cairo/Cairo-Bold.woff2') format('woff2');

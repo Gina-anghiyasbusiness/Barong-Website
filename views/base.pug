@@ -51,6 +51,15 @@ html
 		
 		//-- Preloads (critical assets)		
 		
+		if currentPage === 'home'
+			link(rel="preload" as="image" href="/img/other_imgs/new_hero.webp" type="image/webp" fetchpriority="high")
+			link(rel="preload" as="font" href="/img/fonts/cairo/Cairo-Bold.woff2" type="font/woff2" crossorigin)
+			link(rel="preload" as="font" href="/img/fonts/cairo/Cairo-SemiBold.woff2" type="font/woff2" crossorigin)
+			link(rel="preload" as="font" href="/img/fonts/rubik/Rubik-Regular.woff2" type="font/woff2" crossorigin)
+		if currentPage === 'product' && productPreloadImage
+			link(rel="preload" as="image" href=productPreloadImage fetchpriority="high")
+			
+		
 			
 		link(rel='icon' type='image/png' sizes='32x32' href='/img/favicons/defaultfavicon.png')
 		
