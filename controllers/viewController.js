@@ -26,6 +26,64 @@ const { description } = require('../models/productBaseModel');
 
 
 
+/// Product Schema for seo
+
+
+const getProductDisplayPrice = product => {
+
+	const currentPrice = product.currentPrice || product.originalPrice;
+	const discountPrice = product.discountPrice;
+
+	if (discountPrice && discountPrice < currentPrice) {
+
+		return discountPrice;
+	}
+
+	return currentPrice;
+};
+
+
+const buildProductSchema = (product, productDescription, productPath) => {
+
+	const canonicalBase = process.env.CANONICAL_URL;
+	const productImages = [
+		product.imageCover,
+		...(product.imageUrls || [])
+	]
+		.filter(Boolean)
+		.map(image => `${canonicalBase}img/product_imgs/${image}`);
+
+	const price = getProductDisplayPrice(product);
+
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'Product',
+		name: product.name,
+		description: productDescription,
+		image: productImages,
+		sku: String(product.productSku),
+		brand: {
+			'@type': 'Brand',
+			name: 'Ang Hiyas'
+		},
+		offers: {
+			'@type': 'Offer',
+			url: `${canonicalBase}${productPath}`,
+			priceCurrency: 'AUD',
+			price: Number(price).toFixed(2),
+			availability: 'https://schema.org/InStock',
+			itemCondition: 'https://schema.org/NewCondition',
+			seller: {
+				'@type': 'Organization',
+				name: 'Ang Hiyas'
+			}
+		}
+	};
+};
+
+
+
+
 //------------------------ login Page ---------------------------
 
 
@@ -420,6 +478,8 @@ exports.getBarongPage = catchAsync(async (req, res, next) => {
 		ogTitle: `${product.name} | Ang Hiyas`,
 		ogDescription: productDescription,
 
+		productSchema: buildProductSchema(product, productDescription, `barong/${product.slug}`),
+
 		product,
 		hasReviewed,
 		hasPurchased
@@ -731,6 +791,8 @@ exports.getAccessoryPage = catchAsync(async (req, res, next) => {
 		ogTitle: `${product.name} | Ang Hiyas`,
 		ogDescription: productDescription,
 
+		productSchema: buildProductSchema(product, productDescription, `accessories/${product.slug}`),
+
 		product,
 		hasReviewed,
 		hasPurchased
@@ -900,6 +962,8 @@ exports.getBagPage = catchAsync(async (req, res, next) => {
 		ogType: 'product',
 		ogTitle: `${product.name} | Ang Hiyas`,
 		ogDescription: productDescription,
+
+		productSchema: buildProductSchema(product, productDescription, `bag/${product.slug}`),
 
 		product,
 		hasReviewed,

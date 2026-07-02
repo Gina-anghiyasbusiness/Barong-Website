@@ -144,6 +144,8 @@ html
 						]
 					}
 				}
+			if productSchema
+				script(type="application/ld+json")!= JSON.stringify(productSchema).replace(/</g, '\\u003c')	
 
 	body
 		// Header
