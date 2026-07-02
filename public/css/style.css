@@ -9630,6 +9630,19 @@ ul.header__nav--list {
     padding: .25rem 2rem;
   
 }
+
+.productList_sort-box {
+ 
+ flex-direction: column;
+    gap: 2.4rem;
+		align-items: flex-start;
+   
+    padding: 3rem 0 1.8rem;
+}
+
+    .product-breadcrumbs {
+        flex: 1;
+    }
 	
 }
 
