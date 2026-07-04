@@ -94,6 +94,10 @@ app.use((req, res, next) => {
 });
 
 
+app.use((req, res, next) => {
+	res.locals.gaMeasurementId = process.env.GA_MEASUREMENT_ID;
+	next();
+});
 
 //-- Helmet --/
 

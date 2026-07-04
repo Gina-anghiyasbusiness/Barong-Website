@@ -5,13 +5,14 @@ html
 	
 		//-- Google tag (gtag.js)
 		
-		script(async src="https://www.googletagmanager.com/gtag/js?id=G-TZKL05LR9K" nonce=nonce)
-		script(nonce=nonce).
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
+		if process.env.NODE_ENV === 'production' && gaMeasurementId
+			script(async src=`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}` nonce=nonce)
+			script(nonce=nonce).
+				window.dataLayer = window.dataLayer || [];
+				function gtag(){dataLayer.push(arguments);}
+				gtag('js', new Date());
 
-			gtag('config', 'G-TZKL05LR9K');
+				gtag('config', '#{gaMeasurementId}');
 	
 		
 		meta(charset='UTF-8')
