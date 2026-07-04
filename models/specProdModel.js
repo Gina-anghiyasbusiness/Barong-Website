@@ -59,7 +59,18 @@ const specProdSchema = new mongoose.Schema({
 			'Wedding Appropriate',
 			'Embroidered Front Panel',
 			'Delicate Sleeve Detail',
-			'Comfort Fit'],
+			'Comfort Fit',
+			'Premium Embroidery',
+			'Hand Embroidered',
+			'Breathable Fabric',
+			'Premium Fabric',
+			'Filipino Wedding Attire',
+			'Groom Wear',
+			'Groomsmen Wear',
+			'Graduation Wear',
+			'Oath Taking Ceremony'
+
+		],
 		default: [],
 
 		validate: {
