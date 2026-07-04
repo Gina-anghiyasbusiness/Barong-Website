@@ -167,6 +167,26 @@ exports.getHomePage = catchAsync(async (req, res, next) => {
 //------------------- Shop Pages ------------------------//
 
 
+/// breadcrumbs 
+
+
+const makeBreadcrumbUrl = (basePath, params) => {
+	const searchParams = new URLSearchParams();
+
+	Object.entries(params).forEach(([key, value]) => {
+		if (value) {
+			searchParams.set(key, value);
+		}
+	});
+
+	const queryString = searchParams.toString();
+
+	return queryString ? `${basePath}?${queryString}` : basePath;
+};
+
+
+
+
 ///			Re-usable variant function -	for forms		///
 
 /// Variants (Sizing)
@@ -346,21 +366,46 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 
 
 	if (selectedSex) {
-		breadcrumbs.push({ label: formatBreadcrumbLabel(selectedSex) });
+		breadcrumbs.push({
+			label: formatBreadcrumbLabel(selectedSex),
+			href: makeBreadcrumbUrl('/barong-list', {
+				sex: selectedSex
+			})
+		});
 	}
 
 	if (selectedColor) {
-		breadcrumbs.push({ label: formatBreadcrumbLabel(selectedColor) });
+		breadcrumbs.push({
+			label: formatBreadcrumbLabel(selectedColor),
+			href: makeBreadcrumbUrl('/barong-list', {
+				sex: selectedSex,
+				color: selectedColor
+			})
+		});
 	}
 
 	if (size) {
-		breadcrumbs.push({ label: size });
+		breadcrumbs.push({
+			label: size,
+			href: makeBreadcrumbUrl('/barong-list', {
+				sex: selectedSex,
+				color: selectedColor,
+				productSize: size
+			})
+		});
 	}
 
 	if (selectedCategoryDoc) {
-		breadcrumbs.push({ label: selectedCategoryDoc.name });
+		breadcrumbs.push({
+			label: selectedCategoryDoc.name,
+			href: makeBreadcrumbUrl('/barong-list', {
+				sex: selectedSex,
+				color: selectedColor,
+				productSize: size,
+				category: selectedcategory
+			})
+		});
 	}
-
 
 
 	const queryObj = {};
@@ -697,14 +742,23 @@ exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 	];
 
 	if (selectedColor) {
-		breadcrumbs.push({ label: formatBreadcrumbLabel(selectedColor) });
+		breadcrumbs.push({
+			label: formatBreadcrumbLabel(selectedColor),
+			href: makeBreadcrumbUrl('/accessories-list', {
+				color: selectedColor
+			})
+		});
 	}
 
 	if (selectedCategoryDoc) {
-		breadcrumbs.push({ label: selectedCategoryDoc.name });
+		breadcrumbs.push({
+			label: selectedCategoryDoc.name,
+			href: makeBreadcrumbUrl('/accessories-list', {
+				color: selectedColor,
+				category: selectedcategory
+			})
+		});
 	}
-
-
 
 
 	const queryObj = {};
@@ -884,15 +938,25 @@ exports.getBagListPage = catchAsync(async (req, res, next) => {
 		{ label: 'Bags', href: '/bag-list' }
 	];
 
+
 	if (selectedColor) {
-		breadcrumbs.push({ label: formatBreadcrumbLabel(selectedColor) });
+		breadcrumbs.push({
+			label: formatBreadcrumbLabel(selectedColor),
+			href: makeBreadcrumbUrl('/bag-list', {
+				color: selectedColor
+			})
+		});
 	}
 
 	if (selectedCategoryDoc) {
-		breadcrumbs.push({ label: selectedCategoryDoc.name });
+		breadcrumbs.push({
+			label: selectedCategoryDoc.name,
+			href: makeBreadcrumbUrl('/bag-list', {
+				color: selectedColor,
+				category: selectedcategory
+			})
+		});
 	}
-
-
 
 
 
