@@ -5,6 +5,9 @@ const factory = require('./../controllers/handlerFactory')
 
 const AppError = require('../utilities/appError');
 const catchAsync = require('../utilities/catchAsync');
+
+const Email = require('./../utilities/emailClass');
+
 const filterObj = require('../utilities/filterObject');
 
 
@@ -17,11 +20,6 @@ const filterObj = require('../utilities/filterObject');
 
 
 exports.createBeUser = catchAsync(async (req, res, next) => {
-
-	// if (req.body.role === 'owner' && req.user.role !== 'owner') {
-
-	// 	return next(new AppError('Only owners can create owner accounts', 403));
-	// }
 
 	const requestedRole = req.body.role || 'admin';
 
@@ -47,6 +45,7 @@ exports.createBeUser = catchAsync(async (req, res, next) => {
 		passwordConfirm: req.body.passwordConfirm,
 
 	});
+
 
 	res.status(200).json({
 
@@ -277,6 +276,9 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 			runValidators: true
 		})
 
+
+	await new Email(updatedUser).accountChanges();
+
 	res.status(200).json({
 
 		status: "success",
@@ -366,6 +368,14 @@ exports.updateMyAddress = catchAsync(async (req, res, next) => {
 	if (addressUpdate.matchedCount === 0) {
 
 		return next(new AppError('Address not found', 404));
+	}
+
+
+	const user = await User.findById(userId);
+
+	if (user) {
+
+		await new Email(user).accountChanges();
 	}
 
 

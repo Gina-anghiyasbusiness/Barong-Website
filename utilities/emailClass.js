@@ -150,11 +150,41 @@ module.exports = class Email {
 	/// Template send functions
 
 
+	/// User emails
+
 	async sendWelcome() {
 
 		await this.send('welcome', 'Welcome to our website')
 	}
 
+	async resetPassword() {
+
+		await this.send('resetPassword', 'Reset Password', true);
+	}
+
+	async accountChanges() {
+
+		await this.send('accountChanges', 'Your account has been updated');
+	}
+
+	async passwordUpdated() {
+		await this.send('passwordUpdated', 'Your Ang Hiyas password was updated');
+	}
+
+
+	/// user enquiry emails
+
+	async sendEnquiryConfirmation() {
+
+		await this.send('enquiryConfirmation', 'Thanks for your enquiry | Ang Hiyas');
+	}
+
+	async sendCustomizationEnquiryConfirmation() {
+
+		await this.send('customizationEnquiryConfirmation', 'Thanks for your custom enquiry | Ang Hiyas');
+	}
+
+	/// user order emails
 
 	async orderConfirm() {
 
@@ -162,21 +192,9 @@ module.exports = class Email {
 	}
 
 
-	async resetPassword() {
-
-		await this.send('resetPassword', 'Reset Password', true);
-	}
 
 
-	async accountChanges() {
-
-		await this.send('accountChanges', 'Your account has been updated');
-	}
-
-
-
-
-	/// Template send enquiry functions
+	/// Template send enquiry functions to ang hiyas
 
 
 	async sendEnquiryEmail(enquiryData) {
@@ -189,6 +207,7 @@ module.exports = class Email {
 
 		await this.sendEnquiry('customizationEnquiry', 'New Customization Enquiry', enquiryData, true);
 	}
+
 
 
 }

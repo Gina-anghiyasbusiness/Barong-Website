@@ -84,6 +84,9 @@ exports.createEnquiry = catchAsync(async (req, res, next) => {
 
 
 	await new Email({ email: req.body.email, name: req.body.name }).sendEnquiryEmail(enquiry);
+	await new Email({ email: req.body.email, name: req.body.name }).sendEnquiryConfirmation();
+
+
 
 	res.redirect(303, '/enquiry-success');
 });
@@ -169,6 +172,9 @@ exports.createCustomizationEnquiry = catchAsync(async (req, res, next) => {
 	});
 
 	await new Email({ email: req.body.email, name: req.body.name }).sendCustomizationEnquiryEmail(customizationEnquiry);
+	await new Email({ email: req.body.email, name: req.body.name }).sendCustomizationEnquiryConfirmation();
+
+
 
 	res.redirect(303, '/enquiry-success');
 

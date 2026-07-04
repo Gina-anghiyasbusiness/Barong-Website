@@ -366,9 +366,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
 	await user.save();
 
-
-
-	await new Email(user).accountChanges();
+	await new Email(user).passwordUpdated();
 
 	createSendToken(user, 200, res);
 }
@@ -398,6 +396,8 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 	user.passwordConfirm = req.body.passwordConfirm;
 
 	await user.save();
+
+	await new Email(user).passwordUpdated();
 
 	createSendToken(user, 200, res);
 

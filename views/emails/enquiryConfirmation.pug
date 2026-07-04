@@ -1,0 +1,33 @@
+extends baseEmail
+
+block content
+
+  main.email-wrapper
+
+    .email-card
+
+      .email-header
+        img.email-logo(src=logoUrl, alt="Ang Hiyas logo")
+        h1 Thanks for your enquiry
+        p.email-subtitle We have received your message and will be in touch soon.
+
+      .message-box
+        p Hi #{firstname},
+        p Thank you for contacting Ang Hiyas. We have received your enquiry and will usually respond within 1-2 business days.
+
+      .details-box
+        .detail-row
+          .detail-label Enquiry
+          .detail-value Received
+
+        .detail-row
+          .detail-label Reply time
+          .detail-value Usually within 1-2 business days
+
+      .message-box
+        h2 Need to add anything?
+        p If you need to send extra details, you can reply to this email or contact Ang Hiyas directly at info@anghiyas.com.au.
+
+      .email-footer
+        p Ang Hiyas QLD, Australia
+        p This email was sent because an enquiry was submitted through the Ang Hiyas website.
