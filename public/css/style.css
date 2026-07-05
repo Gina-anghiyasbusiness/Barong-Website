@@ -9982,6 +9982,14 @@ ul.myAccount__side-menu--ul {
 .footer_logo-box, .footer__socials {
    grid-column: 1/3;
 }
+.footer__socials {
+   padding: 1.2rem 0;
+}
+
+.footer_socials-icon {
+    width: 6.2rem;
+    height: 6.2rem;
+}
 
 .footer__address {
 	
