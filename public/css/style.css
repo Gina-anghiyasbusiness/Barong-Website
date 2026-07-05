@@ -9784,6 +9784,11 @@ ul.header__nav--list {
 
 @media (max-width: 26.56em) {
 	
+	.header__banner--preview {
+    padding: 1.2rem;
+ 
+}
+	
 		.aboutPage, 	.watermark-btm--bg, .customizationPage  {
    
     background-position: center;
