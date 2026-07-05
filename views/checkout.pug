@@ -3,10 +3,15 @@ extends base
 block content
 
 	main.med-container.checkout
+		.header-checkout-banner
+			.header__banner--preview-checkout
+				.header__banner--text-checkout 
+					p Checkout is not available yet. Please contact Ang Hiyas to confirm pricing, availability, and orders.
+			
 
 		.checkout__page--headings.checkout__header
-			h2.homePage--sub-heading Checkout
-			h2.homePage--sub-heading.homePage--sub-totals Totals
+			h2.homePage--sub-heading.checkout-totals Checkout
+			h2.homePage--sub-heading.homePage--sub-totals.checkout-totals Totals
 
 		.checkout__page--grid.checkout__layout
 
@@ -36,7 +41,7 @@ block content
 											p.checkout__size.checkoutItem__meta Size: #{item.variantDetails.size}
 									.checkout__page--text-left
 										p.checkout__style.checkoutItem__meta Quantity: #{item.quantity}
-										p.checkout__style.checkoutItem__meta Current Price: $#{item.discountPrice}
+										p.checkout__style.checkoutItem__meta.checkout--current-price Current Price: $#{item.discountPrice}
 
 							.checkout__page--price-box.checkoutItem__priceBox
 								.checkout__priceWrap
@@ -63,9 +68,10 @@ block content
 									p.checkout__col.checkoutItem__meta Color: #{product.color}
 									if variant
 										p.checkout__size.checkoutItem__meta Size: #{variant.size}
+										
 								.checkout__page--text-left
 									p.checkout__style.checkoutItem__meta Quantity: #{qty}
-									p.checkout__style.checkoutItem__meta Current Price: $#{product.discountPrice}
+									p.checkout__style.checkoutItem__meta.checkout--current-price Current Price: $#{product.discountPrice}
 
 						.checkout__page--price-box.checkoutItem__priceBox
 							.checkout__priceWrap
@@ -183,7 +189,11 @@ block content
 							.checkoutPanel__section.checkoutPanel__payments
 							
 								if sitePreview
-									button(disabled)
+									button.checkout__page-submit--btn(type="button" disabled)
+										.checkout--afterpay_card
+											span Payments Disabled  
+											span 
+												img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
 								else
 							
 									button#checkout-submit--stripe(class='checkout__page-submit--btn')
@@ -198,7 +208,7 @@ block content
 									p.creadit-card-address-paypal.checkoutPanel__title Pay with PayPal
 									p.checkoutPanel__title.paypal-no_address No Address required
 								if sitePreview
-									button(disabled) Preview Mode
+									button.checkout__page-submit--btn(type="button" disabled) PayPal currently disabled
 								else
 									#paypal-button-container(
 										data-product=(product && product.id) || ''
@@ -269,7 +279,11 @@ block content
 
 							.checkoutPanel__section.checkoutPanel__payments
 								if sitePreview
-									button(disabled)
+									button.checkout__page-submit--btn(type="button" disabled)
+										.checkout--afterpay_card
+											span Payments Disabled 
+											span 
+												img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
 								else
 									button#checkout-submit--stripe-guest.checkout__page-submit--btn(type="submit") 
 										.checkout--afterpay_card
@@ -285,7 +299,7 @@ block content
 									p.checkoutPanel__title.paypal-no_address No Address required
 									
 								if sitePreview
-									button(disabled) Preview Mode
+									button.checkout__page-submit--btn(type="button" disabled) PayPal currently disabled
 								else
 									#paypal-button-container-guest(
 										data-product=(product && product.id) || ''
@@ -297,4 +311,6 @@ block content
 			script(src="/js/paypal.js")
 			
 block paymentScripts
-	script(src="https://js.stripe.com/v3/")
+	if !sitePreview
+		script(src="https://js.stripe.com/v3/")
+

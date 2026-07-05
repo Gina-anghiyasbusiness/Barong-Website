@@ -5,7 +5,7 @@ const authController = require('./../controllers/authController.js');
 const productController = require('./../controllers/productController.js');
 const viewController = require('./../controllers/viewController.js');
 
-
+const blockPreviewPaymentSuccess = require('../middleware/blockPreviewPaymentSuccess.js');
 
 //----------------  CLIENT ROUTES (FRONTEND) -----------------///
 
@@ -175,7 +175,9 @@ router.get('/categories/:catId', viewController.getFrontEndCategoryPage);
 
 
 router.get('/order-success-guest',
-	viewController.getSuccessfulPaymentPageGuest);
+	blockPreviewPaymentSuccess,
+	viewController.getSuccessfulPaymentPageGuest
+);
 
 
 router.get('/checkout-page/buy-it-now-guest/:productId/:qty/:variant', viewController.getCheckoutPageGuest);
@@ -229,6 +231,7 @@ router.get('/checkout-page/buy-it-now/:productId/:qty/:variant',
 
 router.get('/order-success',
 	authController.restrictTo('user'),
+	blockPreviewPaymentSuccess,
 	productController.setProductUserIds,
 	viewController.getSuccessfulPaymentPage);
 

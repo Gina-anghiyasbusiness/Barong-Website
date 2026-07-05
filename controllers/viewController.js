@@ -1542,6 +1542,7 @@ exports.getAddressFormPage = async (req, res, next) => {
 //---------------------- Checkout page ----------------------//
 
 
+
 exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 
 	let qty = Number(req.params.qty);
