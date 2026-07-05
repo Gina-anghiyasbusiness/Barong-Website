@@ -9770,6 +9770,26 @@ ul.header__nav--list {
 /* /// 425px */
 
 @media (max-width: 26.56em) {
+	
+		.aboutPage, 	.watermark-btm--bg, .customizationPage  {
+   
+    background-position: center;
+ 
+   
+}
+
+.contactPage{
+	
+	    background-position: top;
+}
+
+.rentalsPage{
+	
+	background-position: 50%;
+	
+} 
+
+	
 
     .footer {
         display: block;
@@ -10083,25 +10103,7 @@ padding: 0 0 0 2rem;
 		
 @media (max-width: 21.85em) {
 	
-	.aboutPage, 	.watermark-btm--bg, .customizationPage  {
-   
-    background-position: center;
- 
-   
-}
 
-.contactPage{
-	
-	    background-position: top;
-}
-
-.rentalsPage{
-	
-	background-position: 50%;
-	
-} 
-
-	
 	
 	.productPage__product--heading-box {
  
