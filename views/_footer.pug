@@ -19,22 +19,57 @@ footer
 				
 			.footer__socials
 			
-				a(href="#" aria-label="Instagram")
-					img(src="/img/icons/instagram-logo.svg", class='footer_socials-icon' alt="")
-				a(href="#")
-					img(src="/img/icons/facebook-logo.svg", class='footer_socials-icon' alt="")
-				a(href="#")
-					img(src="/img/icons/x-logo.svg", class='footer_socials-icon' alt="")
+				a(href="https://www.instagram.com/anghiyas/"  target="_blank" aria-label="Instagram")
+					img(src="/img/icons/instagram-logo.svg", class='footer_socials-icon')
+				a(href="https://www.facebook.com/p/Ang-Hiyas-61574027711675/"  target="_blank")
+					img(src="/img/icons/facebook-logo.svg", class='footer_socials-icon')
+				a(href="https://www.tiktok.com/@ang.hiyas"  target="_blank")
+					img(src="/img/icons/tiktok-logo.svg", class='footer_socials-icon')
 				
 
 			.footer__contact 
 			
-				//- a(href="/contact" class='footer_contact-link') Contact Us 
+
 				h4 Contact Us 
 				a(href="mailto:info@anghiyas.com.au" class='footer_contact-link') Email: info@anghiyas.com.au
-				a(href="tel:+61403542521" class='footer_contact-link') Phone: 0403542521
-				a(href="/static/contact" class='footer_contact-link') Need Help?
+				a(href="tel:+61403542521" class='footer_contact-link-desktop') Phone: 0403542521
+				a(href="/static/contact" class='footer_contact-link-desktop') Need Help?
+
+
+
+	.footer-desktop
+	
+		.footer-container-desktop
+		
+			.footer_logo-box-desktop
 			
-			.footer_back-to-top 
+				a(href="/") 
+					img(src='/img/logo/default-logo.png', alt='Ang Hiyas',width="250",height="100", class='header__logo footer__logo' fetchpriority="high")
+				p Where Filipino Tradition is Tailored to Perfection
+				
+	
 			
-				a(href="#top" class='back-to-top_arrow') ⬆
+
+				
+			.footer__socials-desktop
+			
+				a(href="https://www.instagram.com/anghiyas/"  target="_blank" aria-label="Instagram")
+					img(src="/img/icons/instagram-logo.svg", class='footer_socials-icon-desktop')
+				a(href="https://www.facebook.com/p/Ang-Hiyas-61574027711675/"  target="_blank")
+					img(src="/img/icons/facebook-logo.svg", class='footer_socials-icon-desktop')
+				a(href="https://www.tiktok.com/@ang.hiyas"  target="_blank")
+					img(src="/img/icons/tiktok-logo.svg", class='footer_socials-icon-desktop')
+				
+
+			.footer__contact-desktop 
+			
+				//- a(href="/contact" class='footer_contact-link') Contact Us 
+				h4 Contact Us 
+				a(href="mailto:info@anghiyas.com.au" class='footer_contact-link-desktop') Email: info@anghiyas.com.au
+				a(href="tel:+61403542521" class='footer_contact-link-desktop') Phone: 0403542521
+				.footer_contact-p--box
+					p.footer_contact-p Ang Hiyas
+					p.footer_contact-p Queensland, Australia
+
+				a(href="/static/contact" class='footer_contact-link-desktop') Need Help?
+

@@ -808,7 +808,7 @@ justify-content: center;
 .header__logo{
 	
 
-   max-height: 6rem;  
+   max-height: 6.4rem;  
   width: auto;
   display: block;
 }
@@ -1074,7 +1074,7 @@ flex: 0 0 12.5%;
 
 
 
-
+/* // mobile */
 .footer{
 	
 	background-color: var(--color-bg);
@@ -1084,10 +1084,10 @@ flex: 0 0 12.5%;
 
 .footer-container{
 	
-	max-width: 152rem;
+	max-width: 120rem;
 	margin: 0 auto;
 	display: grid;
-	grid-template-columns: repeat(5,1fr);
+	grid-template-columns: repeat(4,1fr);
 	gap: 3.6rem;
 }
 
@@ -1099,6 +1099,12 @@ flex: 0 0 12.5%;
 	text-align: center;
 	
 	font-size: var(--text-small);
+}
+
+.header__logo.footer__logo {
+    max-height: 10rem;
+    width: auto;
+    display: block;
 }
 
 .footer__address{
@@ -1160,24 +1166,115 @@ flex: 0 0 12.5%;
 	color: var(--color-text);
 }
 
+.footer{
+	
+	display: none;
+}
 
-.footer_back-to-top {
+/*// desktop */
+
+
+.footer-desktop{
+	
+	background-color: var(--color-bg);
+	padding:2rem 0 3.2rem;
+	 border-top: 1px solid rgba(20,17,11,0.10);
+}
+
+.footer-container-desktop{
+	
+	max-width: 120rem;
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: repeat(3,1fr);
+	gap: 3.6rem;
+	
+	padding: 1.6rem 0 3.2rem;
+}
+
+.footer_logo-box-desktop{
+	display: flex;
+	flex-direction: column;
+	gap:1.2rem;
+	align-items: center;
+	text-align: center;
+	
+	font-size: var(--text-small);
+}
+
+.footer__address-desktop{
+	font-size: var(--text-small);
+	padding: 0 2.4rem;
+	display: flex;
+	flex-direction: column;
+	/* justify-content: center; */
+	gap: 1rem;
+}
+
+.footer__address-desktop a:link,
+.footer__address-desktop a:visited{
+	
+	font-weight: 600;
+	margin-bottom: 1.2rem;
+}
+.footer__socials-desktop{
 	
 	display: flex;
-	align-items: flex-start;
+	align-items: center;
+	justify-content: center;
+	gap: 2rem;
 }
 
 
-.back-to-top_arrow:link,
-.back-to-top_arrow:visited{
+.footer_socials-icon-desktop{
 	
+	width: 6rem;
+	height: 6rem;
+	
+
+}
+
+.footer__contact-desktop {
+	
+	display: flex;	
+	flex-direction: column;	
+		justify-content: center;
+	gap: 1.1rem;	
+		padding: 0 2.4rem;
+}
+
+
+.footer__contact-desktop h4{
+	
+	
+	font-family: "Cairo", serif;
+	
+	font-size: var(--text-body);
+	
+	margin-bottom: 1rem;
+}
+
+.footer_contact-link-desktop:link,
+.footer_contact-link-desktop:visited{
+	
+	font-size: var(--text-small);
 	text-decoration: none;
-	border: 1px solid #333;
-	font-size: 2.4rem;
-	padding: 0 1.2rem;
-	color: var(--color-text); 
-	
+	color: var(--color-text);
 }
+
+
+
+.footer_contact-p{
+	
+	font-size: 1.4rem;
+}
+
+	.footer_contact-p--box{
+		
+		display: flex;
+		flex-direction: column;
+		gap: .5rem;
+	}
 
 
 
@@ -9293,21 +9390,27 @@ ul.header__nav--list {
 	.header__hamburger-menu {
 		display: block;
 		opacity: 1;
+		
+		border-radius: 6px;
+		overflow: hidden;
 	}
 	
 
 	
 	.header__mobile-menu-btn svg {
-	width: 4.8rem;
-	height: 4.8rem;
-	stroke:var(--color-secondary);
+	/* width: 4.8rem; */
+	/* height: 4.8rem; */
+	width: 100%;
+	height: 100%;
+	stroke:#fff;
+	background-color: var(--color-secondary);
 }
 
 
 	.header__hamburger-menu button {
 		
-		width: 6rem;
-		height: 6rem;
+		width: 4.5rem;
+		height: 4.5rem;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -9386,6 +9489,18 @@ ul.header__nav--list {
 
 @media (max-width: 32.5em) {
 	
+	.footer{
+	
+	display: inline-block;
+}
+
+	
+	
+	.footer-desktop{
+	
+	display: none;
+}
+
 	
 	.size_guide-img {
     width: 100%;
@@ -9656,7 +9771,9 @@ ul.header__nav--list {
 
 @media (max-width: 26.56em) {
 
-
+    .footer {
+        display: block;
+    }
 	
 .productPage__product--text-box {
    grid-column:span 2;
@@ -9857,7 +9974,7 @@ ul.myAccount__side-menu--ul {
 
 .footer-container {
    
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 6fr 5fr;
     row-gap: 2.4rem;
 		
 }
@@ -9870,12 +9987,13 @@ ul.myAccount__side-menu--ul {
 	
 grid-row: 3/4;
 grid-column: 2/3;
-padding: 0 2.4rem 0 6.4rem;
+padding: 0 0 0 2rem;
 }
 
 .footer__contact {
   
-    padding: 0 2.4rem 0 6.4rem;
+    padding: 0 0 0 2rem;
+
 }
 
 .salesPage--img {
@@ -9936,6 +10054,18 @@ padding: 0 2.4rem 0 6.4rem;
     font-size: 1.4rem;
 }
 
+.rentalGuidePage {
+    padding: 5rem 1rem 6rem;
+  
+}
+
+.footer-container {
+   
+    gap: 0;
+		row-gap: 1.6rem;
+}
+
+
 
 }
 
@@ -9944,6 +10074,26 @@ padding: 0 2.4rem 0 6.4rem;
 		/* /// 350px */
 		
 @media (max-width: 21.85em) {
+	
+	.aboutPage, 	.watermark-btm--bg, .customizationPage  {
+   
+    background-position: center;
+ 
+   
+}
+
+.contactPage{
+	
+	    background-position: top;
+}
+
+.rentalsPage{
+	
+	background-position: 50%;
+	
+} 
+
+	
 	
 	.productPage__product--heading-box {
  
@@ -10009,4 +10159,8 @@ padding: 0 2.4rem 0 6.4rem;
         row-gap: 1.2rem;
         grid-template-rows: 1fr 4fr;
     }
+		
+		.cta-heading {
+padding: 0 1rem;
+}
 }
