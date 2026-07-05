@@ -1049,24 +1049,37 @@ flex: 0 0 12.5%;
 	
 	.header__banner--preview{
 		
-		padding: .85rem 0;
+		padding: 1.2rem 0;
 		
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		
-		background-color: var(--color-primary-darkest);
+		/* background-color: var(--color-primary-darkest); */
+		background-color: var(--color-secondary-light);
 	
-		color: #fff;
+		/* color: #fff; */
+		color: var(--color-text-secondary);
 		
-		font-size: var(--text-lg);
+		font-size: 1.75rem;
 		
-		font-weight: 400;
+		font-weight: 500;
+		
+		letter-spacing: .35px;
+		
+	
 	}
+	
 	
 	.header__banner--text{
 		
 		text-align: center;
+		
+		padding: 1.4rem 2rem;
+		
+		background-color: var(--color-secondary);
+		color:#faf6e9;
+			border-radius: 4px;
 	}
 	
 
