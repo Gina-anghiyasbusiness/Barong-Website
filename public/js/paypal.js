@@ -56,11 +56,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
 					const finalData = await res.json();
 
+
+					if (!res.ok || !finalData.success) {
+
+						throw new Error(finalData.message || 'PayPal payment was not completed');
+					}
+
 					window.location.assign('/order-success-guest');
 
 				} catch (err) {
 
-					alert('There was an error capturing your PayPal order.');
+					alert(err.message || 'There was an error capturing your PayPal order. Please try again or use another payment method.');
 				}
 			},
 
@@ -134,11 +140,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
 					const finalData = await res.json();
 
+
+					if (!res.ok || !finalData.success) {
+
+						throw new Error(finalData.message || 'PayPal payment was not completed');
+					}
+
 					window.location.assign('/order-success');
 
 				} catch (err) {
 
-					alert('There was an error capturing your PayPal order.');
+					alert(err.message || 'There was an error capturing your PayPal order. Please try again or use another payment method.');
 				}
 			},
 
@@ -192,10 +204,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
 					const finalData = await res.json();
 
+					if (!res.ok || !finalData.success) {
+
+						throw new Error(finalData.message || 'PayPal payment was not completed');
+					}
+
 					window.location.assign('/order-success');
 
 				} catch (err) {
-					alert('There was an error capturing your PayPal order.');
+
+					alert(err.message || 'There was an error capturing your PayPal order. Please try again or use another payment method.');
 				}
 			},
 

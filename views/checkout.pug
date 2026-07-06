@@ -178,9 +178,6 @@ block content
 										p.checkout__page--totals-p Delivery
 										p.checkout__page--totals-p $#{delivery}
 
-									.checkout__page--totals--row
-										p.checkout__page--totals-p GST
-										p.checkout__page--totals-p $#{taxes}
 
 									.checkout__page--totals--row.checkoutTotals__total
 										p.checkout__page--totals-p Estimated Total
@@ -268,9 +265,6 @@ block content
 										p.checkout__page--totals-p Delivery
 										p.checkout__page--totals-p $#{delivery}
 
-									.checkout__page--totals--row
-										p.checkout__page--totals-p GST
-										p.checkout__page--totals-p $#{taxes}
 
 									.checkout__page--totals--row.checkoutTotals__total
 										p.checkout__page--totals-p Estimated Total
@@ -307,10 +301,19 @@ block content
 										data-variant=(variant && variant.id) || ''
 									)
 		if !sitePreview && paypalClientId
-			script(src=`https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=AUD`)
-			script(src="/js/paypal.js")
+			script(
+				nonce=nonce
+				src=`https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=AUD`
+				data-csp-nonce=nonce
+				)
+			script(
+				nonce=nonce
+				src="/js/paypal.js"
+				)
 			
 block paymentScripts
-	if !sitePreview
-		script(src="https://js.stripe.com/v3/")
+	if !sitePreview && stripePublishableKey
+		script(nonce=nonce).
+			window.stripePublishableKey = !{JSON.stringify(stripePublishableKey)};
+		script(nonce=nonce src="https://js.stripe.com/v3/")
 

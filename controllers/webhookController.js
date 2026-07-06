@@ -25,23 +25,10 @@ if (!process.env.STRIPE_SECRET_KEY) {
 	throw new Error('STRIPE_SECRET_KEY environment variable is required');
 }
 
-
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+const { calculateTotals } = require('../utilities/newCheckoutTotals');
 
-
-const calculateTotals = (totalNet) => {
-
-	const delivery = totalNet < 50 ? 10 : 0;
-	const subtotal = totalNet + delivery;
-	const taxAmount = Math.round(subtotal * 0.1 * 100);
-
-	return {
-		delivery,
-		subtotal,
-		taxAmount
-	};
-}
 
 
 const updateStockLevels = async (productId, variantId, qty) => {

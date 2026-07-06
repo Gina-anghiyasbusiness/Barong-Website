@@ -10,7 +10,12 @@ const getStripe = () => {
 		throw new Error('Stripe.js failed to load');
 	}
 
-	return Stripe('pk_test_51Sv7UbJGnb8O9t51PR8Y22riJBvEZBsuSnRnXqlNYCEYfNbWLr7FOs80Q2iG4dwxbvas5YnfAdjmj1EkAUizCXpo00gQwXLWxA');
+	if (!window.stripePublishableKey) {
+
+		throw new Error('Stripe publishable key is missing');
+	}
+
+	return Stripe(window.stripePublishableKey);
 };
 
 

@@ -24,6 +24,8 @@ const GuestAddress = require('../models/guestAddressModel');
 
 const { description } = require('../models/productBaseModel');
 
+const { calculateTotals } = require('../utilities/newCheckoutTotals');
+
 
 
 /// Product Schema for seo
@@ -1539,7 +1541,7 @@ exports.getAddressFormPage = async (req, res, next) => {
 
 
 
-//---------------------- Checkout page ----------------------//
+//--------------------------------- Checkout page --------------------------------//
 
 
 
@@ -1759,10 +1761,9 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 	}
 
 
-	const delivery = totalNet < 50 ? 10 : 0;
-	const taxes = Math.round(((totalNet + delivery) * 0.1) * 10) / 10;
-	const totalGross = (totalNet + delivery) + taxes;
+	const { delivery, subtotal } = calculateTotals(totalNet);
 
+	const totalGross = subtotal;
 
 
 	///  Buy ItNow total	
@@ -1781,12 +1782,14 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 			cart,
 			totalNet,
 			delivery,
-			taxes,
 			totalGross,
 			defaultAddress: addressToRender,
 			selectedLabel: selectedLabel,
-			paypalClientId: `${process.env.PAYPAL_CLIENT_ID}`,
-			sitePreview: process.env.SITE_PREVIEW === 'true'
+
+			sitePreview,
+
+			paypalClientId: sitePreview ? null : process.env.PAYPAL_CLIENT_ID,
+			stripePublishableKey: sitePreview ? null : process.env.STRIPE_PUBLISHABLE_KEY
 		})
 
 	} else {
@@ -1802,12 +1805,14 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 			qty,
 			totalNet,
 			delivery,
-			taxes,
 			totalGross,
 			defaultAddress: addressToRender,
 			selectedLabel: selectedLabel,
-			paypalClientId: `${process.env.PAYPAL_CLIENT_ID}`,
-			sitePreview
+
+			sitePreview,
+
+			paypalClientId: sitePreview ? null : process.env.PAYPAL_CLIENT_ID,
+			stripePublishableKey: sitePreview ? null : process.env.STRIPE_PUBLISHABLE_KEY
 		})
 	}
 })
@@ -1914,9 +1919,9 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 		return next(new AppError('Invalid checkout total', 400));
 	}
 
-	const delivery = totalNet < 50 ? 10 : 0;
-	const taxes = Math.round(((totalNet + delivery) * 0.1) * 10) / 10;
-	const totalGross = (totalNet + delivery) + taxes;
+	const { delivery, subtotal } = calculateTotals(totalNet);
+
+	const totalGross = subtotal;
 
 
 
@@ -1936,11 +1941,13 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 		qty,
 		totalNet,
 		delivery,
-		taxes,
 		totalGross,
 		guest: true,
-		paypalClientId: `${process.env.PAYPAL_CLIENT_ID}`,
-		sitePreview
+
+		sitePreview,
+
+		paypalClientId: sitePreview ? null : process.env.PAYPAL_CLIENT_ID,
+		stripePublishableKey: sitePreview ? null : process.env.STRIPE_PUBLISHABLE_KEY
 	})
 })
 

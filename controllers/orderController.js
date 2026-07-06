@@ -23,7 +23,6 @@ const checkoutVar = require('../utilities/checkoutVariable');
 
 const { client, paypal } = require('./../utilities/paypalUtility');
 
-
 if (!process.env.STRIPE_SECRET_KEY) {
 
 	throw new Error('STRIPE_SECRET_KEY environment variable is required');
@@ -31,6 +30,10 @@ if (!process.env.STRIPE_SECRET_KEY) {
 
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+
+const { calculateTotals } = require('../utilities/newCheckoutTotals');
+
 
 
 
@@ -76,19 +79,6 @@ const updateStockLevels = async (productId, variantId, qty) => {
 	await product.save();
 };
 
-
-const calculateTotals = (totalNet) => {
-
-	const delivery = totalNet < 50 ? 10 : 0;
-	const subtotal = totalNet + delivery;
-	const taxAmount = Math.round(subtotal * 0.1 * 100);
-
-	return {
-		delivery,
-		subtotal,
-		taxAmount
-	}
-}
 
 
 
@@ -146,17 +136,21 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
 
 
-
-
 	/// Find variant (using your method from Stripe)
 
 	let buyItNowVariant = null;
 
+
 	if (buyItNowProduct.variants && buyItNowProduct.variants.length > 0) {
+
 		const actualVariant = (variant && variant !== 'null') ? variant : null;
+
 		if (actualVariant) {
+
 			buyItNowVariant = buyItNowProduct.variants.find(v => v.id === actualVariant);
+
 			if (!buyItNowVariant) {
+
 				return next(new AppError('Variant not found', 404));
 			}
 		}
@@ -370,10 +364,44 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 	const { product, qty, variant } = req.body;
 
-	const isCartCheckout = !product || !qty;
+
+	const isGuestRoute = req.originalUrl.includes('capture-order-guest');
+
+	const isCartCheckout = !isGuestRoute && !product && !qty;
+
+	const isBuyItNowCheckout = Boolean(product && qty);
+
+
+	if (isGuestRoute && (!product || !qty)) {
+
+		return next(new AppError('Guest PayPal checkout requires product and quantity', 400));
+	}
+
+	if (!isGuestRoute && !isCartCheckout && !isBuyItNowCheckout) {
+
+		return next(new AppError('Invalid PayPal checkout data', 400));
+	}
+
+
+	if (isBuyItNowCheckout) {
+
+		if (!mongoose.Types.ObjectId.isValid(product)) {
+
+			return next(new AppError('Invalid product ID', 400));
+		}
+
+		const qtyNum = Number(qty);
+
+		if (!Number.isInteger(qtyNum) || qtyNum < 1) {
+
+			return next(new AppError('Invalid quantity', 400));
+		}
+	}
+
 
 
 	let user = null;
+
 
 	if (req.user && req.user.id) {
 
@@ -383,7 +411,28 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 	}
 
 
+
+	if (isCartCheckout && !user) {
+
+		return next(new AppError('Please log in to complete PayPal cart checkout', 401));
+	}
+
+
+	if (isCartCheckout && (!user.cart || user.cart.length === 0)) {
+
+		return next(new AppError('Cart is empty', 400));
+	}
+
+
+
+
 	const orderID = req.params.orderID;
+
+	if (!orderID || typeof orderID !== 'string') {
+
+		return next(new AppError('Missing PayPal order ID', 400));
+	}
+
 
 	const request = new paypal.orders.OrdersCaptureRequest(orderID);
 
@@ -394,53 +443,40 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 	const orderData = capture.result;
 
 
-
-	/// start
-
-
-	/// replace
-
-	// const amount = Number(orderData.purchase_units[0].payments.captures[0].amount.value);
-
-	// const currency = orderData.purchase_units[0].payments.captures[0].amount.currency_code;
-
-
-	/// with
-
-
 	const captureData = orderData.purchase_units?.[0]?.payments?.captures?.[0];
 
+
 	if (!captureData) {
+
 		return next(new AppError('PayPal did not return captured payment data', 500));
 	}
 
+	if (!captureData.id) {
+
+		return next(new AppError('PayPal capture ID is missing', 500));
+	}
+
 	if (captureData.status !== 'COMPLETED') {
+
 		return next(new AppError('PayPal payment was not completed', 400));
 	}
+
+
 
 	const amount = Number(captureData.amount?.value);
 
 	const currency = captureData.amount?.currency_code;
 
-	// if (!amount || Number.isNaN(amount)) {
-	// 	return next(new AppError('Invalid PayPal payment amount', 400));
-	// }
 
-	// if (currency !== 'AUD') {
-	// 	return next(new AppError('Invalid PayPal payment currency', 400));
-	// }
+	if (!Number.isFinite(amount) || amount <= 0) {
 
-	if (Number.isNaN(amount) || amount <= 0) {
 		return next(new AppError('Invalid PayPal payment amount', 400));
 	}
 
 	if (currency !== 'AUD') {
+
 		return next(new AppError('Invalid PayPal payment currency', 400));
 	}
-
-
-
-	/// end
 
 
 
@@ -461,6 +497,12 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 	};
 
 
+	if (!shippingAddress.city || !shippingAddress.state || !shippingAddress.postcode) {
+
+		return next(new AppError('PayPal shipping address is incomplete', 400));
+	}
+
+
 	/// check for existing order
 
 
@@ -469,10 +511,9 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 	});
 
 	if (existingTransaction) {
+
 		return next(new AppError('This PayPal payment has already been processed', 409));
 	}
-
-
 
 
 	let order, priceAtPurchase;
@@ -604,12 +645,26 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 			const selectedVariant = actualVariant ? foundProduct.variants?.find(v => v.id === actualVariant) : null;
 
+			if (foundProduct.variants && foundProduct.variants.length > 0) {
+
+				if (!actualVariant) {
+
+					return next(new AppError('Missing product variant', 400));
+				}
+
+				if (!selectedVariant) {
+
+					return next(new AppError('Invalid product variant', 400));
+				}
+			}
+
 
 			/// 3. Calculate price
 
 			priceAtPurchase = await checkoutVar(foundProduct, priceAtPurchase);
 
 			if (typeof priceAtPurchase !== 'number' || isNaN(priceAtPurchase)) {
+
 				return next(new AppError('Invalid price at purchase', 500));
 			}
 
@@ -617,6 +672,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 			const qtyNum = Number(qty);
 
 			if (!Number.isInteger(qtyNum) || qtyNum < 1) {
+
 				return next(new AppError('Invalid quantity', 400));
 			}
 
@@ -869,7 +925,7 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 
 	/// Calculate the totals
 
-	const { delivery, subtotal, taxAmount } = calculateTotals(totalNet * qtyNum);
+	const { delivery } = calculateTotals(totalNet * qtyNum);
 
 
 	/// get address for delivery
@@ -920,46 +976,13 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 
 				product_data: {
 					name: 'Delivery Fee',
-					description: 'Flat rate delivery under $50'
+					description: 'Flat rate delivery under $150'
 				}
 			},
+
 			quantity: 1
 		});
-	} else line_items.push({
-
-		price_data: {
-			currency: 'aud',
-			unit_amount: 0,
-
-			product_data: {
-				name: 'Delivery Fee',
-				description: 'Orders over $50 qualify for free delivery'
-			}
-		},
-
-		quantity: 1
-	});
-
-
-
-
-	///	 Add tax 	 ///
-
-
-	line_items.push(
-		{
-			price_data: {
-				currency: 'aud',
-				unit_amount: taxAmount,
-				product_data: {
-					name: 'GST',
-					description: '10% Goods & Services Tax'
-				}
-			},
-			quantity: 1
-		});
-
-
+	}
 
 
 	/// create session
@@ -1103,7 +1126,7 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 		return next(new AppError('Invalid product price', 400));
 	}
 
-	const { delivery, subtotal, taxAmount } = calculateTotals(totalNet * qtyNum);
+	const { delivery } = calculateTotals(totalNet * qtyNum);
 
 
 	/// Line items
@@ -1120,32 +1143,26 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 				}
 			},
 			quantity: qtyNum
-		},
-		{
+		}
+
+	];
+
+	if (delivery > 0) {
+
+		line_items.push({
+
 			price_data: {
 				currency: 'aud',
 				unit_amount: delivery * 100,
+
 				product_data: {
 					name: 'Delivery Fee',
-					description: delivery > 0
-						? 'Flat rate delivery under $50'
-						: 'Orders over $50 qualify for free delivery'
+					description: 'Flat rate delivery under $150'
 				}
 			},
 			quantity: 1
-		},
-		{
-			price_data: {
-				currency: 'aud',
-				unit_amount: taxAmount,
-				product_data: {
-					name: 'GST',
-					description: '10% Goods & Services Tax'
-				}
-			},
-			quantity: 1
-		}
-	];
+		});
+	}
 
 	try {
 		const session = await stripe.checkout.sessions.create({
@@ -1365,7 +1382,7 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 	}
 
 
-	const { delivery, subtotal, taxAmount } = calculateTotals(overallPrice);
+	const { delivery } = calculateTotals(overallPrice);
 
 
 
@@ -1381,7 +1398,7 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 				product_data: {
 					name: 'Delivery Fee',
-					description: 'Flat rate delivery under $50'
+					description: 'Flat rate delivery under $150'
 				}
 			},
 
@@ -1389,21 +1406,6 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 		});
 	}
 
-
-
-	///	 Add tax 	 ///
-
-	line_items.push({
-		price_data: {
-			currency: 'aud',
-			unit_amount: taxAmount, // 450
-			product_data: {
-				name: 'GST',
-				description: '10% Goods & Services Tax'
-			}
-		},
-		quantity: 1
-	});
 
 
 
