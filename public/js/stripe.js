@@ -21,7 +21,7 @@ const getStripe = () => {
 
 
 
-export const buyCart = async () => {
+export const buyCart = async (fulfilmentMethod = 'delivery') => {
 
 	try {
 
@@ -29,7 +29,7 @@ export const buyCart = async () => {
 
 		/// create the checkout session on orderRoute which calls orderController.buyCartItem
 
-		const session = await axios.post(`/api/v1/orders/checkout-session`);
+		const session = await axios.post(`/api/v1/orders/checkout-session`, { fulfilmentMethod });
 
 
 		/// store the result
@@ -55,7 +55,7 @@ export const buyCart = async () => {
 
 
 
-export const buyItNow = async (product, qty, variant) => {
+export const buyItNow = async (product, qty, variant, fulfilmentMethod = 'delivery') => {
 
 	try {
 
@@ -63,7 +63,7 @@ export const buyItNow = async (product, qty, variant) => {
 
 		const variantParam = variant || 'null';
 
-		const session = await axios.post(`/api/v1/orders/checkout-session-bin/${product}/${qty}/${variantParam}`);
+		const session = await axios.post(`/api/v1/orders/checkout-session-bin/${product}/${qty}/${variantParam}`, { fulfilmentMethod });
 
 		const result = await stripe.redirectToCheckout(
 			{
@@ -84,7 +84,7 @@ export const buyItNow = async (product, qty, variant) => {
 
 
 
-export const buyItNowGuest = async (product, qty, guestAddressId, variant) => {
+export const buyItNowGuest = async (product, qty, guestAddressId, variant, fulfilmentMethod = 'delivery') => {
 
 	const variantParam = variant || 'null';
 
@@ -96,7 +96,7 @@ export const buyItNowGuest = async (product, qty, guestAddressId, variant) => {
 			{
 				method: 'POST',
 				url: `/api/v1/orders/checkout-session-bin-guest/${product}/${qty}/${variantParam}`,
-				data: { guestAddressId }
+				data: { guestAddressId, fulfilmentMethod }
 			}
 		);
 

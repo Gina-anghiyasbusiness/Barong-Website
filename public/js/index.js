@@ -333,6 +333,7 @@ if (passwordUpdateForm) {
 const updateAddressForm = document.querySelector('.user__address--update');
 
 
+
 if (updateAddressForm) {
 
 	const addressId = updateAddressForm.dataset.addressId;
@@ -818,7 +819,71 @@ function enableRemoveFromWishlist() {
 
 
 
+
 /// 					Place order					///
+
+//--- Choose delivery Type ---//
+
+
+const setupFulfilmentToggle = ({ selectId, fieldsSelector, formId }) => {
+
+	const select = document.getElementById(selectId);
+	const fields = document.querySelector(fieldsSelector);
+	const form = document.getElementById(formId);
+	const panel = form ? form.closest('.checkoutPanel') : null;
+	const totals = panel ? panel.querySelector('.checkoutTotals') : null;
+
+	/// if any of these are false move on
+
+	if (!select || !fields || !form || !totals) return;
+
+	const deliveryAmount = totals.querySelector('.checkout-delivery-amount');
+	const totalAmount = totals.querySelector('.checkout-total-amount');
+
+	const requiredFields = fields.querySelectorAll('[required]');
+
+	const originalDelivery = Number(totals.dataset.delivery);
+	const originalTotal = Number(totals.dataset.total);
+	const subtotal = Number(totals.dataset.subtotal);
+
+	const update = () => {
+
+		const isPickup = select.value === 'pickup';
+
+		fields.style.display = isPickup ? 'none' : '';
+
+		requiredFields.forEach(field => {
+			field.required = !isPickup;
+		});
+
+		if (deliveryAmount) {
+			deliveryAmount.textContent = isPickup ? '$0' : `$${originalDelivery}`;
+		}
+
+		if (totalAmount) {
+			totalAmount.textContent = isPickup ? `$${subtotal}` : `$${originalTotal}`;
+		}
+	};
+
+	select.addEventListener('change', update);
+	update();
+};
+
+/// delivery type calls only run if - all thse are true :
+/// 	if (!select || !fields || !form || !totals) return;
+
+setupFulfilmentToggle({
+	selectId: 'fulfilment-method',
+	fieldsSelector: '.checkout__delivery-fields',
+	formId: 'checkout__form--address'
+});
+
+setupFulfilmentToggle({
+	selectId: 'fulfilment-method-guest',
+	fieldsSelector: '.checkout__delivery-fields-guest',
+	formId: 'checkout__form--address-guest'
+});
+
 
 
 
@@ -836,6 +901,8 @@ if (addressForm) {
 		const variant = addressForm.dataset.variant || '';
 		const qty = addressForm.dataset.qty || '';
 
+		const fulfilmentMethod = document.getElementById('fulfilment-method')?.value || 'delivery';
+
 
 		const data = {
 
@@ -848,7 +915,7 @@ if (addressForm) {
 
 		}
 
-		await saveAddressCheckout(data, product, qty, variant);
+		await saveAddressCheckout(data, product, qty, variant, fulfilmentMethod);
 
 	})
 }
@@ -868,6 +935,8 @@ if (addressFormGuest) {
 		const variant = addressFormGuest.dataset.variant || '';
 		const qty = addressFormGuest.dataset.qty || '';
 
+		const fulfilmentMethod = document.getElementById('fulfilment-method-guest')?.value || 'delivery';
+
 		const data = {
 
 			email: document.getElementById('address-email').value,
@@ -879,7 +948,7 @@ if (addressFormGuest) {
 			postcode: document.getElementById('address-postcode').value
 		}
 
-		await saveAddressCheckoutGuest(data, product, qty, variant);
+		await saveAddressCheckoutGuest(data, product, qty, variant, fulfilmentMethod);
 
 	})
 }

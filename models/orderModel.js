@@ -73,6 +73,23 @@ const orderSchema = new mongoose.Schema({
 		// country: { type: String, required: true }
 	},
 
+
+	/// Fulfilment / Pickup fields added
+
+	fulfilmentMethod: {
+
+		type: String,
+		enum: ['delivery', 'pickup'],
+		default: 'delivery'
+	},
+
+	deliveryAmount: {
+
+		type: Number,
+		default: 0
+	},
+
+
 	status: {
 		type: String,
 		enum: ['Pending', 'Paid', 'Shipped', 'Delivered', 'Cancelled'],

@@ -15,7 +15,7 @@ block content
 
 		.checkout__page--grid.checkout__layout
 
-			// LEFT: items
+
 			.checkout__page--items.checkout__items
 
 				if cart
@@ -79,7 +79,7 @@ block content
 								p.checkout__price $ #{product.discountPrice * qty}
 
 
-			// RIGHT: address + totals + payments
+			
 			.checkout__page--right-box.checkout__right
 
 				.checkoutPanel
@@ -102,73 +102,85 @@ block content
 								p.creadit-card-address.checkoutPanel__title Delivery and Payment
 
 								.checkout__form--address-flex.checkoutPanel__fields
-
 									.checkout__form--address-row.checkoutField
-										label(for="address-label") Address Type
-										select.address-label#address-label(
-											name="address-label"
-											data-product=JSON.stringify(product)
-											data-qty=qty
-											data-variant=JSON.stringify(variant)
-										)
-											option(value="Home", selected=(selectedLabel === 'Home')) Home
-											option(value="Work", selected=(selectedLabel === 'Work')) Work
-											option(value="Other", selected=(selectedLabel === 'Other')) Other
+										label(for="fulfilment-method")  Delivery Option
+										select#fulfilment-method(name="fulfilmentMethod")
+											option(value="delivery" selected) Delivery
+											option(value="pickup") Local Pickup
 
-									.checkout__form--address-row.checkoutField
-										label(for="address-number") Street Number
-										input#address-number(
-											type="number"
-											name="address-number"
-											autocomplete="address-number-line1"
-											value=number
-											required
-										)
+									.checkout__delivery-fields
+										
+										.checkout__form--address-row.checkoutField
+											label(for="address-label") Address Type
+											select.address-label#address-label(
+												name="address-label"
+												data-product=JSON.stringify(product)
+												data-qty=qty
+												data-variant=JSON.stringify(variant)
+											)
+												option(value="Home", selected=(selectedLabel === 'Home')) Home
+												option(value="Work", selected=(selectedLabel === 'Work')) Work
+												option(value="Other", selected=(selectedLabel === 'Other')) Other
 
-									.checkout__form--address-row.checkoutField
-										label(for="address-street") Street
-										input#address-street(
-											type="text"
-											name="address-street"
-											autocomplete="address-street-line2"
-											value=street
-											required
-										)
 
-									.checkout__form--address-row.checkoutField
-										label(for="address-city") City
-										input#address-city(
-											type="text"
-											name="address-city"
-											autocomplete="address-city"
-											value=city
-											required
-										)
+										.checkout__form--address-row.checkoutField
+											label(for="address-number") Street Number
+											input#address-number(
+												type="number"
+												name="address-number"
+												autocomplete="address-number-line1"
+												value=number
+												required
+											)
 
-									.checkout__form--address-row.checkoutField
-										label(for="address-state") State
-										input#address-state(
-											type="text"
-											name="address-state"
-											autocomplete="address-state"
-											value=state
-											required
-										)
+										.checkout__form--address-row.checkoutField
+											label(for="address-street") Street
+											input#address-street(
+												type="text"
+												name="address-street"
+												autocomplete="address-street-line2"
+												value=street
+												required
+											)
 
-									.checkout__form--address-row.checkoutField
-										label(for="address-postcode") Postcode
-										input#address-postcode(
-											type="text"
-											name="address-postcode"
-											autocomplete="address-postcode"
-											value=postcode
-											minlength="4"
-											maxlength="4"
-											required
-										)
+										.checkout__form--address-row.checkoutField
+											label(for="address-city") City
+											input#address-city(
+												type="text"
+												name="address-city"
+												autocomplete="address-city"
+												value=city
+												required
+											)
+
+										.checkout__form--address-row.checkoutField
+											label(for="address-state") State
+											input#address-state(
+												type="text"
+												name="address-state"
+												autocomplete="address-state"
+												value=state
+												required
+											)
+
+										.checkout__form--address-row.checkoutField
+											label(for="address-postcode") Postcode
+											input#address-postcode(
+												type="text"
+												name="address-postcode"
+												autocomplete="address-postcode"
+												value=postcode
+												minlength="4"
+												maxlength="4"
+												required
+											)
 
 							.checkoutPanel__section-totals
-								.checkout__page--totals.checkoutTotals
+								.checkout__page--totals.checkoutTotals(
+									data-subtotal=totalNet
+									data-delivery=delivery
+									data-total=totalGross
+								)
 
 									.checkout__page--totals--row
 										p.checkout__page--totals-p Subtotal
@@ -176,12 +188,12 @@ block content
 
 									.checkout__page--totals--row
 										p.checkout__page--totals-p Delivery
-										p.checkout__page--totals-p $#{delivery}
+										p.checkout__page--totals-p.checkout-delivery-amount $#{delivery}
 
 
 									.checkout__page--totals--row.checkoutTotals__total
 										p.checkout__page--totals-p Estimated Total
-										p.checkout__page--totals-p $#{totalGross}
+										p.checkout__page--totals-p.checkout-total-amount $#{totalGross}
 
 							.checkoutPanel__section.checkoutPanel__payments
 							
@@ -227,35 +239,47 @@ block content
 								.checkout__form--address-flex.checkoutPanel__fields
 
 									.checkout__form--address-row.checkoutField
+										label(for="fulfilment-method-guest")  Delivery Option
+										select#fulfilment-method-guest(name="fulfilmentMethod")
+											option(value="delivery" selected) Delivery
+											option(value="pickup") Local Pickup
+
+									.checkout__form--address-row.checkoutField
 										label(for="address-email") Email
 										input#address-email(type="email" name="address-email" required)
 
 									.checkout__form--address-row.checkoutField
 										label(for="address-name") Name
 										input#address-name(type="text" name="address-name" required)
+										
+									.checkout__delivery-fields-guest
 
-									.checkout__form--address-row.checkoutField
-										label(for="address-number") Street Number
-										input#address-number(type="number" name="address-number" required)
+										.checkout__form--address-row.checkoutField
+											label(for="address-number") Street Number
+											input#address-number(type="number" name="address-number" required)
 
-									.checkout__form--address-row.checkoutField
-										label(for="address-street") Street
-										input#address-street(type="text" name="address-street" required)
+										.checkout__form--address-row.checkoutField
+											label(for="address-street") Street
+											input#address-street(type="text" name="address-street" required)
 
-									.checkout__form--address-row.checkoutField
-										label(for="address-city") City
-										input#address-city(type="text" name="address-city" required)
+										.checkout__form--address-row.checkoutField
+											label(for="address-city") City
+											input#address-city(type="text" name="address-city" required)
 
-									.checkout__form--address-row.checkoutField
-										label(for="address-state") State
-										input#address-state(type="text" name="address-state" required)
+										.checkout__form--address-row.checkoutField
+											label(for="address-state") State
+											input#address-state(type="text" name="address-state" required)
 
-									.checkout__form--address-row.checkoutField
-										label(for="address-postcode") Postcode
-										input#address-postcode(type="text" name="address-postcode" minlength="4" maxlength="4" required)
+										.checkout__form--address-row.checkoutField
+											label(for="address-postcode") Postcode
+											input#address-postcode(type="text" name="address-postcode" minlength="4" maxlength="4" required)
 
 							.checkoutPanel__section-totals
-								.checkout__page--totals.checkoutTotals
+								.checkout__page--totals.checkoutTotals(
+									data-subtotal=totalNet
+									data-delivery=delivery
+									data-total=totalGross
+								)
 
 									.checkout__page--totals--row
 										p.checkout__page--totals-p Subtotal
@@ -263,12 +287,12 @@ block content
 
 									.checkout__page--totals--row
 										p.checkout__page--totals-p Delivery
-										p.checkout__page--totals-p $#{delivery}
+										p.checkout__page--totals-p.checkout-delivery-amount $#{delivery}
 
 
 									.checkout__page--totals--row.checkoutTotals__total
 										p.checkout__page--totals-p Estimated Total
-										p.checkout__page--totals-p $#{totalGross}
+										p.checkout__page--totals-p.checkout-total-amount $#{totalGross}
 										
 
 							.checkoutPanel__section.checkoutPanel__payments

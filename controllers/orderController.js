@@ -99,6 +99,8 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
 	const { product, qty, variant } = req.params;
 
+	const fulfilmentMethod = req.body.fulfilmentMethod === 'pickup' ? 'pickup' : 'delivery';
+
 
 	let buyItNowProduct = await SpecProd.findById(product).populate('category');
 
@@ -123,7 +125,6 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 	}
 
 
-
 	/// qtyNum
 
 	const qtyNum = Number(qty);
@@ -131,9 +132,7 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 	if (!Number.isInteger(qtyNum) || qtyNum < 1) {
 
 		return next(new AppError('Invalid quantity', 400));
-
 	}
-
 
 
 	/// Find variant (using your method from Stripe)
@@ -178,7 +177,7 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 	/// Calculate totals (delivery/tax)
 
 
-	const { delivery, subtotal, taxAmount } = calculateTotals(totalNet * qtyNum);
+	const { delivery, subtotal, taxAmount } = calculateTotals(totalNet * qtyNum, { fulfilmentMethod });
 
 
 
@@ -238,10 +237,11 @@ exports.cartItemsPayPal = catchAsync(async (req, res, next) => {
 
 	if (!user || user.cart.length === 0) return next(new AppError('Cart is empty', 400));
 
+	const fulfilmentMethod = req.body.fulfilmentMethod === 'pickup' ? 'pickup' : 'delivery';
+
 	let price;
 	let overallArr = [];
 	let overallPrice = 0;
-
 
 	await Promise.all(user.cart.map(async item => {
 
@@ -264,7 +264,6 @@ exports.cartItemsPayPal = catchAsync(async (req, res, next) => {
 		if (!product) {
 			return next(new AppError('Product not found', 404));
 		}
-
 
 
 		if (!product.discount && !product.category) {
@@ -310,7 +309,7 @@ exports.cartItemsPayPal = catchAsync(async (req, res, next) => {
 
 
 
-	const { delivery, subtotal, taxAmount } = calculateTotals(overallPrice);
+	const { delivery, subtotal, taxAmount } = calculateTotals(overallPrice, { fulfilmentMethod });
 
 
 	// /// Prepare PayPal order
@@ -362,7 +361,9 @@ exports.cartItemsPayPal = catchAsync(async (req, res, next) => {
 
 exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
-	const { product, qty, variant } = req.body;
+	const { product, qty, variant, fulfilmentMethod: fulfilmentMethodRaw } = req.body;
+
+	const fulfilmentMethod = fulfilmentMethodRaw === 'pickup' ? 'pickup' : 'delivery';
 
 
 	const isGuestRoute = req.originalUrl.includes('capture-order-guest');
@@ -399,9 +400,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 	}
 
 
-
 	let user = null;
-
 
 	if (req.user && req.user.id) {
 
@@ -484,7 +483,9 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 	const shipping = orderData.purchase_units?.[0]?.shipping;
 
-	const suburbCity = `${shipping?.address?.address_line_1} : ${shipping?.address?.admin_area_2}`
+	const suburbCity = `${shipping?.address?.address_line_1} : ${shipping?.address?.admin_area_2}`;
+
+
 
 	const shippingAddress = {
 
@@ -497,7 +498,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 	};
 
 
-	if (!shippingAddress.city || !shippingAddress.state || !shippingAddress.postcode) {
+	if (fulfilmentMethod === 'delivery' && (!shippingAddress.city || !shippingAddress.state || !shippingAddress.postcode)) {
 
 		return next(new AppError('PayPal shipping address is incomplete', 400));
 	}
@@ -580,7 +581,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 			}, 0);
 
-			const { delivery, taxAmount } = calculateTotals(expectedNetTotal);
+			const { delivery, taxAmount } = calculateTotals(expectedNetTotal, { fulfilmentMethod });
 
 			const expectedAmount = Number((expectedNetTotal + delivery + taxAmount / 100).toFixed(2));
 
@@ -610,7 +611,9 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 				orderNum,
 				user: req.user.id,
 				product: cartArray,
-				shippingAddress,
+				shippingAddress: fulfilmentMethod === 'delivery' ? shippingAddress : undefined,
+				fulfilmentMethod,
+				deliveryAmount: delivery,
 				status: 'Paid',
 				totalAmount: amount,
 				paymentMethod: 'PayPal',
@@ -620,8 +623,11 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 
 		} catch (err) {
+
 			console.error('=== CART ERROR ===', err.message);
+
 			console.error(err.stack);
+
 			return next(err);
 		}
 
@@ -681,7 +687,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 			const expectedNetTotal = priceAtPurchase * qtyNum;
 
 
-			const { delivery, taxAmount } = calculateTotals(expectedNetTotal);
+			const { delivery, taxAmount } = calculateTotals(expectedNetTotal, { fulfilmentMethod });
 
 			const expectedAmount = Number((expectedNetTotal + delivery + taxAmount / 100).toFixed(2));
 
@@ -723,7 +729,9 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 					selectedVariant: selectedVariant ? selectedVariant._id : null,
 					priceAtPurchase
 				}],
-				shippingAddress,
+				shippingAddress: fulfilmentMethod === 'delivery' ? shippingAddress : undefined,
+				fulfilmentMethod,
+				deliveryAmount: delivery,
 				status: 'Paid',
 				totalAmount: amount,
 				paymentMethod: 'PayPal',
@@ -739,10 +747,10 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 					email: payer.email_address,
 					name: `${payer.name.given_name} ${payer.name.surname}`,
 					number: '',
-					street: shipping?.address?.address_line_2 || '',
-					city: suburbCity,
-					state: shipping?.address?.admin_area_1 || '',
-					postcode: shipping?.address?.postal_code || ''
+					street: fulfilmentMethod === 'delivery' ? shipping?.address?.address_line_2 || '' : '',
+					city: fulfilmentMethod === 'delivery' ? suburbCity : '',
+					state: fulfilmentMethod === 'delivery' ? shipping?.address?.admin_area_1 || '' : '',
+					postcode: fulfilmentMethod === 'delivery' ? shipping?.address?.postal_code || '' : ''
 				});
 			}
 		}
@@ -758,13 +766,6 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 	/// transaction	
 
 
-	// const captureData = orderData.purchase_units[0].payments.captures[0];
-
-
-	// if (!captureData) {
-
-	// 	return next(new AppError('PayPal did not return captured data', 500));
-	// }
 
 	const transaction = await Transaction.create({
 
@@ -812,7 +813,9 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 
 
-///--------			STRIPE			--------///
+///------------------------------	--------------	--------------------------------///
+///------------------------------			STRIPE			--------------------------------///
+///------------------------------	--------------	--------------------------------///
 
 
 /// 			Buy It Now Item 				///
@@ -925,7 +928,10 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 
 	/// Calculate the totals
 
-	const { delivery } = calculateTotals(totalNet * qtyNum);
+	const fulfilmentMethod = req.body.fulfilmentMethod === 'pickup' ? 'pickup' : 'delivery';
+
+	const { delivery } = calculateTotals(totalNet * qtyNum, { fulfilmentMethod });
+
 
 
 	/// get address for delivery
@@ -933,11 +939,10 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 	const defaultAddress = user.addresses?.find(addr => addr.isDefault);
 	const shippingAddress = defaultAddress || user.addresses[0];
 
-	if (!shippingAddress) {
+	if (fulfilmentMethod === 'delivery' && !shippingAddress) {
 
 		return next(new AppError('Please add a delivery address before checkout', 400));
 	}
-
 
 
 	const line_items = [
@@ -993,9 +998,11 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 		payment_method_types: ['card', 'afterpay_clearpay'],
 		mode: 'payment',
 
-		shipping_address_collection: {
-			allowed_countries: ['AU'],
-		},
+		...(fulfilmentMethod === 'delivery' && {
+			shipping_address_collection: {
+				allowed_countries: ['AU'],
+			}
+		}),
 
 
 		success_url: `${req.protocol}://${req.get('host')}/order-success`,
@@ -1014,10 +1021,11 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 		metadata: {
 
 			userId: req.user.id,
+			fulfilmentMethod,
 			product: product.toString(),
 			qty: qtyNum.toString(),
 			variant: buyItNowVariant ? buyItNowVariant.id.toString() : null, // ✅ Fix this line
-			address: JSON.stringify(shippingAddress)
+			address: fulfilmentMethod === 'delivery' ? JSON.stringify(shippingAddress) : ''
 		}
 	});
 
@@ -1033,15 +1041,17 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 
 
 
-
-
 //------------		BuyItNow-GUEST  Item		-------------//
 
 
 
 exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 
-	const { guestAddressId } = req.body;
+	const { guestAddressId, fulfilmentMethod: fulfilmentMethodRaw } = req.body;
+
+	const fulfilmentMethod = fulfilmentMethodRaw === 'pickup' ? 'pickup' : 'delivery';
+
+
 	const { product, qty, variant } = req.params;
 
 
@@ -1102,8 +1112,9 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 
 	const guestAddress = await GuestAddress.findById(guestAddressId).lean();
 
-
 	if (!guestAddress) return next(new AppError('Guest address not found', 404));
+
+
 
 	let totalNet;
 
@@ -1126,7 +1137,7 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 		return next(new AppError('Invalid product price', 400));
 	}
 
-	const { delivery } = calculateTotals(totalNet * qtyNum);
+	const { delivery } = calculateTotals(totalNet * qtyNum, { fulfilmentMethod });
 
 
 	/// Line items
@@ -1170,9 +1181,11 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 			payment_method_types: ['card', 'afterpay_clearpay'],
 			mode: 'payment',
 
-			shipping_address_collection: {
-				allowed_countries: ['AU'],
-			},
+			...(fulfilmentMethod === 'delivery' && {
+				shipping_address_collection: {
+					allowed_countries: ['AU'],
+				}
+			}),
 
 			success_url: `${req.protocol}://${req.get('host')}/order-success-guest`,
 			cancel_url: `${req.protocol}://${req.get('host')}/guest-cancel`,
@@ -1184,10 +1197,11 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 
 			metadata: {
 				userId: 'guest',
+				fulfilmentMethod,
 				product: product.toString(),
 				qty: qtyNum.toString(),
 				variant: buyItNowVariant ? buyItNowVariant.id.toString() : 'null',
-				address: JSON.stringify(guestAddress)
+				address: fulfilmentMethod === 'delivery' ? JSON.stringify(guestAddress) : ''
 			}
 		});
 
@@ -1205,18 +1219,12 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 });
 
 
-
-
-
-
 //----------------			Buy Carts Items 		 	---------------//
-
 
 
 exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 	const user = await User.findById(req.user.id).select('cart addresses');
-
 
 	if (!user) {
 
@@ -1228,6 +1236,7 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 		return next(new AppError('Cart is empty', 400));
 	}
 
+	const fulfilmentMethod = req.body.fulfilmentMethod === 'pickup' ? 'pickup' : 'delivery';
 
 
 	for (const item of user.cart) {
@@ -1263,14 +1272,15 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 	}
 
+
 	const defaultAddress = user.addresses?.find(addr => addr.isDefault);
+
 	const shippingAddress = defaultAddress || user.addresses[0];
 
-	if (!shippingAddress) {
+	if (fulfilmentMethod === 'delivery' && !shippingAddress) {
 
 		return next(new AppError('Please add a delivery address before checkout', 400));
 	}
-
 
 
 	let overallArr = [];
@@ -1293,7 +1303,6 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 			return next(new AppError('A product in your cart is no longer available', 404));
 		}
-
 
 		if (product.variants && product.variants.length > 0) {
 
@@ -1318,7 +1327,6 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 		let price;
 
-
 		///							Cart Checkout								///
 
 
@@ -1340,7 +1348,6 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 			price = await categoryDiscountPrice(product);
 		}
 
-
 		if (typeof price !== 'number' || Number.isNaN(price) || price <= 0) {
 
 			return next(new AppError('Invalid cart item price', 400));
@@ -1349,21 +1356,17 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 		overallArr.push(price * qty);
 
-
 		return {
 
 			price_data: {
 
 				currency: 'aud',
 				unit_amount: Math.round(price * 100),
-
 				product_data: {
-
 					name: product.name,
 					description: product.description
 				}
 			},
-
 			quantity: qty
 
 		};
@@ -1375,15 +1378,13 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 		overallPrice += overallArr[i];
 	}
 
-
 	if (typeof overallPrice !== 'number' || Number.isNaN(overallPrice) || overallPrice <= 0) {
 
 		return next(new AppError('Invalid cart total', 400));
 	}
 
 
-	const { delivery } = calculateTotals(overallPrice);
-
+	const { delivery } = calculateTotals(overallPrice, { fulfilmentMethod });
 
 
 	/// 		Add delivery		///
@@ -1395,18 +1396,14 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 			price_data: {
 				currency: 'aud',
 				unit_amount: delivery * 100,
-
 				product_data: {
 					name: 'Delivery Fee',
 					description: 'Flat rate delivery under $150'
 				}
 			},
-
 			quantity: 1
 		});
 	}
-
-
 
 
 
@@ -1419,9 +1416,11 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 		payment_method_types: ['card', 'afterpay_clearpay'],
 		mode: 'payment',
 
-		shipping_address_collection: {
-			allowed_countries: ['AU'],
-		},
+		...(fulfilmentMethod === 'delivery' && {
+			shipping_address_collection: {
+				allowed_countries: ['AU'],
+			}
+		}),
 
 		success_url: `${req.protocol}://${req.get('host')}/order-success`,
 		cancel_url: `${req.protocol}://${req.get('host')}/my-account/${user.id}`,
@@ -1439,6 +1438,8 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 			userId: req.user.id,
 
+			fulfilmentMethod,
+
 			cart: JSON.stringify(
 
 				user.cart.map(item => ({
@@ -1447,9 +1448,7 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 					//-----------  Variants ------------//
 
-
 					variantId: item.variant?._id?.toString(),
-
 
 					//-----------  ------- ------------//
 
@@ -1460,7 +1459,7 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 				}))
 
 			),
-			address: JSON.stringify(shippingAddress)
+			address: fulfilmentMethod === 'delivery' ? JSON.stringify(shippingAddress) : ''
 		}
 	});
 
@@ -1470,7 +1469,6 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 		session
 	});
 });
-
 
 
 

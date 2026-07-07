@@ -2,6 +2,14 @@
 let product, qty, variant;
 
 
+const getFulfilmentMethod = () => {
+
+	const select = document.getElementById('fulfilment-method') || document.getElementById('fulfilment-method-guest');
+
+	return select && select.value === 'pickup' ? 'pickup' : 'delivery';
+};
+
+
 document.addEventListener('DOMContentLoaded', function () {
 
 	if (typeof paypal === "undefined") return;
@@ -28,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 					const res = await fetch(`/api/v1/orders/paypal/buy-it-now-guest/${product}/${qty}/${variantParam}`, {
 						method: 'POST',
-						body: JSON.stringify({ product, qty, variant: variantParam }),
+						body: JSON.stringify({ product, qty, variant: variantParam, fulfilmentMethod: getFulfilmentMethod() }),
 						headers: { 'Content-Type': 'application/json' }
 					});
 
@@ -51,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					const res = await fetch(`/api/v1/orders/paypal/capture-order-guest/${data.orderID}`, {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ product, qty, variant: variantParam })
+						body: JSON.stringify({ product, qty, variant: variantParam, fulfilmentMethod: getFulfilmentMethod() })
 					});
 
 					const finalData = await res.json();
@@ -108,7 +116,8 @@ document.addEventListener('DOMContentLoaded', function () {
 					const res = await fetch(`/api/v1/orders/paypal/cart`,
 						{
 							method: 'POST',
-							headers: { 'Content-Type': 'application/json' }
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ fulfilmentMethod: getFulfilmentMethod() })
 
 						}
 					);
@@ -133,7 +142,8 @@ document.addEventListener('DOMContentLoaded', function () {
 					const res = await fetch(`/api/v1/orders/paypal/capture-order/${data.orderID}`,
 						{
 							method: 'POST',
-							headers: { 'Content-Type': 'application/json' }
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ fulfilmentMethod: getFulfilmentMethod() })
 
 						});
 
@@ -175,9 +185,11 @@ document.addEventListener('DOMContentLoaded', function () {
 				try {
 
 					const res = await fetch(`/api/v1/orders/paypal/buy-it-now/${product}/${qty}/${variantParam}`, {
+
 						method: 'POST',
-						body: JSON.stringify({ product, qty, variant: variantParam }),
-						headers: { 'Content-Type': 'application/json' }
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ product, qty, variant: variantParam, fulfilmentMethod: getFulfilmentMethod() })
+
 					});
 
 					const orderData = await res.json();
@@ -199,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					const res = await fetch(`/api/v1/orders/paypal/capture-order/${data.orderID}`, {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ product, qty, variant: variantParam })
+						body: JSON.stringify({ product, qty, variant: variantParam, fulfilmentMethod: getFulfilmentMethod() })
 					});
 
 					const finalData = await res.json();

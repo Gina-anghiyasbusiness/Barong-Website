@@ -64,7 +64,7 @@ export const buyItNowGuestCheckout = async (productId, qty, selectedVariant) => 
 //------ Save Address from user checkout / Call Payment Functions -------//
 
 
-export const saveAddressCheckoutGuest = async (data, product, qty, variant) => {
+export const saveAddressCheckoutGuest = async (data, product, qty, variant, fulfilmentMethod) => {
 
 	try {
 
@@ -89,7 +89,7 @@ export const saveAddressCheckoutGuest = async (data, product, qty, variant) => {
 
 				purchaseCart.textContent = "Processing....";
 
-				buyItNowGuest(product, qty, guestAddressId, variant);
+				buyItNowGuest(product, qty, guestAddressId, variant, fulfilmentMethod);
 
 			}
 		}
@@ -106,7 +106,7 @@ export const saveAddressCheckoutGuest = async (data, product, qty, variant) => {
 
 
 
-export const saveAddressCheckout = async (data, product, qty, variant) => {
+export const saveAddressCheckout = async (data, product, qty, variant, fulfilmentMethod) => {
 
 	try {
 
@@ -136,7 +136,7 @@ export const saveAddressCheckout = async (data, product, qty, variant) => {
 
 				purchaseCart.textContent = "Processing....";
 
-				buyCart();
+				buyCart(fulfilmentMethod);
 
 			} else {
 
@@ -144,7 +144,7 @@ export const saveAddressCheckout = async (data, product, qty, variant) => {
 
 				purchaseCart.textContent = "Processing....";
 
-				buyItNow(product, qty, variant);
+				buyItNow(product, qty, variant, fulfilmentMethod);
 
 
 			}

@@ -27,11 +27,15 @@ block content
 
 
 				.address
-					//- p #{order.shippingAddress.label}
-					p #{order.shippingAddress.number + ' ' + order.shippingAddress.street.toUpperCase()}
-					p #{order.shippingAddress.city.toUpperCase()}
-					p #{order.shippingAddress.state.toUpperCase()}
-					p #{order.shippingAddress.postcode}
+					if order.fulfilmentMethod === 'pickup'
+						p Local Pickup
+						p No delivery address required
+					else
+						p #{order.shippingAddress.number + ' ' + order.shippingAddress.street.toUpperCase()}
+						p #{order.shippingAddress.city.toUpperCase()}
+						p #{order.shippingAddress.state.toUpperCase()}
+						p #{order.shippingAddress.postcode}
+						
 				p #{order.status}
 				p #{order.paymentMethod}
 				p #{order.transaction.status}
@@ -51,11 +55,15 @@ block content
 					//- 		p #{item.quantity} x #{item.product.name}
 							
 					.address
-						//- p #{order.shippingAddress.label}
-						p #{order.shippingAddress.number + ' ' + order.shippingAddress.street.toUpperCase()}
-						p #{order.shippingAddress.city.toUpperCase()}
-						p #{order.shippingAddress.state.toUpperCase()}
-						p #{order.shippingAddress.postcode}
+						if order.fulfilmentMethod === 'pickup'
+							p Local Pickup
+							p No delivery address required
+						else
+							p #{order.shippingAddress.number + ' ' + order.shippingAddress.street.toUpperCase()}
+							p #{order.shippingAddress.city.toUpperCase()}
+							p #{order.shippingAddress.state.toUpperCase()}
+							p #{order.shippingAddress.postcode}
+						
 					p #{order.status}
 					p #{order.paymentMethod}
 					p #{order.transaction.status}

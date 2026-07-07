@@ -24,15 +24,21 @@ block content
 								span.order_page--value #{order.user.phone || '—'}
 
 							.order_page--user-address.order_page--block
-								p.order_page--block-heading Shipping Address
+								if order.fulfilmentMethod === 'pickup'
+									p.order_page--block-heading Local Pickup
 
-								.order_page--user-address-details
-									p.order_page--user-p #{order.shippingAddress.label.toUpperCase()}
-									p.order_page--user-p #{order.shippingAddress.number}
-									p.order_page--user-p #{order.shippingAddress.street}
-									p.order_page--user-p #{order.shippingAddress.city}
-									p.order_page--user-p #{order.shippingAddress.state}
-									p.order_page--user-p #{order.shippingAddress.postcode}
+									.order_page--user-address-details
+										p.order_page--user-p No delivery address required
+								else
+									p.order_page--block-heading Shipping Address
+
+									.order_page--user-address-details
+										p.order_page--user-p #{order.shippingAddress.label.toUpperCase()}
+										p.order_page--user-p #{order.shippingAddress.number}
+										p.order_page--user-p #{order.shippingAddress.street}
+										p.order_page--user-p #{order.shippingAddress.city}
+										p.order_page--user-p #{order.shippingAddress.state}
+										p.order_page--user-p #{order.shippingAddress.postcode}
 
 				.order_page-right
 					.order_page--user-details-box.order_page--card

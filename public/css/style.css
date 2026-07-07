@@ -6627,6 +6627,14 @@ p.creadit-card-address-paypal{
 	box-shadow: 0 0 0 4px rgba(201,155,40,0.12);
 }
 
+.checkout__delivery-fields,
+.checkout__delivery-fields-guest {
+	display: flex;
+	flex-direction: column;
+	gap: 0.7rem;
+	width: 100%;
+}
+
 /* =========================
    Totals
    ========================= */

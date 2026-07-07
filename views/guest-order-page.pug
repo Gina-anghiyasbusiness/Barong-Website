@@ -23,14 +23,20 @@ block content
 
 							.order_page--user-address
 								.order_page--user-address-heading
-									p.order_page--user-p Shipping Address:
-								.order_page--user-address-details
+									if order.order.fulfilmentMethod === 'pickup'
+										p.order_page--user-p Local Pickup:
+									else
+										p.order_page--user-p Shipping Address:
 
-									p.order_page--user-p #{order.order.shippingAddress.number}
-									p.order_page--user-p #{order.order.shippingAddress.street}
-									p.order_page--user-p #{order.order.shippingAddress.city}
-									p.order_page--user-p #{order.order.shippingAddress.state}
-									p.order_page--user-p #{order.order.shippingAddress.postcode}				
+								.order_page--user-address-details
+									if order.order.fulfilmentMethod === 'pickup'
+										p.order_page--user-p No delivery address required
+									else
+										p.order_page--user-p #{order.order.shippingAddress.number}
+										p.order_page--user-p #{order.order.shippingAddress.street}
+										p.order_page--user-p #{order.order.shippingAddress.city}
+										p.order_page--user-p #{order.order.shippingAddress.state}
+										p.order_page--user-p #{order.order.shippingAddress.postcode}			
 					
 				.order_page-right
 				

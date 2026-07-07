@@ -262,13 +262,17 @@ block content
 										.myAccount__main--orders-address--box 
 											
 											.myAccount__main--orders-address.myAccount__main--orders-address--line-1
-												p #{order.shippingAddress.label}
-												.street-address
-													p #{order.shippingAddress.number}
-													p #{order.shippingAddress.street.toUpperCase()}
-												p #{order.shippingAddress.city.toUpperCase()}
-												p #{order.shippingAddress.state.toUpperCase()}
-												p #{order.shippingAddress.postcode}
+												if order.fulfilmentMethod === 'pickup'
+													p Local Pickup
+													p No delivery address required
+												else
+													p #{order.shippingAddress.label}
+													.street-address
+														p #{order.shippingAddress.number}
+														p #{order.shippingAddress.street.toUpperCase()}
+													p #{order.shippingAddress.city.toUpperCase()}
+													p #{order.shippingAddress.state.toUpperCase()}
+													p #{order.shippingAddress.postcode}
 										
 										.myAccount__main--orders-order 
 										

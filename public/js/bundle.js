@@ -11820,10 +11820,10 @@
     }
     return Stripe(window.stripePublishableKey);
   };
-  var buyCart = async () => {
+  var buyCart = async (fulfilmentMethod = "delivery") => {
     try {
       const stripe = getStripe();
-      const session = await axios_default.post(`/api/v1/orders/checkout-session`);
+      const session = await axios_default.post(`/api/v1/orders/checkout-session`, { fulfilmentMethod });
       const result = await stripe.redirectToCheckout(
         {
           sessionId: session.data.session.id
@@ -11836,11 +11836,11 @@
       showAlert("error", err);
     }
   };
-  var buyItNow = async (product, qty, variant) => {
+  var buyItNow = async (product, qty, variant, fulfilmentMethod = "delivery") => {
     try {
       const stripe = getStripe();
       const variantParam = variant || "null";
-      const session = await axios_default.post(`/api/v1/orders/checkout-session-bin/${product}/${qty}/${variantParam}`);
+      const session = await axios_default.post(`/api/v1/orders/checkout-session-bin/${product}/${qty}/${variantParam}`, { fulfilmentMethod });
       const result = await stripe.redirectToCheckout(
         {
           sessionId: session.data.session.id
@@ -11853,7 +11853,7 @@
       showAlert("error", err);
     }
   };
-  var buyItNowGuest = async (product, qty, guestAddressId, variant) => {
+  var buyItNowGuest = async (product, qty, guestAddressId, variant, fulfilmentMethod = "delivery") => {
     const variantParam = variant || "null";
     try {
       const stripe = getStripe();
@@ -11861,7 +11861,7 @@
         {
           method: "POST",
           url: `/api/v1/orders/checkout-session-bin-guest/${product}/${qty}/${variantParam}`,
-          data: { guestAddressId }
+          data: { guestAddressId, fulfilmentMethod }
         }
       );
       const result = await stripe.redirectToCheckout(
@@ -11904,7 +11904,7 @@
       showAlert("error", err.response.data.message);
     }
   };
-  var saveAddressCheckoutGuest = async (data, product, qty, variant) => {
+  var saveAddressCheckoutGuest = async (data, product, qty, variant, fulfilmentMethod) => {
     try {
       const result = await axios_default({
         method: "POST",
@@ -11918,7 +11918,7 @@
           const purchaseCart = document.getElementById("checkout-submit--stripe-guest");
           const guestAddressId = result.data.guestAddressId;
           purchaseCart.textContent = "Processing....";
-          buyItNowGuest(product, qty, guestAddressId, variant);
+          buyItNowGuest(product, qty, guestAddressId, variant, fulfilmentMethod);
         }
       }
     } catch (err) {
@@ -11926,7 +11926,7 @@
       showAlert("error", msg);
     }
   };
-  var saveAddressCheckout = async (data, product, qty, variant) => {
+  var saveAddressCheckout = async (data, product, qty, variant, fulfilmentMethod) => {
     try {
       const result = await axios_default({
         method: "POST",
@@ -11941,11 +11941,11 @@
         if (!product) {
           const purchaseCart = document.getElementById("checkout-submit--stripe");
           purchaseCart.textContent = "Processing....";
-          buyCart();
+          buyCart(fulfilmentMethod);
         } else {
           const purchaseCart = document.getElementById("checkout-submit--stripe");
           purchaseCart.textContent = "Processing....";
-          buyItNow(product, qty, variant);
+          buyItNow(product, qty, variant, fulfilmentMethod);
         }
       }
     } catch (err) {
@@ -29565,6 +29565,45 @@
       };
     });
   }
+  var setupFulfilmentToggle = ({ selectId, fieldsSelector, formId }) => {
+    const select = document.getElementById(selectId);
+    const fields = document.querySelector(fieldsSelector);
+    const form = document.getElementById(formId);
+    const panel = form ? form.closest(".checkoutPanel") : null;
+    const totals = panel ? panel.querySelector(".checkoutTotals") : null;
+    if (!select || !fields || !form || !totals) return;
+    const deliveryAmount = totals.querySelector(".checkout-delivery-amount");
+    const totalAmount = totals.querySelector(".checkout-total-amount");
+    const requiredFields = fields.querySelectorAll("[required]");
+    const originalDelivery = Number(totals.dataset.delivery);
+    const originalTotal = Number(totals.dataset.total);
+    const subtotal = Number(totals.dataset.subtotal);
+    const update = () => {
+      const isPickup = select.value === "pickup";
+      fields.style.display = isPickup ? "none" : "";
+      requiredFields.forEach((field) => {
+        field.required = !isPickup;
+      });
+      if (deliveryAmount) {
+        deliveryAmount.textContent = isPickup ? "$0" : `$${originalDelivery}`;
+      }
+      if (totalAmount) {
+        totalAmount.textContent = isPickup ? `$${subtotal}` : `$${originalTotal}`;
+      }
+    };
+    select.addEventListener("change", update);
+    update();
+  };
+  setupFulfilmentToggle({
+    selectId: "fulfilment-method",
+    fieldsSelector: ".checkout__delivery-fields",
+    formId: "checkout__form--address"
+  });
+  setupFulfilmentToggle({
+    selectId: "fulfilment-method-guest",
+    fieldsSelector: ".checkout__delivery-fields-guest",
+    formId: "checkout__form--address-guest"
+  });
   var addressForm = document.getElementById("checkout__form--address");
   if (addressForm) {
     addressForm.addEventListener("submit", async (e) => {
@@ -29572,6 +29611,7 @@
       const product = addressForm.dataset.product || "";
       const variant = addressForm.dataset.variant || "";
       const qty = addressForm.dataset.qty || "";
+      const fulfilmentMethod = document.getElementById("fulfilment-method")?.value || "delivery";
       const data = {
         label: document.getElementById("address-label").value,
         number: document.getElementById("address-number").value,
@@ -29580,7 +29620,7 @@
         state: document.getElementById("address-state").value,
         postcode: document.getElementById("address-postcode").value
       };
-      await saveAddressCheckout(data, product, qty, variant);
+      await saveAddressCheckout(data, product, qty, variant, fulfilmentMethod);
     });
   }
   var addressFormGuest = document.getElementById("checkout__form--address-guest");
@@ -29590,6 +29630,7 @@
       const product = addressFormGuest.dataset.product || "";
       const variant = addressFormGuest.dataset.variant || "";
       const qty = addressFormGuest.dataset.qty || "";
+      const fulfilmentMethod = document.getElementById("fulfilment-method-guest")?.value || "delivery";
       const data = {
         email: document.getElementById("address-email").value,
         name: document.getElementById("address-name").value,
@@ -29599,7 +29640,7 @@
         state: document.getElementById("address-state").value,
         postcode: document.getElementById("address-postcode").value
       };
-      await saveAddressCheckoutGuest(data, product, qty, variant);
+      await saveAddressCheckoutGuest(data, product, qty, variant, fulfilmentMethod);
     });
   }
   document.addEventListener("DOMContentLoaded", () => {

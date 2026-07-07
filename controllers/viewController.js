@@ -2056,7 +2056,9 @@ exports.getGuestOrderPage = catchAsync(async (req, res, next) => {
 
 	const products = order.order.product;
 
-	const transaction = await Transaction.findById(order.transaction);
+	// const transaction = await Transaction.findById(order.transaction);
+
+	const transaction = await Transaction.findById(order.order.transaction);
 
 	if (!transaction) return next(new AppError('Transaction not found', 404));
 
@@ -2765,7 +2767,10 @@ exports.getOrderPage = catchAsync(async (req, res, next) => {
 		? await User.findOne({ email: order.user.email }, 'addresses')
 		: null;
 
+
 	let { shippingAddress } = order;
+
+
 
 	if (addressFilter.label && userAddresses) {
 
@@ -2778,17 +2783,24 @@ exports.getOrderPage = catchAsync(async (req, res, next) => {
 		shippingAddress = order.shippingAddress;
 	}
 
-	if (!shippingAddress) {
+
+	const isPickup = order.fulfilmentMethod === 'pickup';
+
+	if (!shippingAddress && !isPickup) {
 
 		return next(new AppError('Shipping address not found', 404));
 	}
 
 
-	const formattedAddress = `${shippingAddress.number} ${shippingAddress.street},${shippingAddress.city},${shippingAddress.state},${shippingAddress.postcode}`;
+	const formattedAddress = isPickup
+		? 'Local Pickup - no delivery address required'
+		: `${shippingAddress.number} ${shippingAddress.street},${shippingAddress.city},${shippingAddress.state},${shippingAddress.postcode}`;
 
 	const renderedAddress = formattedAddress.replaceAll(",", "\n");
 
-	const shippingAddressData = JSON.stringify(shippingAddress);
+	const shippingAddressData = isPickup
+		? JSON.stringify({})
+		: JSON.stringify(shippingAddress);
 
 
 

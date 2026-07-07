@@ -41,17 +41,26 @@ block content
 						input#order-customer-phone(type="tel" name='order-customer-phone'  value=order.user ? order.user.phone : order.guestPhone, disabled)
 					
 					.admin-order-form--row 
+					
 						.admin-order-address--box
-							label(for="shipaddress" class='shipping-address-label')  Delivery Address
-							p *Set Delievry Address before Order/Transaction Updates
+							if order.fulfilmentMethod === 'pickup'
+								label.shipping-address-label Local Pickup
+								p No delivery address required
+							else
+								label(for="shipaddress" class='shipping-address-label') Delivery Address
+								p *Set Delivery Address before Order/Transaction Updates
+
 						.address-textarea--select
-							if order.status == 'Paid' || order.status == 'Pending'
-								select#shipaddress(name="shipaddress" value=`${shippingAddress.label}`) 
+							if order.fulfilmentMethod === 'pickup'
+								textarea#shipping-address(name="shipping-address" rows='5' disabled) Local Pickup - no delivery address required
+							else
+								if order.status == 'Paid' || order.status == 'Pending'
+									select#shipaddress(name="shipaddress" value=`${shippingAddress.label}`) 
+										option(value="Home" selected=shippingAddress.label ==='Home') Home 
+										option(value="Work" selected=shippingAddress.label ==='Work') Work
+										option(value="Other" selected=shippingAddress.label ==='Other') Other
+								textarea#shipping-address(name="shipping-address" rows='5' disabled) #{renderedAddress || 'No Address Available'}
 							
-									option(value="Home" selected=shippingAddress.label ==='Home') Home 
-									option(value="Work" selected=shippingAddress.label ==='Work') Work
-									option(value="Other" selected=shippingAddress.label ==='Other') Other
-							textarea#shipping-address(name="shipping-address" rows='5' disabled) #{renderedAddress || 'No Address Available'}
 				.admin-order-right
 					.admin-order-form--row 
 						h2 Order Details
@@ -59,7 +68,10 @@ block content
 						label(for="admin-order-product") Products:
 						.admin-order-product-flex
 							each item in order.product
-								input#admin-order-product(type="text" name='admin-order-product' value=`${item.quantity} x ${item.product.name}`, disabled)
+								if item.product
+									input#admin-order-product(type="text" name='admin-order-product' value=`${item.quantity} x ${item.product.name}`, disabled)
+								else
+									input#admin-order-product(type="text" name='admin-order-product' value=`${item.quantity} x Product not found or deleted`, disabled)
 					.admin-order-form--row 
 						- const formatted = new Date(order.createdAt).toLocaleDateString('en-GB');
 						label(for="admin-order-created") Order Created:

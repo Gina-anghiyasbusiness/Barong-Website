@@ -80,7 +80,7 @@ exports.handleStripeWebhook = async (req, res) => {
 
 	/// Declare All order variables for manipulation
 
-	let event, cart, product, qty, variant, userId, shippingAddress;
+	let event, cart, product, qty, variant, userId, shippingAddress, fulfilmentMethod;
 
 
 
@@ -180,6 +180,8 @@ exports.handleStripeWebhook = async (req, res) => {
 
 		userId = session.metadata?.userId;
 
+		fulfilmentMethod = session.metadata?.fulfilmentMethod === 'pickup' ? 'pickup' : 'delivery';
+
 		if (!userId) {
 			return res.status(400).send('Missing metadata.userId');
 		}
@@ -201,18 +203,26 @@ exports.handleStripeWebhook = async (req, res) => {
 				variant = session.metadata.variant;
 			}
 
-			if (!session.metadata?.address) return res.status(400).send('Missing metadata.address');
 
-			shippingAddress = JSON.parse(session.metadata.address);
+			if (fulfilmentMethod === 'delivery') {
 
+				if (!session.metadata?.address) return res.status(400).send('Missing metadata.address');
 
-			if (!shippingAddress || typeof shippingAddress !== 'object') {
+				shippingAddress = JSON.parse(session.metadata.address);
 
-				return res.status(400).send('Invalid shipping address');
-			}
+				if (!shippingAddress || typeof shippingAddress !== 'object') {
 
-			if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.postcode) {
-				return res.status(400).send('Missing shipping address fields');
+					return res.status(400).send('Invalid shipping address');
+				}
+
+				if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.postcode) {
+
+					return res.status(400).send('Missing shipping address fields');
+				}
+
+			} else {
+
+				shippingAddress = undefined;
 			}
 
 
@@ -382,7 +392,7 @@ exports.handleStripeWebhook = async (req, res) => {
 			}
 
 
-			const { delivery, taxAmount } = calculateTotals(expectedNetTotal);
+			const { delivery, taxAmount } = calculateTotals(expectedNetTotal, { fulfilmentMethod });
 
 			const expectedAmount = Math.round((expectedNetTotal + delivery) * 100 + taxAmount);
 
@@ -429,6 +439,8 @@ exports.handleStripeWebhook = async (req, res) => {
 					user: userId,
 					product: orderProducts,
 					shippingAddress,
+					fulfilmentMethod,
+					deliveryAmount: delivery,
 					status: 'Paid',
 					totalAmount: paidAmount / 100,
 					paymentMethod,
@@ -461,13 +473,14 @@ exports.handleStripeWebhook = async (req, res) => {
 
 				/// 🧹 Optional: Clear user cart
 
-				await User.findByIdAndUpdate(userId,
-					{
-						cart: [],
-						$addToSet: { addresses: shippingAddress }
-					}
-				);
+				const userUpdate = { cart: [] };
 
+				if (fulfilmentMethod === 'delivery') {
+
+					userUpdate.$addToSet = { addresses: shippingAddress };
+				}
+
+				await User.findByIdAndUpdate(userId, userUpdate);
 
 
 				///			Send Order confirmation Email			///
@@ -605,23 +618,19 @@ exports.handleStripeWebhook = async (req, res) => {
 			]
 
 
-
-
 			const expectedNetTotal = price * qtyNum;
 
 			if (!Number.isFinite(expectedNetTotal) || expectedNetTotal <= 0) {
 				return res.status(400).send('Invalid order total');
 			}
 
-
-			const { delivery, taxAmount } = calculateTotals(expectedNetTotal);
+			const { delivery, taxAmount } = calculateTotals(expectedNetTotal, { fulfilmentMethod });
 
 			const expectedAmount = Math.round((expectedNetTotal + delivery) * 100 + taxAmount);
 
 			if (paidAmount !== expectedAmount) {
 				return res.status(400).send('Stripe payment amount does not match order total');
 			}
-
 
 
 			/// 							Create Order 								///
@@ -680,6 +689,8 @@ exports.handleStripeWebhook = async (req, res) => {
 					user: isGuest ? undefined : userId,
 					product: orderProducts,
 					shippingAddress,
+					fulfilmentMethod,
+					deliveryAmount: delivery,
 					status: 'Paid',
 					totalAmount: paidAmount / 100,
 					paymentMethod,

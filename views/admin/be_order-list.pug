@@ -42,12 +42,16 @@ block content
 				p #{order.user ? order.user.email : order.guestEmail}
 						
 				.address
-				
-					p #{order.shippingAddress.label}
-					p #{order.shippingAddress.number + ' ' + order.shippingAddress.street.toUpperCase()}
-					p #{order.shippingAddress.city.toUpperCase()}
-					p #{order.shippingAddress.state.toUpperCase()}
-					p #{order.shippingAddress.postcode}
+					if order.fulfilmentMethod === 'pickup'
+						p Local Pickup
+						p No delivery address required
+					else
+						p #{order.shippingAddress.label}
+						p #{order.shippingAddress.number + ' ' + order.shippingAddress.street.toUpperCase()}
+						p #{order.shippingAddress.city.toUpperCase()}
+						p #{order.shippingAddress.state.toUpperCase()}
+						p #{order.shippingAddress.postcode}
+					
 				p #{order.status}
 				p #{order.paymentMethod}
 				p #{transStatus}
