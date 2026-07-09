@@ -3,6 +3,7 @@ const CustomizationEnquiry = require('./../models/customizationEnquiryModel');
 
 const Email = require('./../utilities/emailClass');
 const catchAsync = require('./../utilities/catchAsync');
+const AppError = require('./../utilities/appError');
 
 
 exports.createEnquiry = catchAsync(async (req, res, next) => {
@@ -180,3 +181,105 @@ exports.createCustomizationEnquiry = catchAsync(async (req, res, next) => {
 
 });
 
+
+
+
+
+exports.updateCustomEnquiryStatus = catchAsync(async (req, res, next) => {
+
+	const allowedStatuses = CustomizationEnquiry.schema.path('status').enumValues;
+
+	if (!allowedStatuses.includes(req.body.status)) {
+
+		return next(new AppError('Invalid enquiry status', 400));
+	}
+
+	const { status } = req.body;
+
+	const update = { status };
+
+	if (status === 'read') {
+		update.readAt = Date.now();
+	}
+
+	if (status === 'responded') {
+		update.respondedAt = Date.now();
+		update.readAt = Date.now();
+	}
+
+	if (status === 'new') {
+		update.readAt = undefined;
+		update.respondedAt = undefined;
+	}
+
+
+	const enquiry = await CustomizationEnquiry.findByIdAndUpdate(req.params.id, update, {
+
+		new: true,
+		runValidators: true
+	});
+
+	if (!enquiry) {
+
+		return next(new AppError('No enquiry found with that ID', 404));
+	}
+
+	res.status(200).json({
+
+		status: 'success',
+		data: {
+			enquiry
+		}
+	});
+});
+
+
+
+
+exports.updateEnquiryStatus = catchAsync(async (req, res, next) => {
+
+	const allowedStatuses = Enquiry.schema.path('status').enumValues;
+
+	if (!allowedStatuses.includes(req.body.status)) {
+
+		return next(new AppError('Invalid enquiry status', 400));
+	}
+
+	const { status } = req.body;
+
+	const update = { status };
+
+	if (status === 'read') {
+		update.readAt = Date.now();
+	}
+
+	if (status === 'responded') {
+		update.respondedAt = Date.now();
+		update.readAt = Date.now();
+	}
+
+	if (status === 'new') {
+		update.readAt = undefined;
+		update.respondedAt = undefined;
+	}
+
+
+	const enquiry = await Enquiry.findByIdAndUpdate(req.params.id, update, {
+
+		new: true,
+		runValidators: true
+	});
+
+	if (!enquiry) {
+
+		return next(new AppError('No enquiry found with that ID', 404));
+	}
+
+	res.status(200).json({
+
+		status: 'success',
+		data: {
+			enquiry
+		}
+	});
+});

@@ -1,0 +1,64 @@
+extends be_base 
+
+block content 
+
+	main.admin-enquiryList.wide-container 
+	
+		h2.admin__page--heading Enquiry Details
+		
+		section.admin-enquiry--grid
+		
+
+			.admin-enquiry__details
+				- const created = new Date(enquiry.createdAt).toLocaleDateString('en-GB');
+
+				.admin-enquiry__details-row
+					p Name: 
+					p #{enquiry.name}
+				.admin-enquiry__details-row
+					p Phone: 
+					p #{enquiry.phone || 'Not provided'}
+				.admin-enquiry__details-row
+					p Email: 
+					p #{enquiry.email}
+				.admin-enquiry__details-row
+					p Enquiry: 
+					p #{enquiry.enquiry}
+				.admin-enquiry__details-row
+					p Pref Contact: 
+					p #{enquiry.preferredContactMethod || 'Not provided'}
+				.admin-enquiry__details-row
+					p Message: 
+					p #{enquiry.message || 'No message'}
+				.admin-enquiry__details-row
+					p Date: 
+					p #{created}
+				.admin-enquiry__details-row
+					p Status: 
+					p #{enquiry.status}
+				.admin-enquiry__details-row
+					p Read At:
+					p #{enquiry.readAt ? new Date(enquiry.readAt).toLocaleString('en-GB') : 'Not read yet'}
+
+				.admin-enquiry__details-row
+					p Responded At:
+					p #{enquiry.respondedAt ? new Date(enquiry.respondedAt).toLocaleString('en-GB') : 'Not responded yet'}
+
+		section.admin-enquiry__status
+
+			h3 Update Status
+
+			form(action='#', id='enquiry-update--status')
+
+				label(for="status") Status
+
+				select(name="status", id="status")
+					each statusOption in enquiryStatusOptions
+						option(
+							value=statusOption,
+							selected=enquiry.status === statusOption
+						) #{statusOption}
+
+				input( type='hidden' name="enquiryId", id="enquiryId" value=`${enquiry.id}`)
+				
+				button(type="submit") Save Status

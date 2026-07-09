@@ -28,7 +28,7 @@ header
 			if user
 				.admin_header-info--box
 					p.header__login--user Welcome #{user.name.split(" ")[0]}
-					a(href="/my-details" , class='admin_header-info--link') Edit Details 
+					a(href="/admin/my-details" , class='admin_header-info--link') Edit Details 
 					a(href="/" class='header__login--link logout--btn') Logout
 			else
 				a(href="/login-page" class='header__login--link login--btn') Login/Signup

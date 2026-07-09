@@ -1,0 +1,29 @@
+extends be_base 
+
+block content 
+
+	main.admin-enquiryList.wide-container 
+	
+		h2.admin__page--heading Enquiry List
+		
+		section.admin-enquiryList--grid
+		
+			.admin-enquiryList__headings 
+		
+				p.admin-productList_head Name
+				p.admin-productList_head Email
+				p.admin-productList_head Enquiry
+				p.admin-productList_head Date
+				p.admin-productList_head Status
+				p.admin-productList_head Details
+			
+			.admin-enquiryList__loop 
+				each enquiry in enquiryList 
+					- const created = new Date(enquiry.createdAt).toLocaleDateString('en-GB');
+					p #{enquiry.name} 
+					p #{enquiry.email} 
+					p #{enquiry.enquiry} 
+					//- p #{enquiry.message} 
+					p #{created} 
+					p #{enquiry.status} 
+					a(href=`/admin/be_enquiries/${enquiry.id}`) ➡️

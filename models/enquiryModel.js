@@ -43,8 +43,20 @@ const enquirySchema = new mongoose.Schema({
 	message: {
 
 		type: String
-	}
+	},
+
+	status: {
+
+		type: String,
+		enum: ['new', 'read', 'responded'],
+		default: 'new'
+	},
+
+	readAt: Date,
+
+	respondedAt: Date
 },
+
 
 	{
 		timestamps: true

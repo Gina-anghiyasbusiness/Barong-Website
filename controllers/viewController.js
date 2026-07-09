@@ -10,6 +10,8 @@ const missingDiscountCheck = require('../utilities/missingDiscountCheck');
 const missingDiscountCheckLoop = require('../utilities/missingDiscountCheckLoop');
 
 
+const CustomEnquiry = require('./../models/customizationEnquiryModel');
+const Enquiry = require('./../models/enquiryModel');
 const SpecProd = require('./../models/specProdModel');
 const Shoe = require('./../models/shoeModel');
 const Bag = require('../models/bagModel');
@@ -2114,6 +2116,95 @@ exports.adminPage = (req, res) => {
 
 
 
+/// Enquiries Page ///
+
+
+exports.adminEnquiriesPage = catchAsync(async (req, res) => {
+
+	const enquiryList = await Enquiry.find().sort({ createdAt: -1 });
+
+	res.status(200).render('admin/be_enquiries', {
+
+		title: 'Admin-Enquiries',
+		enquiryList
+	})
+}
+)
+
+
+
+/// Enquiry Page ///
+
+
+exports.adminEnquiryPage = catchAsync(async (req, res, next) => {
+
+
+	if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+
+		return next(new AppError('Invalid enquiry ID', 400));
+	}
+
+	const enquiry = await Enquiry.findById(req.params.id);
+
+	if (!enquiry) {
+
+		return next(new AppError('Enquiry not found', 404));
+	}
+
+
+	const enquiryStatusOptions = Enquiry.schema.path('status').enumValues;
+
+	res.status(200).render('admin/be_enquiry', {
+		title: 'Admin-Enquiry',
+		enquiry,
+		enquiryStatusOptions
+	});
+});
+
+
+
+
+
+exports.adminCustomEnquiriesPage = catchAsync(async (req, res) => {
+
+	const customEnquiryList = await CustomEnquiry.find().sort({ createdAt: -1 });
+
+	res.status(200).render('admin/be_custom-enquiries', {
+
+		title: 'Admin-Custom Enquiries',
+		customEnquiryList
+	})
+}
+)
+
+
+exports.adminCustomEnquiryPage = catchAsync(async (req, res) => {
+
+	if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+
+		return next(new AppError('Invalid custom enquiry ID', 400));
+	}
+
+	const enquiry = await CustomEnquiry.findById(req.params.id);
+
+	if (!enquiry) {
+
+		return next(new AppError('Custom enquiry not found', 404));
+	}
+
+
+	const enquiryStatusOptions = CustomEnquiry.schema.path('status').enumValues;
+
+	res.status(200).render('admin/be_custom-enquiry', {
+		title: 'Admin-Enquiry',
+		enquiry,
+		enquiryStatusOptions
+	});
+});
+
+
+
+
 
 
 /// 	User Pages 	///
@@ -2998,5 +3089,3 @@ exports.updateDiscountPage = catchAsync(async (req, res, next) => {
 	})
 
 })
-
-

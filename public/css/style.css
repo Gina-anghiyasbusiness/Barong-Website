@@ -5161,6 +5161,38 @@ button.myAccount__form--submit{
 	grid-column: 2/3;
 }
 
+.myAccount__main--support .myAccount__main-profile--box {
+	max-width: 72rem;
+	padding: 2.4rem;
+}
+
+.myAccount__main--support .myAccount__main--details-container {
+	display: grid;
+	gap: 1.8rem;
+}
+
+.myAccount__main--support .myAccount__main--details {
+	display: grid;
+	gap: 0.6rem;
+	font-size: 1.5rem;
+	line-height: 1.7;
+}
+
+.myAccount__main--support .myAccount__main--details p {
+	margin: 0;
+}
+
+.myAccount__main--support .myAccount__main--details a {
+	color: inherit;
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 0.25em;
+}
+
+.myAccount__main--support .myAccount__main--details:not(:first-child) {
+	grid-template-columns: 8rem 1fr;
+	align-items: center;
+}
 
 
 
@@ -6689,7 +6721,7 @@ p.creadit-card-address-paypal{
 
 .checkout__page-submit--btn{
 	align-self: center;
-	width: 80%;
+	width: 87.5%;
 	background-color: var(--color-secondary);
 	color: var(--color-text-white);
 	font-size: var(--text-body);
@@ -6754,6 +6786,7 @@ p.creadit-card-address-paypal{
 		align-items: center;
 		justify-content: space-around;
 		padding: 0 3rem;
+		gap: .35rem;
 	}
  
 
@@ -7194,9 +7227,20 @@ section.admin__home--grid {
 	
 	display: grid;
 	
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	justify-items: center;
+	gap: 2.4rem;
+	padding: 10rem 0 0;
+	
+}
+
+section.admin__home--grid-products {
+	
+	display: grid;
+	
 	grid-template-columns: 1fr 1fr 1fr;
 	justify-items: center;
-	gap: 4rem;
+	gap: 2.4rem;
 	padding: 10rem 0 0;
 	
 }
@@ -7236,7 +7280,7 @@ section.admin__home--grid {
 
 .admin__home--box p{
 	
-	font-size: var(--text-body);
+	font-size: var(--text-small);
 	
 }
 
@@ -7262,13 +7306,153 @@ section.admin__home--grid {
 }
 
 
+/*-----------------		enquiry		--------------------*/
+
+
+.admin-enquiryList__loop {
+	
+	display: grid;
+	text-align: center;
+	grid-template-columns:2fr 4fr 2fr 2fr 2fr 1fr;
+	padding: 0;
+	gap: .25rem;
+}
+
+
+.admin-enquiryList__loop a,
+.admin-enquiryList__loop p{
+	
+	font-size: 2rem;
+	padding: 1.2rem 0;
+	border-bottom: 1px solid #ccc;
+}
+
+
+.admin-enquiryList__loop a{
+	
+	text-decoration: none;
+}
+
+/* Enquiry detail page */
+
+.admin-enquiry--grid {
+	max-width: 120rem;
+	margin: 0 auto 4rem;
+	padding-top: 2rem;
+}
+
+.admin-enquiry__details {
+	border-top: 2px solid var(--color-dk-bg);
+	
+}
+
+.admin-enquiry__details-row {
+	display: grid;
+	grid-template-columns: 14rem 44rem;
+	column-gap: 2rem;
+	padding: 1rem 0;
+	border-bottom: 1px solid #ccc;
+}
+
+.admin-enquiry__details-row p {
+	font-size: var(--text-body);
+	line-height: 1.4;
+	overflow-wrap: anywhere;
+}
+.admin-enquiry__details-row p:first-child {
+	font-weight: 600;
+}
+
+/* Enquiry status form */
+
+.admin-enquiry__status {
+	max-width: 110rem;
+	margin: 0 auto 5rem;
+}
+
+.admin-enquiry__status h3 {
+	font-size: var(--text-xlg);
+	margin-bottom: 1.6rem;
+}
+
+.admin-enquiry__status form {
+	display: flex;
+	align-items: center;
+	gap: 1.6rem;
+}
+
+.admin-enquiry__status label,
+.admin-enquiry__status select {
+	font-size: var(--text-body);
+}
+
+.admin-enquiry__status select {
+	padding: .5rem .75rem;
+}
+
+.admin-enquiry__status button {
+	background-color: var(--color-dk-bg);
+	color: var(--color-text-white);
+	font-size: var(--text-body);
+	padding: .75rem 1.2rem;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+
+/*//  custom enquiry */
+
+
+.admin-customEnquiryList__headings,
+.admin-customEnquiryList__loop {
+	display: grid;
+	grid-template-columns: 2fr 3fr 1.5fr 1.8fr 1.5fr 2fr 1fr;
+	text-align: center;
+	gap: .25rem;
+}
+
+.admin-customEnquiryList__headings {
+	padding: 5.2rem 0 1.2rem;
+	border-bottom: 2px solid var(--color-dk-bg);
+}
+
+.admin-customEnquiryList__loop {
+	padding: 0;
+}
+
+.admin-customEnquiryList__loop p,
+.admin-customEnquiryList__loop a {
+	font-size: 2rem;
+	padding: 1.2rem .5rem;
+	border-bottom: 1px solid #ccc;
+	line-height: 1.35;
+	overflow-wrap: anywhere;
+}
+
+.admin-customEnquiryList__loop a {
+	text-decoration: none;
+}
+
+
+
+
 /*-----------------		Products		--------------------*/
-
-
 
 /* //			Product List Page		/// */
 
 
+.admin-enquiryList__headings{
+	
+	display: grid;
+	
+	grid-template-columns:2fr 4fr 2fr 2fr 2fr 1fr;
+	text-align: center;
+	padding: 5.2rem 0 1.2rem;
+	border-bottom: 2px solid var(--color-dk-bg);	
+	gap: .25rem;
+	
+}
 .admin-productList__headings, .admin-product {
 	
 	display: grid;
@@ -7766,7 +7950,7 @@ section.admin__form--box {
 	.admin__page--heading  {
 		
 		text-align:center;
-		padding: 3.2rem 0 1.6rem;
+		padding: 2.2rem 0 1.6rem;
 		
 	}
 	
@@ -7840,7 +8024,7 @@ p.address-form-default{
 
 .admin__form--group input{
 	
-	width: 85%;
+	width: 47.5%;
 }
 
 
@@ -9325,6 +9509,14 @@ h2.homePage--sub-heading.checkout-totals-heading{
 
 @media (max-width: 37.5em) {
 	
+		.myAccount__main--support .myAccount__main-profile--box {
+		padding: 1.8rem;
+	}
+
+	.myAccount__main--support .myAccount__main--details:not(:first-child) {
+		grid-template-columns: 1fr;
+	}
+	
 	p.checkout__desc {
  display: none;
 }
@@ -9976,6 +10168,11 @@ p.checkout__price{
 /* /// 425px */
 
 @media (max-width: 26.56em) {
+	
+		.myAccount__main--support h2{
+			
+			margin: 1.2rem 0 3.2rem;
+		}
 	
 	.header__banner--preview {
     padding: 1.2rem;

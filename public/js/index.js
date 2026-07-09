@@ -5,6 +5,7 @@ import { createReview } from './reviews';
 import { showAlert } from './alert';
 
 import { login, logout, signUpUser, resetEmailPasswordUser, setNewPasswordUser } from "./login";
+import { updateEnquiry, updateCustomEnquiry } from "./enquiry";
 
 import { updateOrders } from './backEndOrders';
 
@@ -63,6 +64,43 @@ const logoutAccountBtn = document.getElementById('my-account-logout');
 
 
 //--------------------------- Functionality -----------------------------//
+
+
+/// enquiry update status
+
+
+const updateEnquiryStatus = document.getElementById('enquiry-update--status');
+
+if (updateEnquiryStatus) {
+
+	updateEnquiryStatus.addEventListener('submit', e => {
+
+		e.preventDefault();
+
+		const status = document.getElementById('status').value;
+		const id = document.getElementById('enquiryId').value;
+
+		updateEnquiry(status, id)
+
+	})
+}
+
+
+const updateCustomEnquiryStatus = document.getElementById('custom-enquiry-update--status');
+
+if (updateCustomEnquiryStatus) {
+
+	updateCustomEnquiryStatus.addEventListener('submit', e => {
+
+		e.preventDefault();
+
+		const status = document.getElementById('status').value;
+		const id = document.getElementById('enquiryId').value;
+
+		updateCustomEnquiry(status, id)
+
+	})
+}
 
 
 
@@ -2201,4 +2239,9 @@ if (updateDiscount) {
 
 	})
 }
+
+
+
+//------------ Enquiries -----------//
+
 

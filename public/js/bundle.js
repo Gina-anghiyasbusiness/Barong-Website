@@ -11276,6 +11276,42 @@
     }
   };
 
+  // public/js/enquiry.js
+  var updateEnquiry = async (status, id) => {
+    try {
+      const result = await axios_default({
+        method: "PATCH",
+        url: `/api/v1/admin/enquiries/status/${id}`,
+        data: { status }
+      });
+      if (result.data.status === "success") {
+        showAlert("success", "Enquiry Updated.");
+        window.setTimeout(() => {
+          location.assign(`/admin/be_enquiries/${id}`);
+        }, 3e3);
+      }
+    } catch (err) {
+      showAlert("error", err.response?.data?.message || "Update failed");
+    }
+  };
+  var updateCustomEnquiry = async (status, id) => {
+    try {
+      const result = await axios_default({
+        method: "PATCH",
+        url: `/api/v1/admin/custom-enquiries/status/${id}`,
+        data: { status }
+      });
+      if (result.data.status === "success") {
+        showAlert("success", "Customization Enquiry Updated.");
+        window.setTimeout(() => {
+          location.assign(`/admin/be_custom-enquiries/${id}`);
+        }, 3e3);
+      }
+    } catch (err) {
+      showAlert("error", err.response?.data?.message || "Customization Update failed");
+    }
+  };
+
   // public/js/backEndOrders.js
   var updateOrders = async (orderStatus, transStatus, addressObject, orderNum) => {
     try {
@@ -29204,6 +29240,24 @@
   var resetPasswordForm = document.getElementById("reset-password-form");
   var setNewPasswordForm = document.getElementById("set-new-password-form");
   var logoutAccountBtn = document.getElementById("my-account-logout");
+  var updateEnquiryStatus = document.getElementById("enquiry-update--status");
+  if (updateEnquiryStatus) {
+    updateEnquiryStatus.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const status = document.getElementById("status").value;
+      const id = document.getElementById("enquiryId").value;
+      updateEnquiry(status, id);
+    });
+  }
+  var updateCustomEnquiryStatus = document.getElementById("custom-enquiry-update--status");
+  if (updateCustomEnquiryStatus) {
+    updateCustomEnquiryStatus.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const status = document.getElementById("status").value;
+      const id = document.getElementById("enquiryId").value;
+      updateCustomEnquiry(status, id);
+    });
+  }
   if (loginBtn) {
     loginBtn.addEventListener("submit", (e) => {
       e.preventDefault();

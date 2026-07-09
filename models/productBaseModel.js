@@ -37,7 +37,7 @@ const productBaseSchema = {
 		type: String,
 		trim: true,
 		default: '',
-		maxLength: [150, 'A product description must not be more than 300 characters long']
+		maxLength: [150, 'A product description must not be more than 150 characters long']
 	},
 
 	originalPrice: {

@@ -266,6 +266,19 @@ router.use(
 router.get('/admin/be_home', viewController.adminPage);
 
 
+router.get('/admin/be_enquiries', viewController.adminEnquiriesPage);
+
+
+router.get('/admin/be_enquiries/:id', viewController.adminEnquiryPage);
+
+
+
+
+
+router.get('/admin/be_custom-enquiries', viewController.adminCustomEnquiriesPage);
+
+router.get('/admin/be_custom-enquiries/:id', viewController.adminCustomEnquiryPage);
+
 
 //------------- 	Render Pages	 ------------//
 
@@ -273,6 +286,7 @@ router.get('/admin/be_home', viewController.adminPage);
 
 ///	 Users	 ///
 
+router.get('/admin/my-details', viewController.getMyDetails)
 
 router.get('/admin/be_user-list', viewController.getUserList);
 
@@ -283,7 +297,6 @@ router.get('/admin/be_new-user-page',
 	viewController.getNewUserPage
 );
 
-router.get('/my-details', viewController.getMyDetails)
 
 router.get('/admin/be_user-search', viewController.getUserSearch);
 

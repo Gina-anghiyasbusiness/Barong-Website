@@ -5,6 +5,7 @@ const authController = require('./../controllers/authController.js');
 const productController = require('./../controllers/productController');
 const userController = require('./../controllers/userController');
 const categoryController = require('./../controllers/categoryController');
+const enquiryController = require('./../controllers/enquiryController');
 
 
 
@@ -14,6 +15,13 @@ const categoryController = require('./../controllers/categoryController');
 router.use(authController.protectRoute);
 
 router.use(authController.restrictTo('admin', 'owner', 'supervisor'));
+
+
+
+router.patch('/enquiries/status/:id', enquiryController.updateEnquiryStatus);
+
+
+router.patch('/custom-enquiries/status/:id', enquiryController.updateCustomEnquiryStatus);
 
 
 
