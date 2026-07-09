@@ -29,16 +29,19 @@ block content
 					.contactPage__card-icon
 						img(src="/img/icons/map-pin.svg", alt="")
 					.contactPage__card-heading
-						p Service Area
-					.contactPage__card-details.contactPage__card-details-center
-						p Queensland
+						p Location & Service
+					.contactPage__card-details.contactPage__card-details-center.contact__card--flex
+						p Based Near Brisbane
+						p Serving Queensland
+						p & Australia-wide
+	
 						
 				.contactPage__card
 					.contactPage__card-icon
 						img(src="/img/icons/clock.svg", alt="")
 					.contactPage__card-heading
 						p Hours / Appointments
-					.contactPage__card-details
+					.contactPage__card-details.contactPage__card-details-center.contact__card--flex
 						p Monday - Friday : 9-5
 						p Saturday 10-4
 						p Sunday 1-4					
@@ -57,8 +60,8 @@ block content
 							
 						.contactPage__form-text
 							h2 We'd love to hear from you! 
-							p Whether you have a question about our products, enquiry about our services, need support, or just want to get in touch, our team is here to help
-							p Simply fill out the form and we'll get back to you as soon as possible.
+							p Have a question about Barong Tagalog, Filipiniana, custom tailoring, rentals, ready-made Filipino formalwear, or wedding attire? 
+							p Send us a message and we’ll get back to you as soon as possible.
 						
 						
 					.contactPage__form
@@ -77,10 +80,11 @@ block content
 								.contactPage__form-row 
 									label(for="enquiry") Enquiry Type
 									select(name="enquiry" id='enquiry' required)
-										option(value="" disabled selected) Select enquiry type
-										option(value="general") General Enquiry
-										option(value="rentals") Rentals
-										option(value="sales") Product / Sales Enquiry
+										option(value="General Enquiry") General Enquiry
+										option(value="Custom Barong & Filipiniana") Custom Barong & Filipiniana
+										option(value="Rentals") Rentals
+										option(value="Product / Sales Enquiry") Product / Sales Enquiry
+										option(value="Wedding or Event Enquiry") Wedding or Event Enquiry
 									
 								.contactPage__form-row-method
 									label.contactPage__method-label Preferred Contact Method
@@ -100,7 +104,7 @@ block content
 																	
 								.contactPage__form-row 
 									label(for="message"  class='enquiry-label') Additional Information
-									textarea(name="message" rows='3', cols="42", id='message' placeholder='Add any Additional Information here')
+									textarea(name="message" rows='3', cols="42", id='message' placeholder='Tell us what you’re looking for, your event date, sizing needs, or any questions.')
 									
 								.contactPage__form-row.contactPage__honeypot(aria-hidden="true")
 									label(for="website") Website

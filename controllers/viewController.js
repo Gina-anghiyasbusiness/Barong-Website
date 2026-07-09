@@ -1139,7 +1139,7 @@ exports.getSalesPage = (req, res) => {
 
 	res.status(200).render('sales', {
 
-		pageTitle: 'Buy Barong Tagalog & Filipiniana Online Australia | Ang Hiyas',
+		pageTitle: 'Ready-Made Barong Tagalog & Filipiniana Australia | Ang Hiyas',
 		pageDescription: 'Shop Barong Tagalog and Filipiniana online at Ang Hiyas, a Filipino clothing store in Australia offering ready-to-wear styles, premium fabrics and authentic Filipino craftsmanship.',
 		canonicalUrl: `${process.env.CANONICAL_URL}static/sales`,
 	})
@@ -1154,8 +1154,8 @@ exports.getServicesPage = (req, res) => {
 
 	res.status(200).render('services', {
 
-		pageTitle: 'Custom Tailoring & Rentals | Ang Hiyas Australia',
-		pageDescription: 'Explore Ang Hiyas custom tailoring and rentals for Barong Tagalog, Filipiniana dresses and Filipino formal wear for weddings, events and special occasions.',
+		pageTitle: 'Custom Barong & Filipiniana Services | Ang Hiyas Australia',
+		pageDescription: 'Explore Ang Hiyas custom Barong Tagalog and Filipiniana services, with rental options for Filipino formal wear, weddings, cultural events and special occasions.',
 		canonicalUrl: `${process.env.CANONICAL_URL}static/services`,
 	})
 }
@@ -1171,7 +1171,7 @@ exports.getCustomizationPage = (req, res) => {
 	res.status(200).render('custom', {
 
 		pageTitle: 'Custom Barong Tagalog & Filipiniana Australia | Ang Hiyas',
-		pageDescription: 'Order custom made Barong Tagalog and bespoke Filipiniana dresses in Australia for weddings, graduations, oath taking ceremonies and formal Filipino events.',
+		pageDescription: 'Order custom made Barong Tagalog and Filipiniana dresses near Brisbane for weddings, graduations, oath-taking ceremonies and formal Filipino events across Australia.',
 		canonicalUrl: `${process.env.CANONICAL_URL}static/custom`,
 	})
 }
@@ -1197,7 +1197,7 @@ exports.getRentalsPage = (req, res) => {
 	res.status(200).render('rentals', {
 
 		pageTitle: 'Barong Tagalog & Filipiniana Rentals Australia | Ang Hiyas',
-		pageDescription: 'Rent Barong Tagalog and Filipiniana outfits in Australia for weddings, graduations, oath taking ceremonies, cultural events and special occasions.',
+		pageDescription: 'Rent Barong Tagalog and Filipiniana outfits near Brisbane for weddings, graduations, oath-taking ceremonies, cultural events and formal occasions across Queensland and Australia.',
 		canonicalUrl: `${process.env.CANONICAL_URL}static/rentals`,
 	})
 }
