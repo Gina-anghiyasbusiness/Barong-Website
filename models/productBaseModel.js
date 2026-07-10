@@ -19,9 +19,6 @@ const productBaseSchema = {
 		maxLength: [128, 'A product name must not be more than 128 characters long'],
 		trim: true,
 
-		// unique: true,
-		// validate: [validator.isAlpha, 'Product must only contain letters (SLUG)']
-
 		validate: {
 
 			validator: function (val) {
@@ -35,6 +32,7 @@ const productBaseSchema = {
 
 	description: {
 		type: String,
+		required: [true, 'A product must have a description'],
 		trim: true,
 		default: '',
 		maxLength: [150, 'A product description must not be more than 150 characters long']
@@ -43,7 +41,7 @@ const productBaseSchema = {
 	originalPrice: {
 		type: Number,
 		required: [true, 'A product must have an original price'],
-		min: [1, 'Price must be 0 or above']
+		min: [1, 'Price must be 1 or above']
 	},
 
 	currentPrice: {

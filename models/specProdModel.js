@@ -38,7 +38,9 @@ const specProdSchema = new mongoose.Schema({
 			'brown',
 			'old rose',
 			'ethnic',
-			'champagne']
+			'champagne',
+			'mixed'],
+		default: 'mixed'
 	},
 
 

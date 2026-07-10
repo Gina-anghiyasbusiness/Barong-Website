@@ -24,7 +24,19 @@ const AccessorySchema = new mongoose.Schema({
 
 	color: {
 		type: String,
-		enum: ['black', 'white', 'red', 'blue', 'green', 'yellow', 'pink', 'purple', 'orange', 'grey', 'brown']
+		enum: ['black',
+			'white',
+			'red',
+			'blue',
+			'green',
+			'yellow',
+			'pink',
+			'purple',
+			'orange',
+			'grey',
+			'brown',
+			'mixed'],
+		default: 'mixed'
 	},
 
 
