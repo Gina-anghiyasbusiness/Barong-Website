@@ -1071,12 +1071,13 @@ flex: 0 0 12.5%;
 	
 		.header__banner--preview-checkout{
 			
-					padding: 1.2rem 0;
+					padding: 1.2rem ;
 		
 		display: flex;
 		align-items: center;
-		justify-content: center;
+		justify-content:center;
 		
+		gap: 4.8rem;
 		background-color: var(--color-primary-darkest);
 		
 
@@ -1097,12 +1098,47 @@ flex: 0 0 12.5%;
 		color: var(--color-text-muted-dk);
 		text-align: center;
 		
-		padding: 1.4rem 2rem;
+		padding: 1rem;
 		
-			border-radius: 4px;
+			border-radius: 4px;	
+			
+			display: flex;
+			flex-direction: column;
+			gap: .75rem;
 		
 	}
 	
+		.header__banner--text-checkout--links{
+			
+			display: flex;
+			gap: 2rem;
+			align-items: center;
+		}
+	
+		.header__banner--text-checkout--links a:link,
+		.header__banner--text-checkout--links a:visited{
+			
+			text-decoration: none;
+			
+			background-color: var(--color-primary-lightest);
+			color: var(--color-text-primary);
+			
+			padding: .75rem 1.8rem;
+			border-radius: 6px;
+			
+			transition: all .2s;
+		}
+		
+				.header__banner--text-checkout--links a:hover,
+		.header__banner--text-checkout--links a:active{
+			
+			transform: scale(1.05);
+			
+			background-color: var(--color-secondary);
+			
+			color: var(--color-text-primary-light);
+			
+		}
 	
 	
 	.header__banner--text{
@@ -1120,9 +1156,14 @@ flex: 0 0 12.5%;
 	
 		.header-checkout-banner{
 			
-			margin: 2.4rem 4.8rem;
+			margin: 4.8rem 2.4rem 3.2rem;
 		}
 	
+			p.header__banner--text-checkout--bold  {
+				
+				font-weight: 700;
+				font-size: 1.8rem;
+			}
 
 /* //						Footer Page 					// */
 
@@ -8975,6 +9016,11 @@ border-bottom: 4px solid var(--color-secondary);
    
 }
 
+.header-checkout-banner {
+    margin: 2.4rem 1.8rem;
+}
+
+
 	
 }
 
@@ -8982,6 +9028,10 @@ border-bottom: 4px solid var(--color-secondary);
 /* /// 960px */
 
 @media (max-width: 60em) {
+	
+	    .header__banner--preview-checkout {
+        padding: 1.2rem 2rem;
+    }
 	
 html{
 		
@@ -9040,7 +9090,6 @@ html{
 			
         padding: 6.4rem 2rem 8rem;
     }
-
 
 
 }
@@ -10277,6 +10326,11 @@ p.checkout__price{
     .product-breadcrumbs {
         flex: 1;
     }
+		
+  .header__banner--preview-checkout {
+  flex-direction: column;
+	gap: 2rem;
+}
 	
 }
 
