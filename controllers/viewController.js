@@ -195,15 +195,37 @@ const makeBreadcrumbUrl = (basePath, params) => {
 
 /// Variants (Sizing)
 
+// const formVariants = async (variant, desiredOrder = null) => {
+
+// 	const variantSearch = await SpecProd.aggregate([
+
+// 		{ $unwind: '$variants' },
+// 		{ $group: { _id: `$variants.${variant}` } }
+// 	])
+
+// 	const Arr = variantSearch.map(v => v._id);
+
+// 	if (!desiredOrder) return Arr;
+
+// 	return desiredOrder.filter(v => Arr.includes(v));
+// }
+
 const formVariants = async (variant, desiredOrder = null) => {
 
 	const variantSearch = await SpecProd.aggregate([
 
+		{ $match: { discontinued: { $ne: true } } },
 		{ $unwind: '$variants' },
+		{
+			$match: {
+				'variants.inStock': { $gt: 0 },
+				[`variants.${variant}`]: { $ne: null }
+			}
+		},
 		{ $group: { _id: `$variants.${variant}` } }
 	])
 
-	const Arr = variantSearch.map(v => v._id);
+	const Arr = variantSearch.map(v => v._id).filter(Boolean);
 
 	if (!desiredOrder) return Arr;
 
@@ -266,6 +288,8 @@ const formFieldsAccs = async (field, desiredOrder = null) => {
 //----------------- Barong List Page --------------------//
 
 
+
+
 exports.getBarongListPage = catchAsync(async (req, res, next) => {
 
 
@@ -284,53 +308,39 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 	const sortOption = parameterFilter[req.query.productSort] || { createdAt: -1 };
 
 
+
 	///			Display Sizes in dropdown			///
 
 
-	const desiredSizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL', '6', '8', '10', '12', '14', '16', '18'];
+	const desiredSizeOrder = SpecProd.schema
+		.path('variants')
+		.schema
+		.path('size')
+		.enumValues;
 
 	const sizeList = await formVariants('size', desiredSizeOrder);
 
 
-	///			Display Colors in dropdown			///
 
-	const desiredColorOrder = [
-		'white',
-		'black',
-		'blue',
-		'red',
-		'green',
-		'yellow',
-		'pink',
-		'purple',
-		'orange',
-		'grey',
-		'brown',
-		'champagne',
-		'old rose',
-		'ethnic'
-	];
+	///			Display Colors			///
+
+	const desiredColorOrder = SpecProd.schema.path('color').enumValues;
 
 	const colorList = await formFields('color', desiredColorOrder);
 
-	///			Display Sex in dropdown			///
 
 
-	const desiredSexOrder = [
-		'male',
-		'female',
-		'boy',
-		'girl',
-		'unisex',
-		'unisex-kids'
 
-	];
+	///			Display Sex			///
+
+
+	const desiredSexOrder = SpecProd.schema.path('sex').enumValues;
 
 	const sexList = await formFields('sex', desiredSexOrder);
 
 
 
-	///			Display Category in dropdown			///
+	///			Display Category			///
 
 
 
@@ -1395,34 +1405,6 @@ exports.getAccountPage = catchAsync(async (req, res, next) => {
 		.sort({ createdAt: -1 });
 
 
-	/// Original Method
-
-	// for (const order of orders) {
-
-	// 	for (const item of order.product) {
-
-	// 		let productDoc = await SpecProd.findById(item.product);
-
-	// 		if (!productDoc) {
-	// 			productDoc = await Shoe.findById(item.product);
-	// 		}
-
-	// 		if (!productDoc) {
-	// 			productDoc = await Bag.findById(item.product);
-	// 		}
-
-	// 		if (!productDoc) {
-	// 			productDoc = await Accessory.findById(item.product);
-	// 		}
-
-	// 		item.product = productDoc; // Will be null if not found
-
-	// 	}
-	// }
-
-
-
-	/// DRY Method
 
 
 	await Promise.all(orders.map(async order => {
@@ -2382,6 +2364,28 @@ exports.getBarong = catchAsync(async (req, res, next) => {
 	const sexes = SpecProd.schema.path('sex').enumValues;
 	const features = SpecProd.schema.path('features').caster.enumValues;
 
+
+	const sizes = SpecProd.schema
+		.path('variants')
+		.schema
+		.path('size')
+		.enumValues;
+
+	const variantMap = new Map(
+		product.variants.map(variant => [variant.size, variant])
+	);
+
+	const variants = sizes.map(size => {
+		const existingVariant = variantMap.get(size);
+
+		return {
+			size,
+			inStock: existingVariant ? existingVariant.inStock : 0
+		};
+	});
+
+
+
 	res.status(200).render('admin/be_barong', {
 
 		title: `Admin-${product.name}`,
@@ -2390,7 +2394,8 @@ exports.getBarong = catchAsync(async (req, res, next) => {
 		discounts,
 		colors,
 		sexes,
-		features
+		features,
+		variants
 
 	})
 })

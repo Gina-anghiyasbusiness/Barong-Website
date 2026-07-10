@@ -7666,7 +7666,7 @@ color: var(--color-text-white);
 .product--grid{
 	
 	
-	column-gap: 12.4rem;
+	column-gap: 6rem;
 	
 	
 }
@@ -7804,8 +7804,26 @@ form.product__form--create, 	form.bag__form--create ,form.shoe__form--create, fo
 	
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	row-gap: 2rem;
+	row-gap: 1.2rem;
+	
+
 }
+
+
+.product__form--group--variant .product__form--variant-row:last-child {
+	
+	grid-column: 1 / -1;
+	margin-top: 1rem;
+
+	
+}
+
+
+.product__form--right{
+	
+		margin-bottom: 3.2rem;
+}
+
 
 .product__form--left .product__form--group{
 	margin-bottom: 2rem;

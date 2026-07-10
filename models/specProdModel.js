@@ -87,7 +87,7 @@ const specProdSchema = new mongoose.Schema({
 		{
 			size: {
 				type: String,
-				enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL'],
+				enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL', 'ONE SIZE'],
 				required: true
 			},
 

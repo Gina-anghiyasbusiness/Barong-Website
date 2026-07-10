@@ -79,7 +79,7 @@ block content
 
 					.product__form--right
 						.product__form--group--variant
-							each variant, i in product.variants
+							each variant, i in variants
 								.product__form--variant-row
 									label.size-label= `Size: ${variant.size}`
 									// 👇 This hidden field ensures size gets submitted
