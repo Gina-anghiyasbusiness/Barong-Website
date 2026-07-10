@@ -89,7 +89,7 @@ export const discontinueProduct = async (id) => {
 
 			window.setTimeout(() => {
 
-				location.assign('/admin/be_barongss-list')
+				location.assign('/admin/be_barongs-list')
 
 			}, 1000)
 		}
