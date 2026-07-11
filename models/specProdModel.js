@@ -8,6 +8,24 @@ const slugify = require('slugify');
 
 
 
+//---------	 Variants  ---------//
+
+
+const BARONG_SIZE_GROUPS = {
+	adult: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL'],
+	boy: ['2', '4', '6', '8', '10', '12', '14', '16', '18', '20'],
+	oneSize: ['ONE SIZE']
+};
+
+
+const BARONG_SIZE_VALUES = [
+	...BARONG_SIZE_GROUPS.adult,
+	...BARONG_SIZE_GROUPS.boy,
+	...BARONG_SIZE_GROUPS.oneSize
+];
+
+
+
 
 //---------------------- Schema ------------------------//
 //------------------ (Changables) ----------------------//
@@ -39,6 +57,7 @@ const specProdSchema = new mongoose.Schema({
 			'old rose',
 			'ethnic',
 			'champagne',
+			'beige',
 			'mixed'],
 		default: 'mixed'
 	},
@@ -63,6 +82,9 @@ const specProdSchema = new mongoose.Schema({
 			'Delicate Sleeve Detail',
 			'Comfort Fit',
 			'Premium Embroidery',
+			'Premium Jusilin Fabric',
+			'Premium pina-organza Fabric',
+			'Machine Embroidery',
 			'Hand Embroidered',
 			'Breathable Fabric',
 			'Premium Fabric',
@@ -87,7 +109,7 @@ const specProdSchema = new mongoose.Schema({
 		{
 			size: {
 				type: String,
-				enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL', 'ONE SIZE'],
+				enum: BARONG_SIZE_VALUES,
 				required: true
 			},
 
@@ -95,7 +117,6 @@ const specProdSchema = new mongoose.Schema({
 				type: Number,
 				default: 0
 			}
-
 		}
 	],
 
@@ -233,6 +254,8 @@ specProdSchema.virtual('currentPriceGBP').get(function () {
 
 
 const SpecProd = mongoose.model('SpecProd', specProdSchema);
+
+SpecProd.sizeGroups = BARONG_SIZE_GROUPS;
 
 
 module.exports = SpecProd;

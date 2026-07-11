@@ -191,24 +191,36 @@ const makeBreadcrumbUrl = (basePath, params) => {
 
 
 
-///			Re-usable variant function -	for forms		///
+//----------------------		Re-usable Helper functions		-------------------//
 
-/// Variants (Sizing)
 
-// const formVariants = async (variant, desiredOrder = null) => {
 
-// 	const variantSearch = await SpecProd.aggregate([
+const getBarongSizeGroups = () => {
+	return {
+		adult: [
+			...SpecProd.sizeGroups.adult,
+			...SpecProd.sizeGroups.oneSize
+		],
+		boy: [
+			...SpecProd.sizeGroups.boy,
+			...SpecProd.sizeGroups.oneSize
+		]
+	};
+};
 
-// 		{ $unwind: '$variants' },
-// 		{ $group: { _id: `$variants.${variant}` } }
-// 	])
 
-// 	const Arr = variantSearch.map(v => v._id);
+const getBarongSizesForSex = sex => {
+	const sizeGroups = getBarongSizeGroups();
 
-// 	if (!desiredOrder) return Arr;
+	if (sex === 'boy') {
+		return sizeGroups.boy;
+	}
 
-// 	return desiredOrder.filter(v => Arr.includes(v));
-// }
+	return sizeGroups.adult;
+};
+
+
+
 
 const formVariants = async (variant, desiredOrder = null) => {
 
@@ -233,6 +245,7 @@ const formVariants = async (variant, desiredOrder = null) => {
 }
 
 
+
 /// top level (colors)
 
 
@@ -252,6 +265,7 @@ const formFields = async (field, desiredOrder = null) => {
 
 
 
+
 const formFieldsBags = async (field, desiredOrder = null) => {
 
 	const fieldSearch = await Bag.aggregate([
@@ -265,6 +279,8 @@ const formFieldsBags = async (field, desiredOrder = null) => {
 
 	return desiredOrder.filter(v => arr.includes(v));
 };
+
+
 
 
 const formFieldsAccs = async (field, desiredOrder = null) => {
@@ -2365,11 +2381,7 @@ exports.getBarong = catchAsync(async (req, res, next) => {
 	const features = SpecProd.schema.path('features').caster.enumValues;
 
 
-	const sizes = SpecProd.schema
-		.path('variants')
-		.schema
-		.path('size')
-		.enumValues;
+	const sizes = getBarongSizesForSex(product.sex);
 
 	const variantMap = new Map(
 		product.variants.map(variant => [variant.size, variant])
@@ -2402,6 +2414,8 @@ exports.getBarong = catchAsync(async (req, res, next) => {
 
 
 
+
+
 exports.createBarongPage = catchAsync(async (req, res) => {
 
 	const categories = await Category.find().select('name');
@@ -2410,6 +2424,7 @@ exports.createBarongPage = catchAsync(async (req, res) => {
 	const colors = SpecProd.schema.path('color').enumValues;
 	const sexes = SpecProd.schema.path('sex').enumValues;
 	const features = SpecProd.schema.path('features').caster.enumValues;
+	const sizeGroups = getBarongSizeGroups();
 
 	const product = {};
 
@@ -2421,10 +2436,10 @@ exports.createBarongPage = catchAsync(async (req, res) => {
 		discounts,
 		colors,
 		sexes,
-		features
-	})
-})
-
+		features,
+		sizeGroups
+	});
+});
 
 
 

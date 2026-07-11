@@ -1436,10 +1436,62 @@ if (updatePasswordForm) {
 ///---------------	 Products 	----------------///
 
 
+/// helpers ///
+
+
+const renderVariantRows = (variantBox, sizes) => {
+
+	variantBox.innerHTML = '';
+
+	sizes.forEach((size, i) => {
+
+		const row = document.createElement('div');
+		row.className = 'product__form--variant-row';
+
+		row.innerHTML = `
+			<label class="size-label">Size: ${size}</label>
+			<input
+				type="hidden"
+				id="variant-size-${i}"
+				name="variant-size-${i}"
+				value="${size}"
+			>
+			<input
+				id="variant-inStock-${i}"
+				name="variant-inStock-${i}"
+				type="number"
+				value="0"
+				required
+			>
+		`;
+
+		variantBox.appendChild(row);
+	});
+};
+
 
 
 /// ----------	 Barongs 	------------//
 
+
+const sexSelect = document.getElementById('sex');
+const variantBox = document.querySelector('.product__form--group--variant');
+
+
+
+if (productFormCreate && sexSelect && variantBox && variantBox.dataset.sizeGroups) {
+
+	const sizeGroups = JSON.parse(variantBox.dataset.sizeGroups);
+
+	sexSelect.addEventListener('change', () => {
+
+		const sizes = sexSelect.value === 'boy'
+			? sizeGroups.boy
+			: sizeGroups.adult;
+
+		renderVariantRows(variantBox, sizes);
+	});
+}
 
 
 
