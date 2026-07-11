@@ -10537,8 +10537,9 @@ ul.myAccount__side-menu--ul {
 }
 
   .barong-page--list {
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 22.5rem));
-    gap: 4rem;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1.2rem;
+    row-gap: 3.2rem;
 }
 	
 	.productList--home {
@@ -10719,6 +10720,10 @@ padding: 0 0 0 2rem;
 .header-checkout-banner{
 	
     margin:0;
+}
+
+.barong-list__filter-category {
+    margin-bottom: 4.2rem;
 }
 
 }
