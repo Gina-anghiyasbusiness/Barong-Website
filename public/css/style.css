@@ -3145,6 +3145,14 @@ font-size: 1.2rem;
 	
 }
 
+.barong-list__filter-gender #barong-list--ul-gender {
+	display: none;
+}
+
+.barong-list__filter-gender #barong-list--ul-gender.display--filter-list {
+	display: flex;
+}
+
 
 .barong-list__filter-size #barong-list--ul-size {
 	display: none;

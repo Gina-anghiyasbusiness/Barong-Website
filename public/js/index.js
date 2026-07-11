@@ -1078,6 +1078,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ///			 Filter			///
 
+const genderBoxBtn = document.getElementById('barong__filter-btn--gender');
+const genderBox = document.getElementById('barong-list--ul-gender');
+
+if (genderBoxBtn && genderBox) {
+	genderBoxBtn.addEventListener('click', function () {
+		genderBox.classList.toggle('display--filter-list');
+	});
+}
+
 
 const sizeBoxBtn = document.getElementById('barong__filter-btn--size');
 const sizeBox = document.getElementById('barong-list--ul-size');
