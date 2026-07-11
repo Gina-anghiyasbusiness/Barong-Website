@@ -10354,6 +10354,27 @@ p.checkout__price{
 
 @media (max-width: 26.56em) {
 	
+	    .salesPage__grid {
+        padding: 0 .5rem;
+    }
+	
+	.servicesPage__cta:link, .servicesPage__cta:visited {
+  
+    font-size: 1.3rem;
+
+    padding: .75rem 1.2rem;
+ 
+}
+	
+	.servicesPage__actions {
+    gap: 3.8rem;
+}
+	
+	 .contactPage__card {
+    height: 19rem;
+   
+}
+	
 		.myAccount__main--support h2{
 			
 			margin: 1.2rem 0 3.2rem;
@@ -10750,6 +10771,17 @@ padding: 0 0 0 2rem;
 		/* /// 350px */
 		
 @media (max-width: 21.85em) {
+	
+	.servicesPage__benefits {
+        padding-left: 0rem;
+    }
+	    .salesPage__grid--text--box {
+      
+        padding: 0 1.2rem;
+    }
+	.servicesPage__actions {
+        gap: 2rem;
+    }
 	
 
 	
