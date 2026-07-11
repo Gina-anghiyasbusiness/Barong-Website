@@ -24,7 +24,8 @@ const AccessorySchema = new mongoose.Schema({
 
 	color: {
 		type: String,
-		enum: ['black',
+		enum: [
+			'black',
 			'white',
 			'red',
 			'blue',
@@ -35,10 +36,13 @@ const AccessorySchema = new mongoose.Schema({
 			'orange',
 			'grey',
 			'brown',
+			'old rose',
+			'ethnic',
+			'champagne',
+			'beige',
 			'mixed'],
 		default: 'mixed'
 	},
-
 
 
 	///		If Ratings are used		///

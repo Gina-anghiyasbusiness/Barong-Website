@@ -22,23 +22,28 @@ const BagSchema = new mongoose.Schema({
 
 
 
+
 	color: {
 		type: String,
-		enum: ['black',
+		enum: [
+			'black',
 			'white',
 			'red',
 			'blue',
 			'green',
 			'yellow',
-			'pink', 'purple',
+			'pink',
+			'purple',
 			'orange',
 			'grey',
 			'brown',
+			'old rose',
+			'ethnic',
+			'champagne',
+			'beige',
 			'mixed'],
 		default: 'mixed'
 	},
-
-
 
 	///		If Ratings are used		///
 
