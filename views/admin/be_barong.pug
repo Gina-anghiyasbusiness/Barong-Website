@@ -73,7 +73,13 @@ block content
 				
 					.product__form--left
 						.product__form--group
-							+formSelect('sex', sexes, product.sex)
+							label.product__form--label(for="sex") SEX
+							input#sex.product__form--input.product__form--input-readonly(
+								type="text"
+								name="sex"
+								value=product.sex
+								readonly
+							)
 						.product__form--group
 							+formSelect('color', colors, product.color)
 

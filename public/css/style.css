@@ -7774,7 +7774,13 @@ form.product__form--create, 	form.bag__form--create ,form.shoe__form--create, fo
 }
 
 
-
+.product__form--input-readonly {
+	background-color: #f1f1f1;
+	color: #777;
+	border: 1px solid #d4d4d4;
+	cursor: not-allowed;
+	pointer-events: none;
+}
 
 .product__form--group{
 	display: flex;
@@ -7799,7 +7805,7 @@ form.product__form--create, 	form.bag__form--create ,form.shoe__form--create, fo
 .product__form--group--checkbox{
 	display: grid;
 	grid-template-columns: 4fr 10fr;
-	padding: 1.6rem 0;
+	padding: .75rem 0 1.2rem ;
 	
 }
 
@@ -7807,7 +7813,7 @@ form.product__form--create, 	form.bag__form--create ,form.shoe__form--create, fo
 	
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
-	row-gap: 1.4rem;
+	row-gap: .8rem;
 }
 
 .product__form--checkbox-row{
@@ -7830,13 +7836,13 @@ form.product__form--create, 	form.bag__form--create ,form.shoe__form--create, fo
 
 .product__form--grid-select{
 	
-	padding-top: 2.4rem;
+	padding-top: 1.2rem;
 	
 	display: grid;
 	
 	grid-template-columns: 1fr 2fr;
 	column-gap: 3.2rem;
-	row-gap: 2rem;
+	
 }
 
 
@@ -7881,6 +7887,7 @@ form.product__form--create, 	form.bag__form--create ,form.shoe__form--create, fo
 	display: grid;
 	grid-template-columns: 2fr 1fr;
 	align-items: center;
+	gap: .5rem;
 	
 }
 
