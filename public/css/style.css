@@ -10730,6 +10730,19 @@ padding: 0 0 0 2rem;
     padding: 0 1rem 6rem;
 }
 
+.barong-list__filter {
+ 
+    gap: 1rem;
+}
+
+.barong-list__filter-clear {
+       margin-bottom: 2rem;
+    }
+		
+		.productList--heading-box {
+        padding: 2rem 1.6rem 1rem;
+    }
+
 }
 
 
