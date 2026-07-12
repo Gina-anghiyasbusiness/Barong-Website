@@ -168,7 +168,7 @@ exports.getHomePage = catchAsync(async (req, res, next) => {
 
 
 
-//------------------- Shop Pages ------------------------//
+//----------------------		Re-usable Helper functions		-------------------//
 
 
 /// breadcrumbs 
@@ -191,7 +191,6 @@ const makeBreadcrumbUrl = (basePath, params) => {
 
 
 
-//----------------------		Re-usable Helper functions		-------------------//
 
 
 
@@ -299,6 +298,9 @@ const formFieldsAccs = async (field, desiredOrder = null) => {
 
 
 
+
+
+//------------------- Shop Pages ------------------------//
 
 
 //----------------- Barong List Page --------------------//
