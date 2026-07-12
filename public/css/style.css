@@ -8968,6 +8968,26 @@ border-bottom: 4px solid var(--color-secondary);
 /* ------------------- MEDIA QUERIES --------------------- */
 
 
+/*/ 1400PX */
+
+@media (max-width: 87.5em) {
+	
+	
+	html{
+		
+		font-size: 58.5%;
+	}
+	
+	.admin-productList--grid{
+		
+		padding: 0 4rem;
+	
+}
+
+
+
+
+
 /* /// 1200px */
 
 
