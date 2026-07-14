@@ -1,0 +1,34 @@
+extends baseEmail
+
+block content
+
+  main.email-wrapper
+    .email-card
+
+      .email-header
+        img.email-logo(src=logoUrl, alt="Ang Hiyas logo")
+        h1 Paid Stripe order failed
+        p.email-subtitle Stripe accepted payment, but the website failed to create the order.
+
+      .message-box
+        p Do not ask the customer to pay again. Check Stripe and recover this order manually if the webhook retry does not fix it.
+
+      .message-box
+        if data.sessionId
+          p Stripe session ID: #{data.sessionId}
+        if data.paymentIntent
+          p Payment intent: #{data.paymentIntent}
+        if data.customerEmail
+          p Customer email: #{data.customerEmail}
+        if data.amountTotal
+          p Amount paid: $#{(data.amountTotal / 100).toFixed(2)} #{data.currency ? data.currency.toUpperCase() : 'AUD'}
+        if data.errorMessage
+          p Error: #{data.errorMessage}
+
+      if data.metadata
+        .message-box
+          h2 Stripe metadata
+          pre #{JSON.stringify(data.metadata, null, 2)}
+
+      .email-footer
+        p Ang Hiyas support alert

@@ -36,6 +36,70 @@ const { calculateTotals } = require('../utilities/newCheckoutTotals');
 
 
 
+exports.getStripeOrderStatus = catchAsync(async (req, res, next) => {
+
+	const { sessionId } = req.params;
+
+	const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+	if (session.payment_status !== 'paid' || !session.payment_intent) {
+		return res.status(200).json({ status: 'payment_pending' });
+	}
+
+	const transaction = await Transaction.findOne({
+		transactionId: session.payment_intent
+	});
+
+	if (!transaction || !transaction.order) {
+		return res.status(200).json({ status: 'processing' });
+	}
+
+	const order = await Order.findById(transaction.order);
+
+	if (!order) {
+		return res.status(200).json({ status: 'processing' });
+	}
+
+	if (!order.user || !order.user.equals(req.user._id)) {
+		return next(new AppError('You do not have permission to view this order', 403));
+	}
+
+	return res.status(200).json({
+		status: 'confirmed',
+		orderUrl: `/user-order-number/${order.orderNum}`
+	});
+});
+
+
+exports.getStripeGuestOrderStatus = catchAsync(async (req, res, next) => {
+
+	const { sessionId } = req.params;
+
+	const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+	if (session.payment_status !== 'paid' || !session.payment_intent) {
+		return res.status(200).json({ status: 'payment_pending' });
+	}
+
+	const transaction = await Transaction.findOne({
+		transactionId: session.payment_intent
+	});
+
+	if (!transaction || !transaction.order) {
+		return res.status(200).json({ status: 'processing' });
+	}
+
+	const order = await Order.findById(transaction.order);
+
+	if (!order) {
+		return res.status(200).json({ status: 'processing' });
+	}
+
+	return res.status(200).json({
+		status: 'confirmed',
+		orderUrl: `/guest-order-number/${order._id}`
+	});
+});
 
 ///			////////////////////////			///////////////////			///////////////////////
 /// DONT FORGET TO ADD STRIPE WEBHOOK ROUTE TO APP.JS AND INCLUDE SCRIPT IN BASE	///
@@ -43,42 +107,40 @@ const { calculateTotals } = require('../utilities/newCheckoutTotals');
 
 
 
-
 const updateStockLevels = async (productId, variantId, qty) => {
 
+	const productModels = [SpecProd, Shoe, Bag, Accessory];
 
-	let product = await SpecProd.findById(productId);
+	for (const ProductModel of productModels) {
 
-	if (!product) {
-		product = await Shoe.findById(productId);
-	}
+		const product = await ProductModel.findById(productId).select('variants');
 
-	if (!product) {
-		product = await Bag.findById(productId);
-	}
+		if (!product) continue;
 
-	if (!product) {
-		product = await Accessory.findById(productId);
-	}
+		if (!product.variants || product.variants.length === 0 || !variantId) {
+			return;
+		}
 
-	if (!product) {
-		throw new Error('Product not found');
-	}
+		const result = await ProductModel.updateOne(
+			{
+				_id: productId,
+				'variants._id': variantId,
+				'variants.inStock': { $gte: qty }
+			},
+			{
+				$inc: { 'variants.$.inStock': -qty }
+			}
+		);
 
-	if (!product.variants || product.variants.length === 0 || !variantId) {
+		if (result.modifiedCount === 0) {
+			throw new Error('Not enough stock');
+		}
+
 		return;
 	}
 
-	const variant = product.variants.id(variantId); // ✅ Now safe to call
-
-	if (!variant) throw new Error('Variant not found');
-	if (variant.inStock < qty) throw new Error('Not enough stock');
-
-	variant.inStock -= qty;
-
-	await product.save();
+	throw new Error('Product not found');
 };
-
 
 
 
@@ -590,10 +652,10 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 			}
 
 
-			await Promise.all(cartArray.map(async item => {
+			for (const item of cartArray) {
 
 				await updateStockLevels(item.product, item.selectedVariant, item.quantity);
-			}));
+			}
 
 
 			const counter = await Counter.findOneAndUpdate(
@@ -952,7 +1014,7 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 				unit_amount: Math.round(totalNet * 100),
 
 				product_data: {
-					name: buyItNowProduct.name,
+					name: buyItNowVariant ? `${buyItNowProduct.name} - Size ${buyItNowVariant.size}` : buyItNowProduct.name,
 					description: buyItNowProduct.description,
 
 					/// ONLY WORKS IN PRODUCTION - USE PRODUCTION URL
@@ -1005,7 +1067,7 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 		}),
 
 
-		success_url: `${req.protocol}://${req.get('host')}/order-success`,
+		success_url: `${req.protocol}://${req.get('host')}/order-success?session_id={CHECKOUT_SESSION_ID}`,
 		cancel_url: `${req.protocol}://${req.get('host')}/my-account/${user.id}`,
 
 		customer_email: req.user.email,
@@ -1024,7 +1086,8 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 			fulfilmentMethod,
 			product: product.toString(),
 			qty: qtyNum.toString(),
-			variant: buyItNowVariant ? buyItNowVariant.id.toString() : null, // ✅ Fix this line
+			variant: buyItNowVariant ? buyItNowVariant.id.toString() : null,
+			size: buyItNowVariant ? buyItNowVariant.size : '',
 			address: fulfilmentMethod === 'delivery' ? JSON.stringify(shippingAddress) : ''
 		}
 	});
@@ -1148,7 +1211,7 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 				currency: 'aud',
 				unit_amount: Math.round(totalNet * 100),
 				product_data: {
-					name: buyItNowProduct.name,
+					name: buyItNowVariant ? `${buyItNowProduct.name} - Size ${buyItNowVariant.size}` : buyItNowProduct.name,
 					description: buyItNowProduct.description,
 					images: [`${process.env.SITE_URL}img/product_imgs/${buyItNowProduct.imageCover}`]
 				}
@@ -1187,7 +1250,7 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 				}
 			}),
 
-			success_url: `${req.protocol}://${req.get('host')}/order-success-guest`,
+			success_url: `${req.protocol}://${req.get('host')}/order-success-guest?session_id={CHECKOUT_SESSION_ID}`,
 			cancel_url: `${req.protocol}://${req.get('host')}/guest-cancel`,
 
 			customer_email: undefined,
@@ -1201,6 +1264,7 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 				product: product.toString(),
 				qty: qtyNum.toString(),
 				variant: buyItNowVariant ? buyItNowVariant.id.toString() : 'null',
+				size: buyItNowVariant ? buyItNowVariant.size : '',
 				address: fulfilmentMethod === 'delivery' ? JSON.stringify(guestAddress) : ''
 			}
 		});
@@ -1304,6 +1368,9 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 			return next(new AppError('A product in your cart is no longer available', 404));
 		}
 
+
+		let selectedVariant = null;
+
 		if (product.variants && product.variants.length > 0) {
 
 			if (!item.variant) {
@@ -1311,7 +1378,7 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 				return next(new AppError('Cart item variant is missing', 400));
 			}
 
-			const selectedVariant = product.variants.id(item.variant);
+			selectedVariant = product.variants.id(item.variant);
 
 			if (!selectedVariant) {
 
@@ -1323,6 +1390,7 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 				return next(new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400));
 			}
 		}
+
 
 
 		let price;
@@ -1363,7 +1431,7 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 				currency: 'aud',
 				unit_amount: Math.round(price * 100),
 				product_data: {
-					name: product.name,
+					name: selectedVariant ? `${product.name} - Size ${selectedVariant.size}` : product.name,
 					description: product.description
 				}
 			},
@@ -1421,8 +1489,7 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 				allowed_countries: ['AU'],
 			}
 		}),
-
-		success_url: `${req.protocol}://${req.get('host')}/order-success`,
+		success_url: `${req.protocol}://${req.get('host')}/order-success?session_id={CHECKOUT_SESSION_ID}`,
 		cancel_url: `${req.protocol}://${req.get('host')}/my-account/${user.id}`,
 
 		customer_email: req.user.email,
@@ -1448,9 +1515,13 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 					//-----------  Variants ------------//
 
-					variantId: item.variant?._id?.toString(),
+					variantId: item.variant ? item.variant.toString() : 'null',
 
 					//-----------  ------- ------------//
+
+					size: item.variant && item.product.variants
+						? item.product.variants.id(item.variant)?.size || ''
+						: '',
 
 					quantity: item.quantity,
 
@@ -1480,10 +1551,32 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 
 exports.addAddressToUser = catchAsync(async (req, res, next) => {
+	const {
+		label,
+		number,
+		street,
+		city,
+		state,
+		postcode,
+		fulfilmentMethod: fulfilmentMethodRaw
+	} = req.body;
 
-	const { label, number, street, city, state, postcode } = req.body;
+	const fulfilmentMethod = fulfilmentMethodRaw === 'pickup' ? 'pickup' : 'delivery';
 
-	if (!street || !city || !postcode) return next(new AppError('Please fill in street, city, and postcode.', 401));
+	if (
+		fulfilmentMethod === 'delivery' &&
+		(!street || !city || !postcode)
+	) {
+		return next(new AppError('Please fill in street, city, and postcode.', 401));
+	}
+
+	if (fulfilmentMethod === 'pickup') {
+		return res.status(200).json({
+			status: 'success',
+			message: 'Local pickup selected'
+		});
+	}
+
 
 	const newAddress = { label, number, street, city, state, postcode, isDefault: true };
 
@@ -1541,32 +1634,46 @@ exports.addAddressToUser = catchAsync(async (req, res, next) => {
 
 
 exports.addAddressToUserGuest = catchAsync(async (req, res, next) => {
+	const {
+		email,
+		name,
+		number,
+		street,
+		city,
+		state,
+		postcode,
+		fulfilmentMethod: fulfilmentMethodRaw
+	} = req.body;
 
-	const { email, name, number, street, city, state, postcode } = req.body;
+	const fulfilmentMethod = fulfilmentMethodRaw === 'pickup' ? 'pickup' : 'delivery';
 
-	if (!name || !number || !street || !city || !state || !postcode) {
+	if (!email || !name) {
+		return next(new AppError('Name and email are required.', 400));
+	}
 
+	if (
+		fulfilmentMethod === 'delivery' &&
+		(!number || !street || !city || !state || !postcode)
+	) {
 		return next(new AppError('All address fields are required.', 400));
 	}
 
-	const guestAddress = await GuestAddress.create(
-		{
-			email,
-			name,
-			number,
-			street,
-			city,
-			state,
-			postcode
-		});
+	const guestAddress = await GuestAddress.create({
+		email,
+		name,
+		number: fulfilmentMethod === 'delivery' ? number : '',
+		street: fulfilmentMethod === 'delivery' ? street : '',
+		city: fulfilmentMethod === 'delivery' ? city : '',
+		state: fulfilmentMethod === 'delivery' ? state : '',
+		postcode: fulfilmentMethod === 'delivery' ? postcode : ''
+	});
 
 	res.status(200).json({
 		status: 'success',
 		message: 'Guest address saved',
 		guestAddressId: guestAddress._id
 	});
-
-})
+});
 
 
 

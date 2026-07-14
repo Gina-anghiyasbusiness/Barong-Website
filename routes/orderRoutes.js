@@ -55,6 +55,9 @@ router.patch('/update-user-order/:orderstatus/:transstatus/:address/:ordernum',
 
 //-------- Buy product routes for cart and buyitnow -------//
 
+router.get('/stripe-order-status-guest/:sessionId',
+	orderController.getStripeGuestOrderStatus
+);
 
 
 /// logged in user checkout
@@ -64,6 +67,10 @@ router.use(
 	authController.protectRoute,
 	authController.restrictTo('user'),
 	productController.setProductUserIds
+);
+
+router.get('/stripe-order-status/:sessionId',
+	orderController.getStripeOrderStatus
 );
 
 

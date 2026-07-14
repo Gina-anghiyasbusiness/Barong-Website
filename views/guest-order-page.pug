@@ -38,29 +38,33 @@ block content
 										p.order_page--user-p #{order.order.shippingAddress.state}
 										p.order_page--user-p #{order.order.shippingAddress.postcode}			
 					
+				
+									
+					.order_page--user-details-box
+						h3.order_page-box--heading  Order details
+							
+						.order_page--order-details
+							- const orderDate = new Date(order.order.createdAt).toLocaleDateString('en-GB')
+							- const lastUpdated = new Date(order.order.updatedAt).toLocaleDateString('en-GB')
+							- const transStatus = transaction ? transaction.status : "No Paypal status"
+							
+
+							
+							p.order_page--user-p Order Amount: $#{order.order.totalAmount}
+							p.order_page--user-p Order Status: #{order.order.status}
+							p.order_page--user-p Payment Method: #{order.order.paymentMethod}
+							p.order_page--user-p Date of Order: #{orderDate}
+							p.order_page--user-p Last Updated: #{lastUpdated}
+							p.order_page--user-p Transaction Status: #{transStatus}
+						
 				.order_page-right
 				
-					.order_page--user-details-box
-					
-					h3.order_page-box--heading  Order details
-						
-					.order_page--order-details
-						- const orderDate = new Date(order.order.createdAt).toLocaleDateString('en-GB')
-						- const lastUpdated = new Date(order.order.updatedAt).toLocaleDateString('en-GB')
-						- const transStatus = transaction ? transaction.status : "No Paypal status"
-
-						
-						p.order_page--user-p Order Amount: #{order.order.totalAmount}
-						p.order_page--user-p Order Status: #{order.order.status}
-						p.order_page--user-p Payment Method: #{order.order.paymentMethod}
-						p.order_page--user-p Date of Order: #{orderDate}
-						p.order_page--user-p Last Updated: #{lastUpdated}
-						p.order_page--user-p Transaction Status: #{transStatus}
 						.order_page--order-products
-							p.order_page--user-p-products Products:
+							p.order_page--user-p-products Items:
 							.order__page--order-headings 
 								h3.order__page--order-head Image
 								h3.order__page--order-head Name
+								h3.order__page--order-head Size
 								h3.order__page--order-head Qty
 								h3.order__page--order-head Price
 							
@@ -75,12 +79,15 @@ block content
 									-const qty = product && product.quantity ? product.quantity : "No Quantity Available"
 									
 									-const price = product && product.priceAtPurchase ? product.priceAtPurchase : "No Price Available"
+									- const matchedVariant = product.product && product.selectedVariant && product.product.variants ? product.product.variants.find(v => v._id.toString() === product.selectedVariant.toString()) : null
+									- const size = matchedVariant ? matchedVariant.size : 'No size selected'
 									
 									-const slug = product && product.product && product.product.slug ?  product.product.slug : "No Slug Available"
 									
 									a(href=`/product/${slug}`) 
 										img(src=`/img/product_imgs/${productImage}`, alt="" , width='800' , height='800' , class='order-image')
 									p.order_page--user-p  #{productName}
+									p.order_page--user-p  #{size}
 									p.order_page--user-p  #{qty}
 									p.order_page--user-p  #{price}
 									

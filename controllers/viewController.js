@@ -29,6 +29,9 @@ const { description } = require('../models/productBaseModel');
 const { calculateTotals } = require('../utilities/newCheckoutTotals');
 
 
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+
 
 /// Product Schema for seo
 
@@ -1310,45 +1313,6 @@ exports.getAccountPage = catchAsync(async (req, res, next) => {
 
 
 
-	/// Original Method
-
-
-	// const populateProducts = async (items) => {
-
-	// 	for (const item of items) {
-
-	// 		let product = await SpecProd.findById(item.product).populate('category');
-	// 		let productType = 'barong';
-
-	// 		if (!product) {
-	// 			product = await Shoe.findById(item.product).populate('category');
-	// 			if (product) productType = 'shoe';
-	// 		}
-
-	// 		if (!product) {
-	// 			product = await Bag.findById(item.product).populate('category');
-	// 			if (product) productType = 'bag';
-	// 		}
-
-	// 		if (!product) {
-	// 			product = await Accessory.findById(item.product).populate('category');
-	// 			if (product) productType = 'accessory';
-	// 		}
-
-	// 		// Direct property assignment
-	// 		item.product = product;
-	// 		item.productType = productType;
-
-	// 		// Force Mongoose to recognize the change
-	// 		item.markModified('product');
-	// 		item.markModified('productType');
-	// 	}
-	// };
-
-	// await populateProducts(user.cart);
-	// await populateProducts(user.wishlist);
-
-
 
 	/// DRY Method
 
@@ -1720,6 +1684,7 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 		///			BuyItNow Item Discount - Checkout			///
 
 	} else {
+
 		if (!product.discount && !product.category) {
 
 			product.discountPrice = product.currentPrice
@@ -1958,30 +1923,41 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 //-------------------- Successful payment page --------------------------//
 
 
+exports.getSuccessfulPaymentPage = catchAsync(async (req, res, next) => {
 
-exports.getSuccessfulPaymentPage = (req, res) => {
+	const { session_id } = req.query;
+
+	if (!session_id) {
+		return next(new AppError('Missing Stripe session ID', 400));
+	}
 
 	res.status(200).render('payment-success', {
-
-		pageTitle: 'Order Confirmed | Ang Hiyas',
-		pageDescription: 'Your Ang Hiyas order has been confirmed. View your order confirmation and next steps.',
+		pageTitle: 'Payment Received | Ang Hiyas',
+		pageDescription: 'Your payment was received and your order is being confirmed.',
 		canonicalUrl: `${process.env.CANONICAL_URL}order-success`,
-		noIndex: true
-	})
-}
+		noIndex: true,
+		sessionId: session_id
+	});
+});
 
 
 
-exports.getSuccessfulPaymentPageGuest = (req, res) => {
+exports.getSuccessfulPaymentPageGuest = catchAsync(async (req, res, next) => {
+
+	const { session_id } = req.query;
+
+	if (!session_id) {
+		return next(new AppError('Missing Stripe session ID', 400));
+	}
 
 	res.status(200).render('payment-success-guest', {
-
-		pageTitle: 'Guest Order Confirmed | Ang Hiyas',
-		pageDescription: 'Your Ang Hiyas guest order has been confirmed. View your order confirmation and next steps.',
+		pageTitle: 'Payment Received | Ang Hiyas',
+		pageDescription: 'Your payment was received and your order is being confirmed.',
 		canonicalUrl: `${process.env.CANONICAL_URL}order-success-guest`,
-		noIndex: true
-	})
-}
+		noIndex: true,
+		sessionId: session_id
+	});
+});
 
 
 
@@ -2056,9 +2032,28 @@ exports.getGuestOrderPage = catchAsync(async (req, res, next) => {
 	if (!order || !order.order) return next(new AppError('Order not found', 404));
 
 
+	for (const item of order.order.product) {
+
+		let productDoc = await SpecProd.findById(item.product);
+
+		if (!productDoc) {
+			productDoc = await Shoe.findById(item.product);
+		}
+
+		if (!productDoc) {
+			productDoc = await Bag.findById(item.product);
+		}
+
+		if (!productDoc) {
+			productDoc = await Accessory.findById(item.product);
+		}
+
+		item.product = productDoc;
+	}
+
+
 	const products = order.order.product;
 
-	// const transaction = await Transaction.findById(order.transaction);
 
 	const transaction = await Transaction.findById(order.order.transaction);
 

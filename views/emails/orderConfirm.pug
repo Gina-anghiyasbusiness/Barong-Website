@@ -1,21 +1,27 @@
-extends baseEmail 
+extends baseEmail
 
-block content 
+block content
 
-	header
-	
-		.orderConfirm_header--img
-		
-			img(src=logoUrl, alt="company-logo")
-	
-	main
-	
-		.email_body
-		
-			p Hi #{firstname},
-			
-			p.order-recieved We've recieved your order.
-			
-			.email_body-link
-			
-				a(href=`${url}`, target='_blank') Order Details
+  main.email-wrapper
+    .email-card
+
+      .email-header
+        img.email-logo(src=logoUrl, alt="Ang Hiyas logo")
+        h1 Order received
+        p.email-subtitle Thank you for your order. We have received your payment and order details.
+
+      .message-box
+        p Hi #{firstname},
+        p We've received your Ang Hiyas order. You can view your full order details using the button below.
+
+      .email-actions
+        if url
+          a.email-btn(href=`${url}`, target="_blank", rel="noopener noreferrer") View Order Details
+
+      .message-box
+        h2 What happens next?
+        p If your order is for delivery, we will prepare it for shipping. If you selected local pickup, Ang Hiyas will contact you with pickup details.
+
+      .email-footer
+        p Ang Hiyas QLD, Australia
+        p This email was sent because an order was placed through the Ang Hiyas website.

@@ -1,18 +1,50 @@
-extends base 
+extends base
 
-
-
-
-block content 
-
-
+block content
 	main.container.seventy-five-vh
-	
-		.checkout__success-page 
-		
+		.checkout__success-page
 			.checkout__success--box
-	
-				h2.checkout__success--heading Checkout Successful
-				h2.checkout__success--heading Please check your inbox for Order Confirmation
-				a(href=`/` , 
-				class='checkout__success-back') Back to Home
+
+				.checkout__success--icon(aria-hidden="true") ✓
+
+				h2.checkout__success--heading Payment received
+				p.checkout__success--sub We are confirming your order now. This can take up to 60 seconds. Please keep this page open and do not pay again.
+
+				p.checkout__success--meta#payment-status Checking confirmation...
+
+				.checkout__success--actions
+					a.checkout__success-btn.checkout__success-btn--primary(href='/') Back to home
+					a.checkout__success-btn.checkout__success-btn--ghost(href='/static/sales') Continue shopping
+
+				script(nonce=nonce).
+					const sessionId = '!{sessionId}';
+					let attempts = 0;
+					const maxAttempts = 30;
+
+					const checkOrderStatus = async () => {
+						attempts += 1;
+
+						try {
+							const res = await fetch(`/api/v1/orders/stripe-order-status-guest/${sessionId}`);
+							const data = await res.json();
+
+							if (data.status === 'confirmed' && data.orderUrl) {
+								window.location.assign(data.orderUrl);
+								return;
+							}
+
+							if (attempts >= maxAttempts) {
+								document.getElementById('payment-status').textContent =
+									'Payment received, but your order confirmation is still pending. Please check your email shortly. Do not pay again.';
+								return;
+							}
+
+							setTimeout(checkOrderStatus, 1000);
+
+						} catch (err) {
+							document.getElementById('payment-status').textContent =
+								'Payment received, but we could not check your order status. Please check your email shortly. Do not pay again.';
+						}
+					};
+
+					checkOrderStatus();

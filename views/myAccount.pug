@@ -195,27 +195,16 @@ block content
 													button(class='remove-cart--item' , data-remove=`${item._id}`, data-user=`${user._id}`)
 														i(data-lucide='x' width="16" height="16")
 											
-													////-------- Variants -------// 
 													
-													.productPage__variant-size--flex.wishlist-btn
-														if item.product.variants && item.product.variants.length
-															each variant, i in item.product.variants
-																- const isSelected = item.variant && variant._id.toString() === item.variant.toString();
-																if variant.inStock > 0
-																	button(class=`product__size--btn variant__size--${i+1} ${isSelected ? 'is-selected' : ''}` data-variant=variant._id) #{variant.size}
-																
-
+													if item.variantDetails
+														p.myAccount__cart--size Size: #{item.variantDetails.size}
 													
-													////-------- -------- -------// 
-													
-													if user		
+													if user
 														.myAccount__cart__quantity
-															.productPage__quantity--box
-																label(for=`quantity`)  Quantity:
-																input#add-to-cart-qty.add-to-cart-qty(type="number" name=`quantity` value="1" min="1")
+															p.myAccount__cart--qty Quantity: #{item.quantity}
 
 															.productPage__quantity-price--box
-																p.myAccount__cart--cprice $#{item.discountPrice}							
+																p.myAccount__cart--cprice $#{item.quantity * item.discountPrice}						
 	
 											else
 												.myAccount__missing-product
@@ -326,66 +315,6 @@ block content
 													data-user=`${user.id}`
 												) Remove
 														
-															
-									
-							
-						//- .myAccount__main--addresses.content-hidden
-						
-						//- 	h2.heading_med.mrgbtm--xlg Addresses	
-							
-						//- 	.myAccount__main--adressess-box 
-							
-						//- 		each addr in user.addresses
-								
-						//- 			.myAccount__main--adressess-text 	
-						//- 				.myAccount__main--adressess-name 																			
-						//- 					p.myAccount__address-label #{addr.label}
-						//- 				.myAccount__address-line-1
-						//- 					p  #{addr.number} &nbsp
-						//- 					p  #{addr.street}
-						//- 				p #{addr.city.toUpperCase()}
-						//- 				p #{addr.state.toUpperCase()}
-						//- 				p #{addr.postcode}
-										
-						//- 				.myAccount__address-btns 
-						//- 					if addr.isDefault
-						//- 						a(href=`/address-form--user/${addr.id}`) Edit 
-						//- 						p.myAccount__address-default Default Address
-						//- 					else 
-						//- 						a(href=`/address-form--user/${addr.id}`) Edit 
-						//- 						button#remove-address-btn(data-address=`${addr.id}` , data-user=`${user.id}`,class='remove-address-btns') Remove 
-							
-						//- 	.myAccount__address-add 
-						//- 		if user.addresses.length < 3
-						//- 			a(href=`/address-form--user`) Add Address 		
-						//- 		else 
-						//- 			p Address Allocation Full	
-													
-							
-						//- .myAccount__main--reviews.content-hidden
-						
-						//- 	h2.heading_med.mrgbtm--xlg Reviews
-							
-						//- 	.main_reviews-grid 
-						//- 		each review in reviews 
-						//- 			.main_reviews-row.main_reviews-row--headings
-						//- 				.main_reviews-img--box
-						//- 					p Image/link
-						//- 				p Product Name
-						//- 				p Description
-						//- 				p Rating
-						//- 				p Comments
-										
-						//- 			.main_reviews-row 
-						//- 				.main_reviews-img--box
-						//- 					a(href=`/product/${review.product.slug}`) 
-						//- 						img(src=`/img/product_imgs/${review.product.imageCover}`, alt="", width="800", height='800')
-						//- 				p #{review.product.name}
-						//- 				p #{review.product.description}
-						//- 				p #{review.rating}
-						//- 				p #{review.comment}
-										
-								
 						
 						.myAccount__main--support.content-hidden
 

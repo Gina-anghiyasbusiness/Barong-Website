@@ -19,59 +19,33 @@ module.exports = class Email {
 
 	newTransport() {
 
-		if (process.env.NODE_ENV === 'development') {
+		const requiredSmtpVars = [
+			'SMTP_HOST',
+			'SMTP_PORT',
+			'SMTP_LOGIN',
+			'SMTP_PASSWORD',
+			'EMAIL_FROM',
+			'EMAIL_FROM_NAME',
+			'ENQUIRY_TO'
+		];
 
-			return nodemailer.createTransport(
-				{
-					host: process.env.EMAIL_HOST,
-					port: Number(process.env.EMAIL_PORT),
-					auth: {
+		const missingSmtpVars = requiredSmtpVars.filter(envVar => !process.env[envVar]);
 
-						user: process.env.EMAIL_USERNAME,
-						pass: process.env.EMAIL_PASSWORD
-
-					}
-				}
-			)
+		if (missingSmtpVars.length > 0) {
+			throw new Error(`Missing SMTP environment variables: ${missingSmtpVars.join(', ')}`);
 		}
 
+		return nodemailer.createTransport({
 
-		/// (WORKSPACE)
+			host: process.env.SMTP_HOST,
+			port: Number(process.env.SMTP_PORT),
+			secure: Number(process.env.SMTP_PORT) === 465,
 
-		if (process.env.NODE_ENV === 'production') {
-
-			const requiredSmtpVars = [
-				'SMTP_HOST',
-				'SMTP_PORT',
-				'SMTP_LOGIN',
-				'SMTP_PASSWORD',
-				'EMAIL_FROM',
-				'EMAIL_FROM_NAME',
-				'ENQUIRY_TO'
-			];
-
-			const missingSmtpVars = requiredSmtpVars.filter(envVar => !process.env[envVar]);
-
-			if (missingSmtpVars.length > 0) {
-
-				throw new Error(`Missing SMTP environment variables: ${missingSmtpVars.join(', ')}`);
+			auth: {
+				user: process.env.SMTP_LOGIN,
+				pass: process.env.SMTP_PASSWORD
 			}
-
-
-			return nodemailer.createTransport({
-
-				host: process.env.SMTP_HOST,
-				port: Number(process.env.SMTP_PORT),
-
-
-				secure: Number(process.env.SMTP_PORT) === 465,
-				auth: {
-
-					user: process.env.SMTP_LOGIN,
-					pass: process.env.SMTP_PASSWORD
-				}
-			});
-		}
+		});
 	}
 
 
@@ -147,6 +121,45 @@ module.exports = class Email {
 	}
 
 
+	/// workspace helper
+
+
+
+	async sendInternal(template, subject, data, to, throwOnError = false) {
+
+		if (!to) {
+			throw new Error(`Missing recipient for internal email: ${subject}`);
+		}
+
+		const html = pug.renderFile(`${__dirname}/../views/emails/${template}.pug`, {
+			subject,
+			data,
+			url: this.url,
+			logoUrl: `${process.env.CANONICAL_URL}img/logo/default-logo.png`
+		});
+
+		const mailOptions = {
+			from: this.from,
+			to,
+			subject,
+			html,
+			text: convert(html)
+		};
+
+		try {
+
+			await this.newTransport().sendMail(mailOptions);
+
+		} catch (err) {
+
+			console.error('Internal email failed:', err.response || err);
+
+			if (throwOnError) throw err;
+		}
+	}
+
+
+
 	/// Template send functions
 
 
@@ -206,6 +219,35 @@ module.exports = class Email {
 	async sendCustomizationEnquiryEmail(enquiryData) {
 
 		await this.sendEnquiry('customizationEnquiry', 'New Customization Enquiry', enquiryData, true);
+	}
+
+
+
+	/// workspace support
+
+
+	async sendInternalOrderCreated(orderData) {
+
+		await this.sendInternal(
+			'internalOrderCreated',
+			`New paid order created: #${orderData.orderNum}`,
+			orderData,
+			process.env.ORDER_ALERT_TO
+		);
+	}
+
+
+	async sendStripeOrderFailureAlert(failureData) {
+
+		const alertIdSource = failureData.paymentIntent || failureData.sessionId || 'unknown';
+		const alertId = alertIdSource === 'unknown' ? alertIdSource : alertIdSource.slice(-8);
+
+		await this.sendInternal(
+			'internalStripeOrderFailed',
+			`URGENT: Paid Stripe order failed - ${alertId}`,
+			failureData,
+			process.env.SUPPORT_ALERT_TO
+		);
 	}
 
 

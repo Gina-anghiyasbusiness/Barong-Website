@@ -72,7 +72,10 @@ export const saveAddressCheckoutGuest = async (data, product, qty, variant, fulf
 
 			method: 'POST',
 			url: '/api/v1/orders/add-address-checkout-guest',
-			data
+			data: {
+				...data,
+				fulfilmentMethod
+			}
 		})
 
 		if (result.data.status === 'success') {
@@ -81,7 +84,12 @@ export const saveAddressCheckoutGuest = async (data, product, qty, variant, fulf
 
 			if (msg === 'Guest address saved') {
 
-				showAlert('success', 'Address added successfully!');
+				showAlert(
+					'success',
+					fulfilmentMethod === 'pickup'
+						? 'Local pickup selected.'
+						: 'Address added successfully!'
+				);
 
 				const purchaseCart = document.getElementById('checkout-submit--stripe-guest');
 
@@ -106,6 +114,7 @@ export const saveAddressCheckoutGuest = async (data, product, qty, variant, fulf
 
 
 
+
 export const saveAddressCheckout = async (data, product, qty, variant, fulfilmentMethod) => {
 
 	try {
@@ -114,7 +123,10 @@ export const saveAddressCheckout = async (data, product, qty, variant, fulfilmen
 
 			method: 'POST',
 			url: '/api/v1/orders/add-address-checkout',
-			data
+			data: {
+				...data,
+				fulfilmentMethod
+			}
 		})
 
 		if (result.data.status === 'success') {
@@ -123,9 +135,11 @@ export const saveAddressCheckout = async (data, product, qty, variant, fulfilmen
 
 			if (msg !== 'Duplicate address') {
 
-				showAlert('success', 'Address added successfully!');
+				showAlert(
+					'success',
+					fulfilmentMethod === 'pickup' ? 'Local pickup selected.' : 'Address added successfully!'
+				);
 			}
-
 
 
 			/// call buyCart or BuyitNow functions

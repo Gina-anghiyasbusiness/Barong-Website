@@ -79,6 +79,7 @@ block content
 						.order__page--order-headings
 							h3.order__page--order-head Image
 							h3.order__page--order-head Name
+							h3.order__page--order-head Size
 							h3.order__page--order-head Qty
 							h3.order__page--order-head Price
 
@@ -88,6 +89,8 @@ block content
 								-const productName = product.product && product.product.name ? product.product.name : 'Product unavailable'
 								-const qty = product && product.quantity ? product.quantity : '—'
 								-const price = product && product.priceAtPurchase ? product.priceAtPurchase : '—'
+								- const matchedVariant = product.product && product.selectedVariant && product.product.variants ? product.product.variants.find(v => v._id.toString() === product.selectedVariant.toString()) : null
+								- const size = matchedVariant ? matchedVariant.size : 'No size selected'
 								-const slug = product && product.product && product.product.slug ? product.product.slug : ''
 
 								.order__page--cell
@@ -100,5 +103,6 @@ block content
 											img(src=`/img/product_imgs/${productImage}`, alt="" width="800" height="800" class="order-image")
 
 								p.order_page--user-p #{productName}
+								p.order_page--user-p #{size}
 								p.order_page--user-p #{qty}
 								p.order_page--user-p $#{price}

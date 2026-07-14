@@ -1,17 +1,3 @@
-//- extends base 
-
-//- block content 
-
-//- 	main.container.seventy-five-vh
-	
-//- 		.checkout__success-page 
-		
-//- 			.checkout__success--box
-	
-//- 				h2.checkout__success--heading Checkout Successful
-//- 				a(href=`/my-account/${user.id}` , 
-//- 				class='checkout__success-back') Back to Account Page
-
 extends base
 
 block content
@@ -21,14 +7,44 @@ block content
 
 				.checkout__success--icon(aria-hidden="true") ✓
 
-				h2.checkout__success--heading Order confirmed
+				h2.checkout__success--heading Payment received
+				p.checkout__success--sub We are confirming your order now. This can take up to 60 seconds. Please keep this page open and do not pay again.
 
-				p.checkout__success--sub We’ve received your order and will begin processing it shortly.
-
-				if typeof order !== 'undefined' && order && order.orderNum
-					p.checkout__success--meta Order number:
-						span.checkout__success--metaValue #{order.orderNum}
+				p.checkout__success--meta#payment-status Checking confirmation...
 
 				.checkout__success--actions
 					a.checkout__success-btn.checkout__success-btn--primary(href=`/my-account/${user.id}`) View my account
 					a.checkout__success-btn.checkout__success-btn--ghost(href='/') Continue shopping
+
+				script(nonce=nonce).
+					const sessionId = '!{sessionId}';
+					let attempts = 0;
+					const maxAttempts = 30;
+
+					const checkOrderStatus = async () => {
+						attempts += 1;
+
+						try {
+							const res = await fetch(`/api/v1/orders/stripe-order-status/${sessionId}`);
+							const data = await res.json();
+
+							if (data.status === 'confirmed' && data.orderUrl) {
+								window.location.assign(data.orderUrl);
+								return;
+							}
+
+							if (attempts >= maxAttempts) {
+								document.getElementById('payment-status').textContent =
+									'Payment received, but your order confirmation is still pending. Please check your email shortly. Do not pay again.';
+								return;
+							}
+
+							setTimeout(checkOrderStatus, 1000);
+
+						} catch (err) {
+							document.getElementById('payment-status').textContent =
+								'Payment received, but we could not check your order status. Please check your email shortly. Do not pay again.';
+						}
+					};
+
+					checkOrderStatus();

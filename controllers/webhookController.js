@@ -33,39 +33,38 @@ const { calculateTotals } = require('../utilities/newCheckoutTotals');
 
 const updateStockLevels = async (productId, variantId, qty) => {
 
+	const productModels = [SpecProd, Shoe, Bag, Accessory];
 
-	let product = await SpecProd.findById(productId);
+	for (const ProductModel of productModels) {
 
-	if (!product) {
-		product = await Shoe.findById(productId);
-	}
+		const product = await ProductModel.findById(productId).select('variants');
 
-	if (!product) {
-		product = await Bag.findById(productId);
-	}
+		if (!product) continue;
 
-	if (!product) {
-		product = await Accessory.findById(productId);
-	}
+		if (!product.variants || product.variants.length === 0 || !variantId) {
+			return;
+		}
 
-	if (!product) {
-		throw new Error('Product not found');
-	}
+		const result = await ProductModel.updateOne(
+			{
+				_id: productId,
+				'variants._id': variantId,
+				'variants.inStock': { $gte: qty }
+			},
+			{
+				$inc: { 'variants.$.inStock': -qty }
+			}
+		);
 
-	if (!product.variants || product.variants.length === 0 || !variantId) {
+		if (result.modifiedCount === 0) {
+			throw new Error('Not enough stock');
+		}
+
 		return;
 	}
 
-	const variant = product.variants.id(variantId); // ✅ Now safe to call
-
-	if (!variant) throw new Error('Variant not found');
-	if (variant.inStock < qty) throw new Error('Not enough stock');
-
-	variant.inStock -= qty;
-
-	await product.save();
+	throw new Error('Product not found');
 };
-
 
 
 ///			////////////////////////			///////////////////			///////////////////////
@@ -114,6 +113,16 @@ exports.handleStripeWebhook = async (req, res) => {
 	}
 
 
+	/// checkout cleanup
+
+
+	if (event.type !== 'checkout.session.completed') {
+		return res.status(200).json({
+			received: true,
+			ignored: true
+		});
+	}
+
 
 	/// ✅ Check which type of event was received		///
 
@@ -148,621 +157,690 @@ exports.handleStripeWebhook = async (req, res) => {
 			return res.status(400).send('Stripe session is not paid');
 		}
 
-
-
-		const paidAmount = Number(session.amount_total);
-
-
-
-		if (!Number.isInteger(paidAmount) || paidAmount <= 0) {
-			return res.status(400).send('Invalid Stripe payment amount');
-		}
-
-		if (!session.currency || session.currency.toUpperCase() !== 'AUD') {
-			return res.status(400).send('Invalid Stripe payment currency');
-		}
-
-
-		/// Retrieve the actual payment method used
-
-		let paymentMethod = 'Stripe';
-
-		if (session.payment_intent) {
-
-			const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent);
-			const actualMethod = paymentIntent.payment_method_types?.[0] || paymentIntent.charges?.data?.[0]?.payment_method_details?.type;
-
-			if (actualMethod === 'afterpay_clearpay') paymentMethod = 'Afterpay';
-		}
-
-
-		/// ✅ Extract session data
-
-		userId = session.metadata?.userId;
-
-		fulfilmentMethod = session.metadata?.fulfilmentMethod === 'pickup' ? 'pickup' : 'delivery';
-
-		if (!userId) {
-			return res.status(400).send('Missing metadata.userId');
-		}
-
 		try {
 
-			if (!session.metadata.product) {
 
-				/// Cart			
 
-				cart = session.metadata?.cart ? JSON.parse(session.metadata.cart) : null;
+			const paidAmount = Number(session.amount_total);
 
-			} else {
 
-				/// BuyItNow	
 
-				product = session.metadata.product;
-				qty = session.metadata.qty;
-				variant = session.metadata.variant;
+			if (!Number.isInteger(paidAmount) || paidAmount <= 0) {
+				throw new Error('Invalid Stripe payment amount');
+			}
+
+			if (!session.currency || session.currency.toUpperCase() !== 'AUD') {
+				throw new Error('Invalid Stripe payment currency');
 			}
 
 
-			if (fulfilmentMethod === 'delivery') {
+			/// Retrieve the actual payment method used
 
-				if (!session.metadata?.address) return res.status(400).send('Missing metadata.address');
+			let paymentMethod = 'Stripe';
 
-				shippingAddress = JSON.parse(session.metadata.address);
+			if (session.payment_intent) {
 
-				if (!shippingAddress || typeof shippingAddress !== 'object') {
+				const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent);
+				const actualMethod = paymentIntent.payment_method_types?.[0] || paymentIntent.charges?.data?.[0]?.payment_method_details?.type;
 
-					return res.status(400).send('Invalid shipping address');
-				}
-
-				if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.postcode) {
-
-					return res.status(400).send('Missing shipping address fields');
-				}
-
-			} else {
-
-				shippingAddress = undefined;
+				if (actualMethod === 'afterpay_clearpay') paymentMethod = 'Afterpay';
 			}
 
 
-		} catch (err) {
+			/// ✅ Extract session data
 
-			return res.status(400).send('Invalid Stripe metadata');
-		}
+			userId = session.metadata?.userId;
 
+			fulfilmentMethod = session.metadata?.fulfilmentMethod === 'pickup' ? 'pickup' : 'delivery';
 
-
-		/// 🛑 Validate User type
-
-
-		let user = null;
-
-		const isGuest = userId === 'guest';
-
-
-		if (!isGuest) {
-
-			user = await User.findById(userId);
-
-			if (!user) {
-
-				console.error('❌ User not found:', userId);
-
-				return res.status(400).send('Invalid user ID');
+			if (!userId) {
+				throw new Error('Missing metadata.userId');
 			}
-
-		}
-
-
-
-		/// 🧾 Format products for Order model
-
-
-
-		//------------------- Cart --------------------//
-
-
-
-		if (cart) {
-
-			if (isGuest) {
-
-				return res.status(400).send('Guest cart checkout is not supported');
-			}
-
-			if (!Array.isArray(cart) || cart.length === 0) {
-
-				return res.status(400).send('Cart metadata is empty or invalid');
-			}
-
-
-			const orderProducts = await Promise.all(
-
-				cart.map(async item => {
-
-					/// mongoose check
-
-					if (!mongoose.Types.ObjectId.isValid(item.productId)) {
-
-						return null;
-					}
-
-
-					let productDoc = await SpecProd.findById(item.productId).populate('category');
-
-
-
-					if (!productDoc) {
-						productDoc = await Shoe.findById(item.productId).populate('category');
-					}
-
-					if (!productDoc) {
-						productDoc = await Bag.findById(item.productId).populate('category');
-					}
-
-					if (!productDoc) {
-						productDoc = await Accessory.findById(item.productId).populate('category');
-					}
-
-					if (!productDoc) {
-						console.error('❌ Product not found:', item.productId);
-						return null;
-					}
-
-
-					let itemPrice;
-
-
-					if (!productDoc.category && !productDoc.discount) {
-
-
-						itemPrice = productDoc.currentPrice;
-
-					} else if (!productDoc.category || productDoc.discount) {
-
-						itemPrice = await priceAtPurchaseDiscount(productDoc);
-
-					} else if (!productDoc.category.discount) {
-
-						itemPrice = productDoc.currentPrice;
-
-					} else {
-
-						itemPrice = await categoryDiscountPrice(productDoc);
-					}
-
-
-
-					const qtyNum = Number(item.quantity);
-
-					if (!Number.isInteger(qtyNum) || qtyNum < 1) {
-						return null;
-					}
-
-
-
-					let selectedVariant = null;
-
-					if (productDoc.variants && productDoc.variants.length > 0) {
-
-						const variantId = item.variantId || null;
-
-						if (!variantId) {
-							return null;
-						}
-
-						selectedVariant = productDoc.variants.id(variantId);
-
-						if (!selectedVariant) {
-							return null;
-						}
-					}
-
-
-
-					return {
-
-						product: item.productId,
-						productModel: productDoc.constructor.modelName,
-						quantity: qtyNum,
-						priceAtPurchase: itemPrice,
-						selectedVariant: selectedVariant ? selectedVariant._id : null
-
-
-					};
-				}));
-
-
-
-			/// Expected total comparison
-
-
-			if (orderProducts.some(item => !item)) {
-				return res.status(400).send('Cart contains an invalid product');
-			}
-
-			const expectedNetTotal = orderProducts.reduce((sum, item) => {
-				return sum + item.priceAtPurchase * item.quantity;
-			}, 0);
-
-
-			if (!Number.isFinite(expectedNetTotal) || expectedNetTotal <= 0) {
-				return res.status(400).send('Invalid cart total');
-			}
-
-
-			const { delivery, taxAmount } = calculateTotals(expectedNetTotal, { fulfilmentMethod });
-
-			const expectedAmount = Math.round((expectedNetTotal + delivery) * 100 + taxAmount);
-
-			if (paidAmount !== expectedAmount) {
-				return res.status(400).send('Stripe payment amount does not match cart total');
-			}
-
-
-			/// 							Create Order 								///
-
 
 			try {
 
-				await Promise.all(orderProducts.map(item =>
+				if (!session.metadata.product) {
 
-					updateStockLevels(item.product, item.selectedVariant, item.quantity)
+					/// Cart			
 
-				));
-
-
-				/// create an order number independant of ordering 	///
-
-
-				/// find orderNum in counter
-
-
-				const counter = await Counter.findOneAndUpdate(
-
-					{ name: 'order' },
-					{ $inc: { seq: 1 } },
-					{ new: true, upsert: true }
-				)
-
-				const orderNum = String(counter.seq).padStart(4, '0');
-
-
-
-
-				/// 💾 Save the Order to the Database
-
-
-				const order = await Order.create({
-
-					user: userId,
-					product: orderProducts,
-					shippingAddress,
-					fulfilmentMethod,
-					deliveryAmount: delivery,
-					status: 'Paid',
-					totalAmount: paidAmount / 100,
-					paymentMethod,
-					currency: session.currency.toUpperCase(),
-					orderNum
-
-				});
-
-
-				/// 💳 Save the Transaction to the Database
-
-
-				const transaction = await Transaction.create({
-
-					order: order._id,
-					transactionId: session.payment_intent,
-					status: 'Completed',
-					paidAt: new Date()
-
-				});
-
-
-				/// 🔗 Link transaction to order
-
-
-				order.transaction = transaction._id;
-
-				await order.save();
-
-
-				/// 🧹 Optional: Clear user cart
-
-				const userUpdate = { cart: [] };
-
-				if (fulfilmentMethod === 'delivery') {
-
-					userUpdate.$addToSet = { addresses: shippingAddress };
-				}
-
-				await User.findByIdAndUpdate(userId, userUpdate);
-
-
-				///			Send Order confirmation Email			///
-
-
-				const url = `${req.protocol}://${req.get('host')}/user-order-number/${orderNum}`
-
-				await new Email(user, url).orderConfirm();
-
-
-				res.status(200).json({ received: true });
-
-				return;
-
-
-			} catch (err) {
-
-				console.error('❌ Failed to save order or transaction:', err);
-
-				if (['Product not found', 'Variant not found', 'Not enough stock'].includes(err.message)) {
-
-					return res.status(400).send(err.message);
-				}
-
-				return res.status(500).send('Webhook processing failed');
-			}
-		}
-
-
-		//--------------- Buy It Now ----------------//
-
-
-		else if (product) {
-
-			/// mongoose check
-
-			if (!mongoose.Types.ObjectId.isValid(product)) {
-
-				return res.status(400).send('Invalid product ID');
-			}
-
-			let productDoc = await SpecProd.findById(product).populate('category');
-
-			let productModel = 'SpecProd';
-
-			if (!productDoc) {
-				productDoc = await Shoe.findById(product).populate('category');
-				if (productDoc) productModel = 'Shoe';
-			}
-
-			if (!productDoc) {
-				productDoc = await Bag.findById(product).populate('category');
-				if (productDoc) productModel = 'Bag';
-			}
-
-			if (!productDoc) {
-				productDoc = await Accessory.findById(product).populate('category');
-				if (productDoc) productModel = 'Accessory';
-			}
-
-			if (!productDoc) {
-
-				console.error('❌ Product not found:', product);
-
-				return res.status(404).send('Product not found');
-			}
-
-
-			let price;
-
-
-			if (!productDoc.category && !productDoc.discount) {
-
-				price = productDoc.currentPrice;
-
-			} else if (!productDoc.category || productDoc.discount) {
-
-				price = await priceAtPurchaseDiscount(productDoc);
-
-			} else if (!productDoc.category.discount) {
-
-				price = productDoc.currentPrice;
-
-			} else {
-
-				price = await categoryDiscountPrice(productDoc);
-			}
-
-
-
-			/// qtyNum
-
-
-			const qtyNum = Number(qty);
-
-			if (!Number.isInteger(qtyNum) || qtyNum < 1) {
-				return res.status(400).send('Invalid quantity');
-			}
-
-
-
-			let selectedVariant = null;
-
-
-			if (productDoc.variants && productDoc.variants.length > 0) {
-
-				const variantId = variant && variant !== 'null' ? variant : null;
-
-				if (!variantId) {
-					return res.status(400).send('Missing product variant');
-				}
-
-				selectedVariant = productDoc.variants.id(variantId);
-
-				if (!selectedVariant) {
-					return res.status(400).send('Invalid product variant');
-				}
-			}
-
-
-
-			const orderProducts = [
-				{
-					product: product,
-					productModel: productModel,
-					quantity: qtyNum,
-					priceAtPurchase: price,
-
-					//------------- Variant -------------//
-
-					selectedVariant: selectedVariant ? selectedVariant._id : null
-
-					//------------- ------- -------------//
-				}
-			]
-
-
-			const expectedNetTotal = price * qtyNum;
-
-			if (!Number.isFinite(expectedNetTotal) || expectedNetTotal <= 0) {
-				return res.status(400).send('Invalid order total');
-			}
-
-			const { delivery, taxAmount } = calculateTotals(expectedNetTotal, { fulfilmentMethod });
-
-			const expectedAmount = Math.round((expectedNetTotal + delivery) * 100 + taxAmount);
-
-			if (paidAmount !== expectedAmount) {
-				return res.status(400).send('Stripe payment amount does not match order total');
-			}
-
-
-			/// 							Create Order 								///
-
-
-			try {
-
-
-				await updateStockLevels(product, selectedVariant ? selectedVariant._id : null, qtyNum);
-
-
-				/// Create custom order number
-
-				const counter = await Counter.findOneAndUpdate(
-
-					{ name: 'order' },
-					{ $inc: { seq: 1 } },
-					{ new: true, upsert: true }
-				)
-
-				const orderNum = String(counter.seq).padStart(4, '0');
-
-
-				/// Validate guest address before creating order
-
-
-				let guestAddress;
-
-				if (isGuest) {
-
-					if (!session.client_reference_id) {
-
-						return res.status(400).send('Missing guest address reference');
-					}
-
-					if (!mongoose.Types.ObjectId.isValid(session.client_reference_id)) {
-
-						return res.status(400).send('Invalid guest address reference');
-					}
-
-
-					guestAddress = await GuestAddress.findById(session.client_reference_id);
-
-					if (!guestAddress) {
-						return res.status(400).send('Guest address not found');
-					}
-				}
-
-
-
-				/// 💾 Save the Order to the Database
-
-
-				const order = await Order.create({
-
-					user: isGuest ? undefined : userId,
-					product: orderProducts,
-					shippingAddress,
-					fulfilmentMethod,
-					deliveryAmount: delivery,
-					status: 'Paid',
-					totalAmount: paidAmount / 100,
-					paymentMethod,
-					currency: session.currency.toUpperCase(),
-					orderNum
-
-				});
-
-
-				if (isGuest) {
-
-					await GuestAddress.findByIdAndUpdate(session.client_reference_id, {
-
-						order: order._id
-					});
-				}
-
-
-				/// 💳 Save the Transaction to the Database
-
-				const transaction = await Transaction.create({
-
-					order: order._id,
-					transactionId: session.payment_intent,
-					status: 'Completed',
-					paidAt: new Date()
-
-				});
-
-				/// 🔗 Link transaction to order  
-
-				order.transaction = transaction._id;
-
-				await order.save();
-
-
-
-				///			Send Order confirmation Email			///
-
-
-				if (!isGuest) {
-
-					const url = `${req.protocol}://${req.get('host')}/user-order-number/${orderNum}`
-
-					await new Email(user, url).orderConfirm();
+					cart = session.metadata?.cart ? JSON.parse(session.metadata.cart) : null;
 
 				} else {
 
-					/// user orderId for guests
+					/// BuyItNow	
 
-					const url = `${req.protocol}://${req.get('host')}/guest-order-number/${order._id}`;
-
-					await new Email(guestAddress, url).orderConfirm();
+					product = session.metadata.product;
+					qty = session.metadata.qty;
+					variant = session.metadata.variant;
 				}
 
 
-				res.status(200).json({ received: true });
-				return;
+				if (fulfilmentMethod === 'delivery') {
+
+					if (!session.metadata?.address) throw new Error('Missing metadata.address');
+
+					shippingAddress = JSON.parse(session.metadata.address);
+
+					if (!shippingAddress || typeof shippingAddress !== 'object') {
+
+						throw new Error('Invalid shipping address');
+					}
+
+					if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.postcode) {
+
+						throw new Error('Missing shipping address fields');
+					}
+
+				} else {
+
+					shippingAddress = undefined;
+				}
+
 
 			} catch (err) {
 
-				console.error('❌ Failed to save order or transaction:', err);
+				throw new Error('Invalid Stripe metadata');
+			}
 
-				if (['Product not found', 'Variant not found', 'Not enough stock'].includes(err.message)) {
 
-					return res.status(400).send(err.message);
+
+			/// 🛑 Validate User type
+
+
+			let user = null;
+
+			const isGuest = userId === 'guest';
+
+
+			if (!isGuest) {
+
+				user = await User.findById(userId);
+
+				if (!user) {
+
+					console.error('❌ User not found:', userId);
+
+					throw new Error('Invalid user ID');
 				}
 
-				return res.status(500).send('Webhook processing failed');
 			}
+
+
+
+			/// 🧾 Format products for Order model
+
+
+
+			//------------------- Cart --------------------//
+
+
+
+			if (cart) {
+
+				if (isGuest) {
+
+					throw new Error('Guest cart checkout is not supported');
+				}
+
+				if (!Array.isArray(cart) || cart.length === 0) {
+
+					throw new Error('Cart metadata is empty or invalid');
+				}
+
+
+				const orderProducts = await Promise.all(
+
+					cart.map(async item => {
+
+						/// mongoose check
+
+						if (!mongoose.Types.ObjectId.isValid(item.productId)) {
+
+							return null;
+						}
+
+
+						let productDoc = await SpecProd.findById(item.productId).populate('category');
+
+
+
+						if (!productDoc) {
+							productDoc = await Shoe.findById(item.productId).populate('category');
+						}
+
+						if (!productDoc) {
+							productDoc = await Bag.findById(item.productId).populate('category');
+						}
+
+						if (!productDoc) {
+							productDoc = await Accessory.findById(item.productId).populate('category');
+						}
+
+						if (!productDoc) {
+							console.error('❌ Product not found:', item.productId);
+							return null;
+						}
+
+
+						let itemPrice;
+
+
+						if (!productDoc.category && !productDoc.discount) {
+
+
+							itemPrice = productDoc.currentPrice;
+
+						} else if (!productDoc.category || productDoc.discount) {
+
+							itemPrice = await priceAtPurchaseDiscount(productDoc);
+
+						} else if (!productDoc.category.discount) {
+
+							itemPrice = productDoc.currentPrice;
+
+						} else {
+
+							itemPrice = await categoryDiscountPrice(productDoc);
+						}
+
+
+
+						const qtyNum = Number(item.quantity);
+
+						if (!Number.isInteger(qtyNum) || qtyNum < 1) {
+							return null;
+						}
+
+
+
+						let selectedVariant = null;
+
+						if (productDoc.variants && productDoc.variants.length > 0) {
+
+							const variantId = item.variantId || null;
+
+							if (!variantId) {
+								return null;
+							}
+
+							selectedVariant = productDoc.variants.id(variantId);
+
+							if (!selectedVariant) {
+								return null;
+							}
+						}
+
+
+
+						return {
+
+							product: item.productId,
+							productModel: productDoc.constructor.modelName,
+							quantity: qtyNum,
+							priceAtPurchase: itemPrice,
+							selectedVariant: selectedVariant ? selectedVariant._id : null
+
+
+						};
+					}));
+
+
+
+				/// Expected total comparison
+
+
+				if (orderProducts.some(item => !item)) {
+					throw new Error('Cart contains an invalid product');
+				}
+
+				const expectedNetTotal = orderProducts.reduce((sum, item) => {
+					return sum + item.priceAtPurchase * item.quantity;
+				}, 0);
+
+
+				if (!Number.isFinite(expectedNetTotal) || expectedNetTotal <= 0) {
+					throw new Error('Invalid cart total');
+				}
+
+
+				const { delivery, taxAmount } = calculateTotals(expectedNetTotal, { fulfilmentMethod });
+
+				const expectedAmount = Math.round((expectedNetTotal + delivery) * 100 + taxAmount);
+
+				if (paidAmount !== expectedAmount) {
+					throw new Error('Stripe payment amount does not match cart total');
+				}
+
+
+				/// 							Create Order 								///
+
+
+				try {
+
+					for (const item of orderProducts) {
+
+						await updateStockLevels(item.product, item.selectedVariant, item.quantity);
+					}
+
+
+					/// create an order number independant of ordering 	///
+
+
+					/// find orderNum in counter
+
+
+					const counter = await Counter.findOneAndUpdate(
+
+						{ name: 'order' },
+						{ $inc: { seq: 1 } },
+						{ new: true, upsert: true }
+					)
+
+					const orderNum = String(counter.seq).padStart(4, '0');
+
+
+
+
+					/// 💾 Save the Order to the Database
+
+
+					const order = await Order.create({
+
+						user: userId,
+						product: orderProducts,
+						shippingAddress,
+						fulfilmentMethod,
+						deliveryAmount: delivery,
+						status: 'Paid',
+						totalAmount: paidAmount / 100,
+						paymentMethod,
+						currency: session.currency.toUpperCase(),
+						orderNum
+
+					});
+
+
+					/// 💳 Save the Transaction to the Database
+
+
+					const transaction = await Transaction.create({
+
+						order: order._id,
+						transactionId: session.payment_intent,
+						status: 'Completed',
+						paidAt: new Date()
+
+					});
+
+
+					/// 🔗 Link transaction to order
+
+
+					order.transaction = transaction._id;
+
+					await order.save();
+
+
+					/// 🧹 Optional: Clear user cart
+
+					const userUpdate = { cart: [] };
+
+					if (fulfilmentMethod === 'delivery') {
+
+						userUpdate.$addToSet = { addresses: shippingAddress };
+					}
+
+					await User.findByIdAndUpdate(userId, userUpdate);
+
+
+					///			Send Order confirmation Email			///
+
+
+					const url = `${req.protocol}://${req.get('host')}/user-order-number/${orderNum}`;
+
+					const adminOrderUrl = `${req.protocol}://${req.get('host')}/admin/be_order-page/${orderNum}`;
+
+					res.status(200).json({ received: true });
+
+					try {
+
+						await new Email(user, url).orderConfirm();
+
+					} catch (err) {
+
+						console.error('Order confirmation email failed:', err.message);
+					}
+
+					try {
+
+						await new Email(
+							{ name: 'Ang Hiyas Orders', email: process.env.ORDER_ALERT_TO },
+							adminOrderUrl
+						).sendInternalOrderCreated({
+							orderNum,
+							orderId: order._id,
+							paymentIntent: session.payment_intent,
+							customerEmail: session.customer_details?.email || session.customer_email,
+							totalAmount: order.totalAmount,
+							currency: order.currency,
+							fulfilmentMethod: order.fulfilmentMethod,
+							paymentMethod: order.paymentMethod
+						});
+
+					} catch (err) {
+
+						console.error('Internal order alert email failed:', err.message);
+					}
+
+					return;
+
+
+				} catch (err) {
+
+					console.error('❌ Failed to save order or transaction:', err);
+
+
+					throw err;
+				}
+			}
+
+
+			//--------------- Buy It Now ----------------//
+
+
+			else if (product) {
+
+				/// mongoose check
+
+				if (!mongoose.Types.ObjectId.isValid(product)) {
+
+					throw new Error('Invalid product ID');
+				}
+
+				let productDoc = await SpecProd.findById(product).populate('category');
+
+				let productModel = 'SpecProd';
+
+				if (!productDoc) {
+					productDoc = await Shoe.findById(product).populate('category');
+					if (productDoc) productModel = 'Shoe';
+				}
+
+				if (!productDoc) {
+					productDoc = await Bag.findById(product).populate('category');
+					if (productDoc) productModel = 'Bag';
+				}
+
+				if (!productDoc) {
+					productDoc = await Accessory.findById(product).populate('category');
+					if (productDoc) productModel = 'Accessory';
+				}
+
+				if (!productDoc) {
+
+					console.error('❌ Product not found:', product);
+
+					throw new Error('Product not found');
+				}
+
+
+				let price;
+
+
+				if (!productDoc.category && !productDoc.discount) {
+
+					price = productDoc.currentPrice;
+
+				} else if (!productDoc.category || productDoc.discount) {
+
+					price = await priceAtPurchaseDiscount(productDoc);
+
+				} else if (!productDoc.category.discount) {
+
+					price = productDoc.currentPrice;
+
+				} else {
+
+					price = await categoryDiscountPrice(productDoc);
+				}
+
+
+
+				/// qtyNum
+
+
+				const qtyNum = Number(qty);
+
+				if (!Number.isInteger(qtyNum) || qtyNum < 1) {
+					throw new Error('Invalid quantity');
+				}
+
+
+
+				let selectedVariant = null;
+
+
+				if (productDoc.variants && productDoc.variants.length > 0) {
+
+					const variantId = variant && variant !== 'null' ? variant : null;
+
+					if (!variantId) {
+						throw new Error('Missing product variant');
+					}
+
+					selectedVariant = productDoc.variants.id(variantId);
+
+					if (!selectedVariant) {
+						throw new Error('Invalid product variant');
+					}
+				}
+
+
+
+				const orderProducts = [
+					{
+						product: product,
+						productModel: productModel,
+						quantity: qtyNum,
+						priceAtPurchase: price,
+
+						//------------- Variant -------------//
+
+						selectedVariant: selectedVariant ? selectedVariant._id : null
+
+						//------------- ------- -------------//
+					}
+				]
+
+
+				const expectedNetTotal = price * qtyNum;
+
+				if (!Number.isFinite(expectedNetTotal) || expectedNetTotal <= 0) {
+					throw new Error('Invalid order total');
+				}
+
+				const { delivery, taxAmount } = calculateTotals(expectedNetTotal, { fulfilmentMethod });
+
+				const expectedAmount = Math.round((expectedNetTotal + delivery) * 100 + taxAmount);
+
+				if (paidAmount !== expectedAmount) {
+					throw new Error('Stripe payment amount does not match order total');
+				}
+
+
+				/// 							Create Order 								///
+
+
+				try {
+
+
+					await updateStockLevels(product, selectedVariant ? selectedVariant._id : null, qtyNum);
+
+
+					/// Create custom order number
+
+					const counter = await Counter.findOneAndUpdate(
+
+						{ name: 'order' },
+						{ $inc: { seq: 1 } },
+						{ new: true, upsert: true }
+					)
+
+					const orderNum = String(counter.seq).padStart(4, '0');
+
+
+					/// Validate guest address before creating order
+
+
+					let guestAddress;
+
+					if (isGuest) {
+
+						if (!session.client_reference_id) {
+
+							throw new Error('Missing guest address reference');
+						}
+
+						if (!mongoose.Types.ObjectId.isValid(session.client_reference_id)) {
+
+							throw new Error('Invalid guest address reference');
+						}
+
+
+						guestAddress = await GuestAddress.findById(session.client_reference_id);
+
+						if (!guestAddress) {
+							throw new Error('Guest address not found');
+						}
+					}
+
+
+
+					/// 💾 Save the Order to the Database
+
+
+					const order = await Order.create({
+
+						user: isGuest ? undefined : userId,
+						product: orderProducts,
+						shippingAddress,
+						fulfilmentMethod,
+						deliveryAmount: delivery,
+						status: 'Paid',
+						totalAmount: paidAmount / 100,
+						paymentMethod,
+						currency: session.currency.toUpperCase(),
+						orderNum
+
+					});
+
+
+					if (isGuest) {
+
+						await GuestAddress.findByIdAndUpdate(session.client_reference_id, {
+
+							order: order._id
+						});
+					}
+
+
+					/// 💳 Save the Transaction to the Database
+
+					const transaction = await Transaction.create({
+
+						order: order._id,
+						transactionId: session.payment_intent,
+						status: 'Completed',
+						paidAt: new Date()
+
+					});
+
+					/// 🔗 Link transaction to order  
+
+					order.transaction = transaction._id;
+
+					await order.save();
+
+					const emailRecipient = isGuest ? guestAddress : user;
+
+					const emailUrl = isGuest
+						? `${req.protocol}://${req.get('host')}/guest-order-number/${order._id}`
+						: `${req.protocol}://${req.get('host')}/user-order-number/${orderNum}`;
+
+					const adminOrderUrl = `${req.protocol}://${req.get('host')}/admin/be_order-page/${orderNum}`;
+
+					/// Respond to Stripe before sending email so SMTP delays do not cause webhook retries.
+
+					res.status(200).json({ received: true });
+
+					try {
+
+						await new Email(emailRecipient, emailUrl).orderConfirm();
+
+					} catch (err) {
+
+						console.error('Order confirmation email failed:', err.message);
+					}
+
+					try {
+
+						await new Email(
+							{ name: 'Ang Hiyas Orders', email: process.env.ORDER_ALERT_TO },
+							adminOrderUrl
+						).sendInternalOrderCreated({
+							orderNum,
+							orderId: order._id,
+							paymentIntent: session.payment_intent,
+							customerEmail: session.customer_details?.email || session.customer_email,
+							totalAmount: order.totalAmount,
+							currency: order.currency,
+							fulfilmentMethod: order.fulfilmentMethod,
+							paymentMethod: order.paymentMethod
+						});
+
+					} catch (err) {
+
+						console.error('Internal order alert email failed:', err.message);
+					}
+
+
+					return;
+
+				} catch (err) {
+
+					console.error('❌ Failed to save order or transaction:', err);
+
+
+					throw err;
+				}
+			}
+			throw new Error('No cart or product data found in session metadata');
+
+		} catch (err) {
+
+			console.error('Paid Stripe webhook failed before order was fully created:', err);
+
+			try {
+
+				await new Email(
+					{ name: 'Ang Hiyas Support', email: process.env.SUPPORT_ALERT_TO },
+					null
+				).sendStripeOrderFailureAlert({
+					sessionId: session.id,
+					paymentIntent: session.payment_intent,
+					customerEmail: session.customer_details?.email || session.customer_email,
+					amountTotal: session.amount_total,
+					currency: session.currency,
+					metadata: session.metadata,
+					errorMessage: err.message
+				});
+
+			} catch (emailErr) {
+
+				console.error('Stripe order failure alert email failed:', emailErr.message);
+			}
+
+			return res.status(500).send('Webhook processing failed');
 		}
 	}
-
-	return res.status(400).send('No cart or product data found in session metadata');
 }
