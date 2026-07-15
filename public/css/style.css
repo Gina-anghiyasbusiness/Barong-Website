@@ -10309,11 +10309,14 @@ p.checkout__price{
         padding: 0 1rem;
     }
 		
-			.productPage__variant-size--flex {
+	.productPage__variant-size--flex {
 		max-width: 20rem;
 	}
-
-
+	
+	
+	.header__mobile-menu-btn svg {
+		padding: .35rem;
+	}
 }
 
 
@@ -10463,6 +10466,20 @@ p.checkout__price{
 /* /// 425px */
 
 @media (max-width: 26.56em) {
+	
+.salesPage__grid--text--box {
+  
+    padding: 0 3.2rem;
+}
+
+	
+	.rentalsPage__benefits {
+    padding-left: 1.2rem;
+}
+	
+	.rentalsPage--heading-box {
+    padding: 0 3.2rem;
+}
 	
 	    .salesPage__grid {
         padding: 0 .5rem;
@@ -10873,6 +10890,15 @@ padding: 0 0 0 2rem;
 		.productList--heading-box {
         padding: 2rem 1.6rem 1rem;
     }
+		
+			.rentalsPage__actions
+ {
+    gap: 4rem;
+}
+
+.rentalsPage--heading-box {
+    gap: 2.2rem;
+}
 
 }
 
@@ -10881,6 +10907,21 @@ padding: 0 0 0 2rem;
 		/* /// 350px */
 		
 @media (max-width: 21.85em) {
+	
+	.rentalsPage__cta:link, .rentalsPage__cta:visited {
+  
+    font-size: 1.4rem;
+
+}
+	
+	  .rentalsPage--heading-box {
+        padding: 0 2rem;
+    }
+	
+	.rentalsPage__actions
+ {
+    gap: 3.2rem;
+}
 	
 	.servicesPage__benefits {
         padding-left: 0rem;
