@@ -28,11 +28,11 @@ if (!process.env.STRIPE_SECRET_KEY) {
 	throw new Error('STRIPE_SECRET_KEY environment variable is required');
 }
 
-
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-
 const { calculateTotals } = require('../utilities/newCheckoutTotals');
+
+
 
 
 
@@ -71,6 +71,9 @@ exports.getStripeOrderStatus = catchAsync(async (req, res, next) => {
 });
 
 
+
+
+
 exports.getStripeGuestOrderStatus = catchAsync(async (req, res, next) => {
 
 	const { sessionId } = req.params;
@@ -100,6 +103,8 @@ exports.getStripeGuestOrderStatus = catchAsync(async (req, res, next) => {
 		orderUrl: `/guest-order-number/${order._id}`
 	});
 });
+
+
 
 ///			////////////////////////			///////////////////			///////////////////////
 /// DONT FORGET TO ADD STRIPE WEBHOOK ROUTE TO APP.JS AND INCLUDE SCRIPT IN BASE	///
@@ -161,6 +166,12 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
 	const { product, qty, variant } = req.params;
 
+	if (!mongoose.Types.ObjectId.isValid(product)) {
+
+		return next(new AppError('Invalid product ID', 400));
+	}
+
+
 	const fulfilmentMethod = req.body.fulfilmentMethod === 'pickup' ? 'pickup' : 'delivery';
 
 
@@ -197,25 +208,34 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 	}
 
 
+
 	/// Find variant (using your method from Stripe)
+
 
 	let buyItNowVariant = null;
 
+	const actualVariant = (variant && variant !== 'null') ? variant : null;
 
 	if (buyItNowProduct.variants && buyItNowProduct.variants.length > 0) {
 
-		const actualVariant = (variant && variant !== 'null') ? variant : null;
+		if (!actualVariant) {
 
-		if (actualVariant) {
+			return next(new AppError('Missing product variant', 400));
+		}
 
-			buyItNowVariant = buyItNowProduct.variants.find(v => v.id === actualVariant);
+		buyItNowVariant = buyItNowProduct.variants.find(v => v.id === actualVariant);
 
-			if (!buyItNowVariant) {
+		if (!buyItNowVariant) {
 
-				return next(new AppError('Variant not found', 404));
-			}
+			return next(new AppError('Variant not found', 404));
+		}
+
+		if (buyItNowVariant.inStock < qtyNum) {
+
+			return next(new AppError(`Not enough ${buyItNowVariant.size} in stock! Only ${buyItNowVariant.inStock} left.`, 400));
 		}
 	}
+
 
 
 
@@ -287,8 +307,8 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
 
 
-/// 			Cart PayPal Payment			///
 
+/// 			Cart PayPal Payment			///
 
 
 exports.cartItemsPayPal = catchAsync(async (req, res, next) => {
@@ -301,13 +321,19 @@ exports.cartItemsPayPal = catchAsync(async (req, res, next) => {
 
 	const fulfilmentMethod = req.body.fulfilmentMethod === 'pickup' ? 'pickup' : 'delivery';
 
-	let price;
-	let overallArr = [];
 	let overallPrice = 0;
 
-	await Promise.all(user.cart.map(async item => {
+	for (const item of user.cart) {
 
-		const qty = item.quantity
+		const qty = Number(item.quantity);
+
+		if (!Number.isInteger(qty) || qty < 1) {
+			return next(new AppError('Invalid cart item quantity', 400));
+		}
+
+		if (!item.product || !item.product.id) {
+			return next(new AppError('Invalid cart product', 400));
+		}
 
 		let product = await SpecProd.findById(item.product.id).populate('category');
 
@@ -327,41 +353,55 @@ exports.cartItemsPayPal = catchAsync(async (req, res, next) => {
 			return next(new AppError('Product not found', 404));
 		}
 
+		let selectedVariant = null;
+
+		if (product.variants && product.variants.length > 0) {
+
+			if (!item.variant) {
+				return next(new AppError('Cart item variant is missing', 400));
+			}
+
+			selectedVariant = product.variants.id(item.variant);
+
+			if (!selectedVariant) {
+				return next(new AppError('Variant not found in product', 404));
+			}
+
+			if (selectedVariant.inStock < qty) {
+				return next(new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400));
+			}
+		}
+
+
+		let price;
 
 		if (!product.discount && !product.category) {
 
 			price = product.currentPrice;
-
 		}
 
 		else if (!product.category || product.discount) {
 
 			price = await priceAtPurchaseDiscount(product);
-
 		}
 
 		else if (!product.category.discount) {
 
 			price = product.currentPrice;
-
 		}
 
 		else {
-
 			price = await categoryDiscountPrice(product);
 		}
 
+		if (typeof price !== 'number' || Number.isNaN(price) || price <= 0) {
 
-		overallArr.push(price * qty);
+			return next(new AppError('Invalid cart item price', 400));
+		}
 
-	}))
-
-
-
-	for (let i = 0; i < overallArr.length; i++) {
-
-		overallPrice += overallArr[i];
+		overallPrice += price * qty;
 	}
+
 
 
 	if (typeof overallPrice !== 'number' || Number.isNaN(overallPrice) || overallPrice <= 0) {
@@ -372,7 +412,6 @@ exports.cartItemsPayPal = catchAsync(async (req, res, next) => {
 
 
 	const { delivery, subtotal, taxAmount } = calculateTotals(overallPrice, { fulfilmentMethod });
-
 
 	// /// Prepare PayPal order
 
@@ -545,33 +584,51 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 	const shipping = orderData.purchase_units?.[0]?.shipping;
 
-	const suburbCity = `${shipping?.address?.address_line_1} : ${shipping?.address?.admin_area_2}`;
+	const paypalAddress = shipping?.address;
+
+	const shippingAddress = fulfilmentMethod === 'delivery'
+		? {
+			label: 'PayPal Address:',
+			number: '',
+			street: paypalAddress?.address_line_2 || paypalAddress?.address_line_1 || '',
+			city: paypalAddress?.address_line_1 || paypalAddress?.admin_area_2 || '',
+			state: paypalAddress?.admin_area_1 || '',
+			postcode: paypalAddress?.postal_code || '',
+		}
+		: undefined;
 
 
-
-	const shippingAddress = {
-
-		label: 'PayPal',
-		number: '',
-		street: shipping?.address?.address_line_2 || '',
-		city: suburbCity,
-		state: shipping?.address?.admin_area_1 || '',
-		postcode: shipping?.address?.postal_code || '',
-	};
-
-
-	if (fulfilmentMethod === 'delivery' && (!shippingAddress.city || !shippingAddress.state || !shippingAddress.postcode)) {
+	if (fulfilmentMethod === 'delivery' &&
+		(!shippingAddress || !shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.postcode)
+	) {
 
 		return next(new AppError('PayPal shipping address is incomplete', 400));
 	}
+
 
 
 	/// check for existing order
 
 
 	const existingTransaction = await Transaction.findOne({
+
 		transactionId: captureData.id
-	});
+	}).populate('order');
+
+	if (existingTransaction && existingTransaction.order) {
+
+		const existingOrder = existingTransaction.order;
+
+		const orderUrl = existingOrder.user
+			? `/user-order-number/${existingOrder.orderNum}`
+			: `/guest-order-number/${existingOrder._id}`;
+
+		return res.status(200).json({
+			success: true,
+			orderUrl
+		});
+	}
+
 
 	if (existingTransaction) {
 
@@ -587,12 +644,19 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 		try {
 
 
-			const cartArray = (await Promise.all(user.cart.map(async item => {
+			const cartArray = [];
 
-				if (!item.product || !item.product._id) return null;
+			for (const item of user.cart) {
 
+				if (!item.product || !item.product._id) {
+					return next(new AppError('Invalid cart product', 400));
+				}
 
-				///			PriceAtPurchase Calc			///
+				const qty = Number(item.quantity);
+
+				if (!Number.isInteger(qty) || qty < 1) {
+					return next(new AppError('Invalid cart item quantity', 400));
+				}
 
 				let product = await SpecProd.findById(item.product.id).populate('category');
 
@@ -612,20 +676,39 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 					return next(new AppError('Product not found', 404));
 				}
 
+				let selectedVariant = null;
+
+				if (product.variants && product.variants.length > 0) {
+
+					if (!item.variant) {
+						return next(new AppError('Cart item variant is missing', 400));
+					}
+
+					selectedVariant = product.variants.id(item.variant);
+
+					if (!selectedVariant) {
+						return next(new AppError('Variant not found in product', 404));
+					}
+
+					if (selectedVariant.inStock < qty) {
+						return next(new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400));
+					}
+				}
 
 				priceAtPurchase = await checkoutVar(product, priceAtPurchase);
 
-				return {
+				if (typeof priceAtPurchase !== 'number' || Number.isNaN(priceAtPurchase) || priceAtPurchase <= 0) {
+					return next(new AppError('Invalid cart item price', 400));
+				}
 
+				cartArray.push({
 					product: item.product._id.toString(),
 					productModel: product.constructor.modelName,
-					selectedVariant: item.variant?._id?.toString(),
-					quantity: item.quantity,
+					selectedVariant: selectedVariant ? selectedVariant._id.toString() : null,
+					quantity: qty,
 					priceAtPurchase
-				};
-
-			}))).filter(Boolean); // ⬅️ prevent nulls in DB!
-
+				});
+			}
 
 
 			/// check expected amounts
@@ -690,7 +773,35 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 			console.error(err.stack);
 
-			return next(err);
+			try {
+
+				await new Email(
+					{ name: 'Ang Hiyas Support', email: process.env.SUPPORT_ALERT_TO },
+					null
+				).sendPayPalOrderFailureAlert({
+					paypalOrderId: orderID,
+					paypalCaptureId: captureData.id,
+					customerEmail: user?.email || payer?.email_address,
+					amount,
+					currency,
+					fulfilmentMethod,
+					checkoutType: 'logged-in-cart',
+					checkoutData: {
+						userId: user?._id,
+						cart: user?.cart
+					},
+					errorMessage: err.message
+				});
+
+			} catch (emailErr) {
+
+				console.error('PayPal order failure alert email failed:', emailErr.message);
+			}
+
+			return res.status(500).json({
+				status: 'fail',
+				message: 'PayPal payment was captured, but we could not finish creating your order. Please contact support before trying again.'
+			});
 		}
 
 	} else {
@@ -742,6 +853,11 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 			if (!Number.isInteger(qtyNum) || qtyNum < 1) {
 
 				return next(new AppError('Invalid quantity', 400));
+			}
+
+			if (selectedVariant && selectedVariant.inStock < qtyNum) {
+
+				return next(new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400));
 			}
 
 
@@ -809,18 +925,50 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 					email: payer.email_address,
 					name: `${payer.name.given_name} ${payer.name.surname}`,
 					number: '',
-					street: fulfilmentMethod === 'delivery' ? shipping?.address?.address_line_2 || '' : '',
-					city: fulfilmentMethod === 'delivery' ? suburbCity : '',
-					state: fulfilmentMethod === 'delivery' ? shipping?.address?.admin_area_1 || '' : '',
-					postcode: fulfilmentMethod === 'delivery' ? shipping?.address?.postal_code || '' : ''
+					street: fulfilmentMethod === 'delivery' ? shippingAddress.street : '',
+					city: fulfilmentMethod === 'delivery' ? shippingAddress.city : '',
+					state: fulfilmentMethod === 'delivery' ? shippingAddress.state : '',
+					postcode: fulfilmentMethod === 'delivery' ? shippingAddress.postcode : ''
 				});
 			}
 		}
 
 		catch (err) {
+
 			console.error('=== BUYITNOW ERROR ===', err.message);
+
 			console.error(err.stack);
-			return next(err);
+
+			try {
+				await new Email(
+					{ name: 'Ang Hiyas Support', email: process.env.SUPPORT_ALERT_TO },
+					null
+				).sendPayPalOrderFailureAlert({
+					paypalOrderId: orderID,
+					paypalCaptureId: captureData.id,
+					customerEmail: user?.email || payer?.email_address,
+					amount,
+					currency,
+					fulfilmentMethod,
+					checkoutType: isGuestRoute ? 'guest-buy-now' : 'logged-in-buy-now',
+					checkoutData: {
+						userId: user?._id,
+						product,
+						qty,
+						variant
+					},
+					errorMessage: err.message
+				});
+
+			} catch (emailErr) {
+
+				console.error('PayPal order failure alert email failed:', emailErr.message);
+			}
+
+			return res.status(500).json({
+				status: 'fail',
+				message: 'PayPal payment was captured, but we could not finish creating your order. Please contact support before trying again.'
+			});
 		}
 	}
 
@@ -829,48 +977,145 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 
 
-	const transaction = await Transaction.create({
+	let transaction;
 
-		order: order._id,
-		transactionId: captureData.id,
-		status: captureData.status === 'COMPLETED' ? 'Completed' : 'Pending',
-		paidAt: new Date(captureData.create_time)
-	});
+	try {
 
-	order.transaction = transaction._id;
+		transaction = await Transaction.create({
 
-	await order.save();
+			order: order._id,
+			transactionId: captureData.id,
+			status: captureData.status === 'COMPLETED' ? 'Completed' : 'Pending',
+			paidAt: new Date(captureData.create_time)
+		});
+
+		order.transaction = transaction._id;
+
+		await order.save();
+
+	} catch (err) {
+
+		console.error('=== PAYPAL TRANSACTION LINK ERROR ===', err.message);
+		console.error(err.stack);
+
+		try {
+
+			await new Email(
+				{ name: 'Ang Hiyas Support', email: process.env.SUPPORT_ALERT_TO },
+				null
+			).sendPayPalOrderFailureAlert({
+				paypalOrderId: orderID,
+				paypalCaptureId: captureData.id,
+				customerEmail: user?.email || payer?.email_address,
+				amount,
+				currency,
+				fulfilmentMethod,
+				checkoutType: isCartCheckout
+					? 'logged-in-cart'
+					: isGuestRoute
+						? 'guest-buy-now'
+						: 'logged-in-buy-now',
+				checkoutData: {
+					orderId: order?._id,
+					orderNum: order?.orderNum
+				},
+				errorMessage: err.message
+			});
+
+		} catch (emailErr) {
+
+			console.error('PayPal order failure alert email failed:', emailErr.message);
+		}
+
+		return res.status(500).json({
+			status: 'fail',
+			message: 'PayPal payment was captured, but we could not finish creating your order. Please contact support before trying again.'
+		});
+	}
 
 
-	if (user) {
+	try {
 
-		const urlConfirm = `${req.protocol}://${req.get('host')}/user-order-number/${order.orderNum}`;
-		await new Email(user, urlConfirm).orderConfirm();
+		if (user) {
 
-	} else {
+			const urlConfirm = `${req.protocol}://${req.get('host')}/user-order-number/${order.orderNum}`;
+			await new Email(user, urlConfirm).orderConfirm();
 
-		const guestUser = {
-			email: payer.email_address,
-			name: `${payer.name.given_name} ${payer.name.surname}`
+		} else {
 
-		};
+			const guestUser = {
+				email: payer.email_address,
+				name: `${payer.name.given_name} ${payer.name.surname}`
+			};
 
-		const urlConfirm = `${req.protocol}://${req.get('host')}/guest-order-number/${order._id}`;
+			const urlConfirm = `${req.protocol}://${req.get('host')}/guest-order-number/${order._id}`;
 
-		await new Email(guestUser, urlConfirm).orderConfirm();
+			await new Email(guestUser, urlConfirm).orderConfirm();
+		}
+
+	} catch (err) {
+
+		console.error('PayPal order confirmation email failed:', err.message);
+	}
+
+
+	const adminOrderUrl = `${req.protocol}://${req.get('host')}/admin/be_order-page/${order.orderNum}`;
+
+
+	try {
+
+		await new Email(
+			{ name: 'Ang Hiyas Orders', email: process.env.ORDER_ALERT_TO },
+			adminOrderUrl
+		).sendInternalOrderCreated({
+			orderNum: order.orderNum,
+			orderId: order._id,
+			paymentReference: captureData.id,
+			customerEmail: user ? user.email : payer.email_address,
+			totalAmount: order.totalAmount,
+			currency: order.currency,
+			fulfilmentMethod: order.fulfilmentMethod,
+			paymentMethod: order.paymentMethod
+		});
+
+	} catch (err) {
+
+		console.error('Internal PayPal order alert email failed:', err.message);
 	}
 
 
 	if (isCartCheckout) {
 
-		await User.findByIdAndUpdate(
+		try {
 
-			user._id,
-			{ cart: [] },
-			{ new: true });
+			await User.findByIdAndUpdate(
+				user._id,
+				{ cart: [] },
+				{ new: true }
+			);
+
+		} catch (err) {
+
+			console.error('PayPal cart clear failed after paid order:', err.message);
+		}
 	}
 
-	res.status(200).json({ success: true, order, transaction });
+
+	const orderUrl = isGuestRoute
+		? `/guest-order-number/${order._id}`
+		: `/user-order-number/${order.orderNum}`;
+
+
+
+	res.status(200).json({
+		success: true,
+		orderUrl,
+		order,
+		transaction
+	});
+
+	// res.status(200).json({ success: true, order, transaction });
+
 });
 
 

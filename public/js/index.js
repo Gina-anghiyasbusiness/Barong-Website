@@ -434,11 +434,14 @@ document.addEventListener('DOMContentLoaded', () => {
 			} else {
 
 				const productObj = JSON.parse(product);
-				const variantObj = JSON.parse(variant);
+				const variantObj = variant && variant !== 'null' ? JSON.parse(variant) : null;
+				const variantId = variantObj && variantObj.id ? variantObj.id : 'null';
 
-				window.location.href = `/checkout-page/buy-it-now/${productObj.id}/${qty}/${variantObj.id}?label=${selectedLabel}`;
+				window.location.href = `/checkout-page/buy-it-now/${productObj.id}/${qty}/${variantId}?label=${selectedLabel}`;
 
 			}
+
+
 		});
 	}
 });

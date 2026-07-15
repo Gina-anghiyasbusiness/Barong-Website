@@ -87,9 +87,13 @@ block content
 						label(for="admin-transaction-pay-date") Payment Date: 
 						input#admin-transaction-pay-date(type="text" name='admin-transaction-pay-date' value=`${formattedPaidAt || 'No Payment Date'}` disabled)
 					.admin-order-form--row
-						- const formattedUpdated = new Date(order.transaction. updatedAt).toLocaleDateString('en-GB'); 
+						- const formattedUpdated = new Date(order.transaction.updatedAt).toLocaleDateString('en-GB'); 
 						label(for="admin-transaction-pay-updated") Transaction Updated: 
 						input#admin-transaction-pay-updated(type="text" name='admin-transaction-pay-updated' value=`${formattedUpdated || 'No Update Date'}` disabled)
+					.admin-order-form--row
+						- const formattedID = order.transaction.transactionId; 
+						label(for="admin-transaction-pay-updated") Transaction ID: 
+						input#admin-transaction-pay-updated(type="text" name='admin-transaction-pay-updated' value=`${formattedID || 'No ID Available'}` disabled)
 
 						
 				.admin-order-form--submit

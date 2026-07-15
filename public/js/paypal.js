@@ -42,6 +42,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 					const orderData = await res.json();
 
+					if (!res.ok || !orderData.orderID) {
+
+						throw new Error(orderData.message || 'There was an error creating the PayPal order.');
+					}
+
 					return orderData.orderID;
 
 				} catch (err) {
@@ -70,7 +75,12 @@ document.addEventListener('DOMContentLoaded', function () {
 						throw new Error(finalData.message || 'PayPal payment was not completed');
 					}
 
-					window.location.assign('/order-success-guest');
+					if (!finalData.orderUrl) {
+
+						throw new Error('PayPal payment completed, but no order page was returned.');
+					}
+
+					window.location.assign(finalData.orderUrl);
 
 				} catch (err) {
 
@@ -124,6 +134,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 					const orderData = await res.json();
 
+					if (!res.ok || !orderData.orderID) {
+
+						throw new Error(orderData.message || 'There was an error creating the PayPal order.');
+					}
+
 					return orderData.orderID;
 
 
@@ -156,7 +171,12 @@ document.addEventListener('DOMContentLoaded', function () {
 						throw new Error(finalData.message || 'PayPal payment was not completed');
 					}
 
-					window.location.assign('/order-success');
+					if (!finalData.orderUrl) {
+
+						throw new Error('PayPal payment completed, but no order page was returned.');
+					}
+
+					window.location.assign(finalData.orderUrl);
 
 				} catch (err) {
 
@@ -194,6 +214,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 					const orderData = await res.json();
 
+					if (!res.ok || !orderData.orderID) {
+
+						throw new Error(orderData.message || 'There was an error creating the PayPal order.');
+					}
+
 					return orderData.orderID;
 
 				} catch (err) {
@@ -221,7 +246,12 @@ document.addEventListener('DOMContentLoaded', function () {
 						throw new Error(finalData.message || 'PayPal payment was not completed');
 					}
 
-					window.location.assign('/order-success');
+					if (!finalData.orderUrl) {
+
+						throw new Error('PayPal payment completed, but no order page was returned.');
+					}
+
+					window.location.assign(finalData.orderUrl);
 
 				} catch (err) {
 

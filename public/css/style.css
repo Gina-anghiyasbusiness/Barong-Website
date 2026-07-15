@@ -1754,7 +1754,7 @@ margin-bottom: 6rem;
 
   font-size: 2.4rem;
   font-weight: 500;	
-	margin: 0 auto 2.4rem;
+	margin: 0 auto;
 	line-height: 1.3;
  
 }
@@ -5416,8 +5416,8 @@ button.myAccount__form--submit{
  .myAccount__cart--grid {
 	
 	display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(25rem, 43rem));
-  row-gap: 2.4rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.4rem;
   align-items: start;
   justify-content: space-between;
 
@@ -6863,32 +6863,29 @@ p.creadit-card-address-paypal{
 
 .checkout__page-submit--btn{
 	align-self: center;
-	width: 87.5%;
+	width: 82.5%;
 	background-color: var(--color-secondary);
 	color: var(--color-text-white);
 	font-size: var(--text-body);
 	font-weight: 700;
 
-	padding: 1rem 0;
+	padding: .75rem 0;
 
-
+margin-bottom: 2rem;
 	border: none;
 	border-radius: 10px;
 	cursor: pointer;
 }
 
 
-/* .orLine{
+
 	
-	text-align: center;
-	margin-top: 1rem;
-	} */
 .pay-sep{
   display:flex;
   align-items:center;
   justify-content:center;
   gap:8px;
-  margin: 1.6rem auto;     /* centers the whole thing */
+  margin: .35rem auto;     /* centers the whole thing */
   width: 100%;
   max-width: 70%;
   color: rgba(0,0,0,0.55);
@@ -7087,6 +7084,8 @@ h2.order_page--heading{
 	grid-template-columns: 1fr 1fr;
 	gap: 2.4rem;
 	align-items: start;
+	
+	margin-bottom: 2rem;
 }
 
 /* cards */
@@ -7190,7 +7189,8 @@ p.order_page--user-p{
 	grid-template-columns: 9rem 2fr 1fr 1fr 1fr;
 	justify-items: center;
 	gap: 1.2rem;
-	padding: 2rem 0 0;
+	padding: 1.2rem 0 0;
+
 }
 
 .order__page--order-headings{
@@ -7272,6 +7272,20 @@ p.order_page--user-p{
     display: inline-block;
     margin-right: 12px;
   }
+	
+		p.order_page--notice {
+			
+			font-size: 1.8rem;
+			font-weight: 600;
+		}
+		
+		.order_page--order-message {
+			
+			display: flex;
+			flex-direction: column;
+			gap: .7rem;
+			margin-bottom: 6.4rem;
+		}
 
 
 /* //----------------		Reset Password Page 	-----------------// */
@@ -8666,7 +8680,7 @@ justify-self: start;
 	
 	display: flex;
 	flex-direction: column;
-	gap:2.4rem;
+	gap:2rem;
 }
 
 	.admin-order-product-flex{

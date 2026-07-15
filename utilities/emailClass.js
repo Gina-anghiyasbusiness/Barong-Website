@@ -168,21 +168,21 @@ module.exports = class Email {
 	async sendWelcome() {
 
 		await this.send('welcome', 'Welcome to our website')
-	}
+	};
 
 	async resetPassword() {
 
 		await this.send('resetPassword', 'Reset Password', true);
-	}
+	};
 
 	async accountChanges() {
 
 		await this.send('accountChanges', 'Your account has been updated');
-	}
+	};
 
 	async passwordUpdated() {
 		await this.send('passwordUpdated', 'Your Ang Hiyas password was updated');
-	}
+	};
 
 
 	/// user enquiry emails
@@ -202,7 +202,7 @@ module.exports = class Email {
 	async orderConfirm() {
 
 		await this.send('orderConfirm', 'Order details')
-	}
+	};
 
 
 
@@ -213,18 +213,20 @@ module.exports = class Email {
 	async sendEnquiryEmail(enquiryData) {
 
 		await this.sendEnquiry('enquiry', 'New Enquiry', enquiryData, true);
-	}
+	};
 
 
 	async sendCustomizationEnquiryEmail(enquiryData) {
 
 		await this.sendEnquiry('customizationEnquiry', 'New Customization Enquiry', enquiryData, true);
-	}
+	};
 
 
 
 	/// workspace support
 
+
+	// / Stripe
 
 	async sendInternalOrderCreated(orderData) {
 
@@ -234,7 +236,7 @@ module.exports = class Email {
 			orderData,
 			process.env.ORDER_ALERT_TO
 		);
-	}
+	};
 
 
 	async sendStripeOrderFailureAlert(failureData) {
@@ -248,7 +250,26 @@ module.exports = class Email {
 			failureData,
 			process.env.SUPPORT_ALERT_TO
 		);
-	}
+	};
+
+
+
+	// / Paypal
+
+	async sendPayPalOrderFailureAlert(failureData) {
+
+		const alertIdSource = failureData.paypalCaptureId || failureData.paypalOrderId || 'unknown';
+
+		const alertId = alertIdSource === 'unknown' ? alertIdSource : alertIdSource.slice(-8);
+
+		await this.sendInternal(
+			'internalPayPalOrderFailed',
+			`URGENT: Paid PayPal order failed - ${alertId}`,
+			failureData,
+			process.env.SUPPORT_ALERT_TO
+		);
+	};
+
 
 
 

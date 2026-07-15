@@ -7,7 +7,7 @@ block content
 	
 		section.order_page 
 			
-			h2.order_page--heading Order Number: #{order.orderNum}
+			h2.order_page--heading Order Number: #{order.order.orderNum}
 			
 			.order_page--main-grid
 		
@@ -59,35 +59,37 @@ block content
 						
 				.order_page-right
 				
-						.order_page--order-products
-							p.order_page--user-p-products Items:
-							.order__page--order-headings 
-								h3.order__page--order-head Image
-								h3.order__page--order-head Name
-								h3.order__page--order-head Size
-								h3.order__page--order-head Qty
-								h3.order__page--order-head Price
+					.order_page--order-products
+						p.order_page--user-p-products Items:
+						.order__page--order-headings 
+							h3.order__page--order-head Image
+							h3.order__page--order-head Name
+							h3.order__page--order-head Size
+							h3.order__page--order-head Qty
+							h3.order__page--order-head Price
+						
+						.order__page--order-details 
+						
+							each product in products
 							
-							.order__page--order-details 
-							
-								each product in products
+								-const productImage = product.product && product.product.imageCover ? product.product.imageCover : "No Image"
 								
-									-const productImage = product.product && product.product.imageCover ? product.product.imageCover : "No Image"
+								-const productName = product.product && product.product.name ? product.product.name : "No Product Name"
+								
+								-const qty = product && product.quantity ? product.quantity : "No Quantity Available"
+								
+								-const price = product && product.priceAtPurchase ? product.priceAtPurchase : "No Price Available"
+								- const matchedVariant = product.product && product.selectedVariant && product.product.variants ? product.product.variants.find(v => v._id.toString() === product.selectedVariant.toString()) : null
+								- const size = matchedVariant ? matchedVariant.size : 'No size selected'
+								
+								-const slug = product && product.product && product.product.slug ?  product.product.slug : "No Slug Available"
+								
+								a(href=`/product/${slug}`) 
+									img(src=`/img/product_imgs/${productImage}`, alt="" , width='800' , height='800' , class='order-image')
+								p.order_page--user-p  #{productName}
+								p.order_page--user-p  #{size}
+								p.order_page--user-p  #{qty}
+								p.order_page--user-p  #{price}
 									
-									-const productName = product.product && product.product.name ? product.product.name : "No Product Name"
-									
-									-const qty = product && product.quantity ? product.quantity : "No Quantity Available"
-									
-									-const price = product && product.priceAtPurchase ? product.priceAtPurchase : "No Price Available"
-									- const matchedVariant = product.product && product.selectedVariant && product.product.variants ? product.product.variants.find(v => v._id.toString() === product.selectedVariant.toString()) : null
-									- const size = matchedVariant ? matchedVariant.size : 'No size selected'
-									
-									-const slug = product && product.product && product.product.slug ?  product.product.slug : "No Slug Available"
-									
-									a(href=`/product/${slug}`) 
-										img(src=`/img/product_imgs/${productImage}`, alt="" , width='800' , height='800' , class='order-image')
-									p.order_page--user-p  #{productName}
-									p.order_page--user-p  #{size}
-									p.order_page--user-p  #{qty}
-									p.order_page--user-p  #{price}
-									
+			.order_page--order-message 
+				p.order_page--notice A copy of your order details has been sent to your email. Please keep this page or email for your records.

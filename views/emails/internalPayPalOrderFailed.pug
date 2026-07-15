@@ -1,0 +1,37 @@
+extends baseEmail
+
+block content
+  main.email-wrapper
+    .email-card
+
+      .email-header
+        img.email-logo(src=logoUrl, alt="Ang Hiyas logo")
+        h1 Paid PayPal order failed
+        p.email-subtitle PayPal captured payment, but the website failed to create or finish the order.
+
+      .message-box
+        p Do not ask the customer to pay again. Check PayPal and recover or refund this order manually.
+
+      .message-box
+        if data.paypalOrderId
+          p PayPal order ID: #{data.paypalOrderId}
+        if data.paypalCaptureId
+          p PayPal capture ID: #{data.paypalCaptureId}
+        if data.customerEmail
+          p Customer email: #{data.customerEmail}
+        if data.amount
+          p Amount captured: $#{Number(data.amount).toFixed(2)} #{data.currency || 'AUD'}
+        if data.fulfilmentMethod
+          p Fulfilment: #{data.fulfilmentMethod === 'pickup' ? 'Local pickup' : 'Delivery'}
+        if data.checkoutType
+          p Checkout type: #{data.checkoutType}
+        if data.errorMessage
+          p Error: #{data.errorMessage}
+
+      if data.checkoutData
+        .message-box
+          h2 Checkout data
+          pre #{JSON.stringify(data.checkoutData, null, 2)}
+
+      .email-footer
+        p Ang Hiyas support alert

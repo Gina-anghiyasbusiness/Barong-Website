@@ -2,33 +2,35 @@ extends baseEmail
 
 block content
 
-  main.email-wrapper
-    .email-card
+	main.email-wrapper
+		.email-card
 
-      .email-header
-        img.email-logo(src=logoUrl, alt="Ang Hiyas logo")
-        h1 New paid order created
-        p.email-subtitle A paid Stripe order has been created in the Ang Hiyas admin system.
+			.email-header
+				img.email-logo(src=logoUrl, alt="Ang Hiyas logo")
+				h1 New paid order created
+				p.email-subtitle A paid order has been created in the Ang Hiyas admin system.
 
-      .message-box
-        if data.orderNum
-          p Order number: ##{data.orderNum}
-        if data.orderId
-          p Order ID: #{data.orderId}
-        if data.customerEmail
-          p Customer email: #{data.customerEmail}
-        if data.totalAmount
-          p Total: $#{data.totalAmount} #{data.currency || 'AUD'}
-        if data.fulfilmentMethod
-          p Fulfilment: #{data.fulfilmentMethod === 'pickup' ? 'Local pickup' : 'Delivery'}
-        if data.paymentMethod
-          p Payment method: #{data.paymentMethod}
-        if data.paymentIntent
-          p Stripe payment intent: #{data.paymentIntent}
+			.message-box
+				if data.orderNum
+					p Order number: ##{data.orderNum}
+				if data.orderId
+					p Order ID: #{data.orderId}
+				if data.customerEmail
+					p Customer email: #{data.customerEmail}
+				if data.totalAmount
+					p Total: $#{data.totalAmount} #{data.currency || 'AUD'}
+				if data.fulfilmentMethod
+					p Fulfilment: #{data.fulfilmentMethod === 'pickup' ? 'Local pickup' : 'Delivery'}
+				if data.paymentMethod
+					p Payment method: #{data.paymentMethod}
+				if data.paymentReference
+					p Payment reference: #{data.paymentReference}
+				else if data.paymentIntent
+					p Payment reference: #{data.paymentIntent}
 
-      if url
-        .email-actions
-          a.email-btn(href=`${url}`, target="_blank", rel="noopener noreferrer") View Order
+			if url
+				.email-actions
+					a.email-btn(href=`${url}`, target="_blank", rel="noopener noreferrer") View Order
 
-      .email-footer
-        p Ang Hiyas internal order notification
+			.email-footer
+				p Ang Hiyas internal order notification

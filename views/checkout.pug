@@ -84,6 +84,7 @@ block content
 								p.checkout__price $ #{product.discountPrice * qty}
 
 
+			//-//			 PAYMENTS BOX 				//
 			
 			.checkout__page--right-box.checkout__right
 
@@ -104,14 +105,69 @@ block content
 							- const number = defaultAddress && defaultAddress.number ? defaultAddress.number : ''
 
 							.checkoutPanel__section
-								p.creadit-card-address.checkoutPanel__title Delivery and Payment
-
-								.checkout__form--address-flex.checkoutPanel__fields
+							
+								.checkoutPanel__section--delivery
+									p.creadit-card-address.checkoutPanel__title Delivery and Payment
 									.checkout__form--address-row.checkoutField
 										label(for="fulfilment-method")  Delivery Option
 										select#fulfilment-method(name="fulfilmentMethod")
 											option(value="delivery" selected) Delivery
 											option(value="pickup") Local Pickup
+
+
+
+							.checkoutPanel__section-totals
+								.checkout__page--totals.checkoutTotals(
+									data-subtotal=totalNet
+									data-delivery=delivery
+									data-total=totalGross
+								)
+
+									.checkout__page--totals--row
+										p.checkout__page--totals-p Subtotal
+										p.checkout__page--totals-p $#{totalNet}
+
+									.checkout__page--totals--row
+										p.checkout__page--totals-p Delivery
+										p.checkout__page--totals-p.checkout-delivery-amount $#{delivery}
+
+
+									.checkout__page--totals--row.checkoutTotals__total
+										p.checkout__page--totals-p Estimated Total
+										p.checkout__page--totals-p.checkout-total-amount $#{totalGross}
+
+							.checkoutPanel__section.checkoutPanel__payments
+								if sitePreview
+									button.checkout__page-submit--btn(type="button" disabled) PayPal currently disabled
+								else
+									#paypal-button-container(
+										data-product=(product && product.id) || ''
+										data-qty=qty || ''
+										data-variant=(variant && variant.id) || ''
+								)
+								
+								
+								
+
+									.pay-sep
+										span Or
+							
+								if sitePreview
+									button.checkout__page-submit--btn(type="button" disabled)
+										.checkout--afterpay_card
+											span Payments Disabled  
+											span 
+												img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
+								else
+							
+									button#checkout-submit--stripe(class='checkout__page-submit--btn')
+										.checkout--afterpay_card
+											span Pay with Card or 
+											span 
+												img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
+																					
+										
+								.checkout__form--address-flex.checkoutPanel__fields
 
 									.checkout__delivery-fields
 										
@@ -179,6 +235,23 @@ block content
 												maxlength="4"
 												required
 											)
+					else
+
+						form#checkout__form--address-guest.checkout__form--address.checkoutPanel__form(
+							data-product=product ? product.id : ''
+							data-qty=qty
+							data-variant=variant ? variant.id : ''
+						)
+
+							.checkoutPanel__section
+
+								.checkoutPanel__section--delivery
+									p.creadit-card-address.checkoutPanel__title Delivery and Payment
+									.checkout__form--address-row.checkoutField
+										label(for="fulfilment-method-guest")  Delivery Option
+										select#fulfilment-method-guest(name="fulfilmentMethod")
+											option(value="delivery" selected) Delivery
+											option(value="pickup") Local Pickup
 
 							.checkoutPanel__section-totals
 								.checkout__page--totals.checkoutTotals(
@@ -195,59 +268,37 @@ block content
 										p.checkout__page--totals-p Delivery
 										p.checkout__page--totals-p.checkout-delivery-amount $#{delivery}
 
-
 									.checkout__page--totals--row.checkoutTotals__total
 										p.checkout__page--totals-p Estimated Total
 										p.checkout__page--totals-p.checkout-total-amount $#{totalGross}
 
 							.checkoutPanel__section.checkoutPanel__payments
-							
-								if sitePreview
-									button.checkout__page-submit--btn(type="button" disabled)
-										.checkout--afterpay_card
-											span Payments Disabled  
-											span 
-												img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
-								else
-							
-									button#checkout-submit--stripe(class='checkout__page-submit--btn')
-										.checkout--afterpay_card
-											span Pay with Card or 
-											span 
-												img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
-												
-									.pay-sep
-										span Or
-									
-									p.creadit-card-address-paypal.checkoutPanel__title Pay with PayPal
-									p.checkoutPanel__title.paypal-no_address No Address required
 								if sitePreview
 									button.checkout__page-submit--btn(type="button" disabled) PayPal currently disabled
 								else
-									#paypal-button-container(
+									#paypal-button-container-guest(
 										data-product=(product && product.id) || ''
 										data-qty=qty || ''
 										data-variant=(variant && variant.id) || ''
-								)
+									)
 
-					else
+									.pay-sep
+										span Or
 
-						form#checkout__form--address-guest.checkout__form--address.checkoutPanel__form(
-							data-product=product ? product.id : ''
-							data-qty=qty
-							data-variant=variant ? variant.id : ''
-						)
-
-							.checkoutPanel__section
-								p.creadit-card-address.checkoutPanel__title  Delivery and Payment
+								if sitePreview
+									button.checkout__page-submit--btn(type="button" disabled)
+										.checkout--afterpay_card
+											span Payments Disabled
+											span
+												img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
+								else
+									button#checkout-submit--stripe-guest.checkout__page-submit--btn(type="submit")
+										.checkout--afterpay_card
+											span Pay with Card or
+											span
+												img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
 
 								.checkout__form--address-flex.checkoutPanel__fields
-
-									.checkout__form--address-row.checkoutField
-										label(for="fulfilment-method-guest")  Delivery Option
-										select#fulfilment-method-guest(name="fulfilmentMethod")
-											option(value="delivery" selected) Delivery
-											option(value="pickup") Local Pickup
 
 									.checkout__form--address-row.checkoutField
 										label(for="address-email") Email
@@ -256,7 +307,7 @@ block content
 									.checkout__form--address-row.checkoutField
 										label(for="address-name") Name
 										input#address-name(type="text" name="address-name" required)
-										
+
 									.checkout__delivery-fields-guest
 
 										.checkout__form--address-row.checkoutField
@@ -279,60 +330,10 @@ block content
 											label(for="address-postcode") Postcode
 											input#address-postcode(type="text" name="address-postcode" minlength="4" maxlength="4" required)
 
-							.checkoutPanel__section-totals
-								.checkout__page--totals.checkoutTotals(
-									data-subtotal=totalNet
-									data-delivery=delivery
-									data-total=totalGross
-								)
-
-									.checkout__page--totals--row
-										p.checkout__page--totals-p Subtotal
-										p.checkout__page--totals-p $#{totalNet}
-
-									.checkout__page--totals--row
-										p.checkout__page--totals-p Delivery
-										p.checkout__page--totals-p.checkout-delivery-amount $#{delivery}
-
-
-									.checkout__page--totals--row.checkoutTotals__total
-										p.checkout__page--totals-p Estimated Total
-										p.checkout__page--totals-p.checkout-total-amount $#{totalGross}
-										
-
-							.checkoutPanel__section.checkoutPanel__payments
-								if sitePreview
-									button.checkout__page-submit--btn(type="button" disabled)
-										.checkout--afterpay_card
-											span Payments Disabled 
-											span 
-												img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
-								else
-									button#checkout-submit--stripe-guest.checkout__page-submit--btn(type="submit") 
-										.checkout--afterpay_card
-											span Pay with Card or 
-											span 
-												img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
-												
-												
-									.pay-sep
-										span Or
-									
-									p.creadit-card-address-paypal.checkoutPanel__title Pay with PayPal
-									p.checkoutPanel__title.paypal-no_address No Address required
-									
-								if sitePreview
-									button.checkout__page-submit--btn(type="button" disabled) PayPal currently disabled
-								else
-									#paypal-button-container-guest(
-										data-product=(product && product.id) || ''
-										data-qty=qty || ''
-										data-variant=(variant && variant.id) || ''
-									)
 		if !sitePreview && paypalClientId
 			script(
 				nonce=nonce
-				src=`https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=AUD`
+				src=`https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=AUD&disable-funding=card`
 				data-csp-nonce=nonce
 				)
 			script(
