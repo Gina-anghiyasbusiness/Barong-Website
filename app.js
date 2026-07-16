@@ -224,10 +224,31 @@ app.get('/health', (req, res) => {
 
 //----  Morgan ----//
 
-if (process.env.NODE_ENV === 'development') {
+// if (process.env.NODE_ENV === 'development') {
 
-	app.use(morgan('dev'));
-}
+// 	app.use(morgan('dev'));
+// }
+
+
+
+//---- Safe Morgan Access logs ----//
+
+
+morgan.token('safe-url', req => {
+
+	const pathOnly = (req.originalUrl || req.url || '').split('?')[0];
+
+	return pathOnly
+		.replace(/^\/set-new-password-page\/[^/]+/i, '/set-new-password-page/[token]')
+		.replace(/^\/api\/v1\/users\/resetPassword\/[^/]+/i, '/api/v1/users/resetPassword/[token]')
+		.replace(/^\/guest-order-number\/[^/]+\/[^/]+/i, '/guest-order-number/[orderId]/[accessToken]');
+});
+
+
+app.use(morgan(':method :safe-url :status :response-time ms', {
+
+	skip: req => req.path === '/health'
+}));
 
 
 //---- render JSON to object ----///
