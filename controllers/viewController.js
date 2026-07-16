@@ -1113,9 +1113,9 @@ exports.getCategoriesPage = catchAsync(async (req, res, next) => {
 
 	res.status(200).render('categories-page', {
 
-		pageTitle: `Categories | Template Website`,
-		pageDescription: 'Category Page for your website',
-		canonicalUrl: `${process.env.CANONICAL_URL}categories-page`,
+		pageTitle: 'Shop Filipino Clothing Categories | Ang Hiyas',
+		pageDescription: 'Browse Ang Hiyas product categories including Barong Tagalog, Filipiniana, accessories and formalwear selected for Filipino events and special occasions.',
+		canonicalUrl: `${process.env.CANONICAL_URL}categories`,
 		categories
 	});
 })
@@ -1154,9 +1154,9 @@ exports.getFrontEndCategoryPage = catchAsync(async (req, res, next) => {
 
 	res.status(200).render('category-page', {
 
-		pageTitle: `Category -  | Template Website`,
-		pageDescription: `Category Page for your website`,
-		canonicalUrl: `${process.env.CANONICAL_URL}category-page`,
+		pageTitle: `${category.name} | Ang Hiyas`,
+		pageDescription: `Shop ${category.name} from Ang Hiyas, with Filipino formalwear and occasion pieces selected for weddings, cultural events and special celebrations.`,
+		canonicalUrl: `${process.env.CANONICAL_URL}categories/${category.id}`,
 		products,
 		category
 	});
