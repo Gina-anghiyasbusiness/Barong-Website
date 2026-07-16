@@ -1745,6 +1745,7 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 	}
 
 	try {
+
 		const session = await stripe.checkout.sessions.create({
 
 			payment_method_types: ['card', 'afterpay_clearpay'],
@@ -1757,7 +1758,7 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 			}),
 
 			success_url: `${req.protocol}://${req.get('host')}/order-success-guest?session_id={CHECKOUT_SESSION_ID}`,
-			cancel_url: `${req.protocol}://${req.get('host')}/guest-cancel`,
+			cancel_url: `${req.protocol}://${req.get('host')}/checkout-page/buy-it-now-guest/${product}/${qty}/${variant || 'null'}`,
 
 			customer_email: undefined,
 			client_reference_id: guestAddressId,

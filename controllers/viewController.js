@@ -1924,13 +1924,16 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 
 //-------------------- Successful payment page --------------------------//
 
+const isStripeCheckoutSessionId = (value) =>
+	typeof value === 'string' && /^cs_(test|live)_[A-Za-z0-9_]+$/.test(value);
 
 exports.getSuccessfulPaymentPage = catchAsync(async (req, res, next) => {
 
 	const { session_id } = req.query;
 
-	if (!session_id) {
-		return next(new AppError('Missing Stripe session ID', 400));
+	if (!isStripeCheckoutSessionId(session_id)) {
+
+		return next(new AppError('Invalid Stripe session ID', 400));
 	}
 
 	res.status(200).render('payment-success', {
@@ -1948,8 +1951,9 @@ exports.getSuccessfulPaymentPageGuest = catchAsync(async (req, res, next) => {
 
 	const { session_id } = req.query;
 
-	if (!session_id) {
-		return next(new AppError('Missing Stripe session ID', 400));
+	if (!isStripeCheckoutSessionId(session_id)) {
+
+		return next(new AppError('Invalid Stripe session ID', 400));
 	}
 
 	res.status(200).render('payment-success-guest', {

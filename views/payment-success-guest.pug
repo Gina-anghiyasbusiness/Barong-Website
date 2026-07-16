@@ -9,15 +9,19 @@ block content
 
 				h2.checkout__success--heading Payment received
 				p.checkout__success--sub We are confirming your order now. This can take up to 60 seconds. Please keep this page open and do not pay again.
+				
+				p.checkout__success--meta#payment-status(data-session-id=sessionId) Checking confirmation...
 
-				p.checkout__success--meta#payment-status Checking confirmation...
+			
 
 				.checkout__success--actions
 					a.checkout__success-btn.checkout__success-btn--primary(href='/') Back to home
 					a.checkout__success-btn.checkout__success-btn--ghost(href='/static/sales') Continue shopping
 
 				script(nonce=nonce).
-					const sessionId = '!{sessionId}';
+					const statusEl = document.getElementById('payment-status');
+					const sessionId = statusEl.dataset.sessionId;
+					
 					let attempts = 0;
 					const maxAttempts = 30;
 
@@ -25,7 +29,7 @@ block content
 						attempts += 1;
 
 						try {
-							const res = await fetch(`/api/v1/orders/stripe-order-status-guest/${sessionId}`);
+							const res = await fetch(`/api/v1/orders/stripe-order-status-guest/${encodeURIComponent(sessionId)}`);
 							const data = await res.json();
 
 							if (data.status === 'confirmed' && data.orderUrl) {
