@@ -63,7 +63,16 @@ html
 		if currentPage === 'home'
 			link(rel="preload" as="image" href="/img/other_imgs/new_hero.webp" type="image/webp" fetchpriority="high")
 			link(rel="preload" as="font" href="/img/fonts/cairo/Cairo-Bold.woff2" type="font/woff2" crossorigin)
-		
+			script(type="application/ld+json").
+				{
+					"@context": "https://schema.org",
+					"@type": "WebSite",
+					"@id": "https://www.anghiyas.com.au/#website",
+					"name": "Ang Hiyas",
+					"alternateName": ["Ang Hiyas Australia", "anghiyas.com.au"],
+					"url": "https://www.anghiyas.com.au/"
+				}
+				
 		if currentPage === 'product' && productPreloadImage
 			link(rel="preload" as="image" href=productPreloadImage fetchpriority="high")
 			
