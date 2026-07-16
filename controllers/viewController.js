@@ -24,6 +24,8 @@ const Transaction = require('./../models/transactionModel');
 const Discount = require('./../models/discountModel');
 const GuestAddress = require('../models/guestAddressModel');
 
+const { verifyGuestOrderAccessToken } = require('../utilities/guestOrderAccess');
+
 const { description } = require('../models/productBaseModel');
 
 const { calculateTotals } = require('../utilities/newCheckoutTotals');
@@ -2019,7 +2021,7 @@ exports.getUserOrderPage = catchAsync(async (req, res, next) => {
 
 exports.getGuestOrderPage = catchAsync(async (req, res, next) => {
 
-	const orderId = req.params.orderId;
+	const { orderId, accessToken } = req.params;
 
 	if (!mongoose.Types.ObjectId.isValid(orderId)) {
 
@@ -2030,6 +2032,12 @@ exports.getGuestOrderPage = catchAsync(async (req, res, next) => {
 	const order = await GuestAddress.findOne({ order: orderId }).populate('order');
 
 	if (!order || !order.order) return next(new AppError('Order not found', 404));
+
+
+	if (!verifyGuestOrderAccessToken(accessToken, order.order._id, order._id)) {
+
+		return next(new AppError('Order not found', 404));
+	}
 
 
 	for (const item of order.order.product) {

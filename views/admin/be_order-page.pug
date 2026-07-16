@@ -16,8 +16,11 @@ block content
 						select#admin-order-status(name="admin-order-status" ) 
 							option(value="Pending"  selected=order.status === 'Pending') Pending
 							option(value="Paid" selected=order.status === 'Paid') Paid
-							option(value="Shipped" selected=order.status === 'Shipped') Shipped
-							option(value="Delivered" selected=order.status === 'Delivered') Delivered
+							if order.fulfilmentMethod === 'pickup'
+								option(value="Delivered" selected=order.status === 'Delivered') Collected
+							else
+								option(value="Shipped" selected=order.status === 'Shipped') Shipped
+								option(value="Delivered" selected=order.status === 'Delivered') Delivered
 							option(value="Cancelled" selected=order.status === 'Cancelled') Cancelled
 							
 					.admin-top-right

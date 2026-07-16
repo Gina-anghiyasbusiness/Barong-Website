@@ -19,7 +19,8 @@ const requiredEnvVars = [
 	'JWT_EXPIRY',
 	'JWT_COOKIE_EXPIRY',
 	'SITE_URL',
-	'CANONICAL_URL'
+	'CANONICAL_URL',
+	'GUEST_ORDER_ACCESS_SECRET'
 ];
 
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
@@ -39,6 +40,67 @@ if (!['true', 'false'].includes(process.env.SITE_PREVIEW)) {
 
 	throw new Error('SITE_PREVIEW must be either true or false');
 }
+
+if (!process.env.GUEST_ORDER_ACCESS_SECRET || process.env.GUEST_ORDER_ACCESS_SECRET.length < 32) {
+
+	throw new Error('GUEST_ORDER_ACCESS_SECRET must be at least 32 characters');
+}
+
+
+
+/// Only run if all envs are for live site if preview mode off
+
+
+if (process.env.SITE_PREVIEW === 'false') {
+
+	const livePaymentEnvVars = [
+		'STRIPE_SECRET_KEY',
+		'STRIPE_PUBLISHABLE_KEY',
+		'STRIPE_WEBHOOK_SECRET',
+		'PAYPAL_CLIENT_ID',
+		'PAYPAL_SECRET_KEY',
+		'PAYPAL_MODE'
+	];
+
+	const missingLivePaymentEnvVars = livePaymentEnvVars.filter(envVar => !process.env[envVar]);
+
+	if (missingLivePaymentEnvVars.length > 0) {
+
+		throw new Error(`SITE_PREVIEW=false requires live payment environment variables: ${missingLivePaymentEnvVars.join(', ')}`);
+	}
+
+	if (!process.env.STRIPE_SECRET_KEY.startsWith('sk_live_')) {
+
+		throw new Error('SITE_PREVIEW=false requires a live Stripe secret key');
+	}
+
+	if (!process.env.STRIPE_PUBLISHABLE_KEY.startsWith('pk_live_')) {
+
+		throw new Error('SITE_PREVIEW=false requires a live Stripe publishable key');
+	}
+
+	if (!process.env.STRIPE_WEBHOOK_SECRET.startsWith('whsec_')) {
+
+		throw new Error('SITE_PREVIEW=false requires a Stripe webhook signing secret');
+	}
+
+	if (process.env.PAYPAL_MODE !== 'live') {
+
+		throw new Error('SITE_PREVIEW=false requires PAYPAL_MODE=live');
+	}
+
+	for (const envVar of ['SITE_URL', 'CANONICAL_URL']) {
+
+		const value = process.env[envVar].toLowerCase();
+
+		if (value.includes('localhost') || value.includes('127.0.0.1')) {
+
+			throw new Error(`SITE_PREVIEW=false requires ${envVar} to use the live website URL`);
+		}
+	}
+}
+
+
 
 
 

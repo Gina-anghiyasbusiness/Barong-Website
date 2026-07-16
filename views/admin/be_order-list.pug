@@ -25,7 +25,7 @@ block content
 			h3.admin-orderList--heading Date Ordered
 			h3.admin-orderList--heading Customer
 		
-			h3.admin-orderList--heading Shipping Address
+			h3.admin-orderList--heading Delivery Type
 			h3.admin-orderList--heading Order Status
 			h3.admin-orderList--heading Pay Method
 			h3.admin-orderList--heading Transaction Status
@@ -44,13 +44,10 @@ block content
 				.address
 					if order.fulfilmentMethod === 'pickup'
 						p Local Pickup
-						p No delivery address required
+						
 					else
-						p #{order.shippingAddress.label}
-						p #{order.shippingAddress.number + ' ' + order.shippingAddress.street.toUpperCase()}
-						p #{order.shippingAddress.city.toUpperCase()}
-						p #{order.shippingAddress.state.toUpperCase()}
-						p #{order.shippingAddress.postcode}
+						p Delivery
+
 					
 				p #{order.status}
 				p #{order.paymentMethod}

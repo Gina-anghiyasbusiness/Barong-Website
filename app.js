@@ -224,9 +224,10 @@ app.get('/health', (req, res) => {
 
 //----  Morgan ----//
 
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') {
 
-
+	app.use(morgan('dev'));
+}
 
 
 //---- render JSON to object ----///
@@ -276,12 +277,16 @@ app.use((req, res, next) => {
 
 //---- log API call time (with cookie) ----//
 
-app.use((req, res, next) => {
 
-	console.log(`API call logged at :${req.requestTime = new Date().toISOString()}`);
+if (process.env.NODE_ENV === 'development') {
 
-	next();
-})
+	app.use((req, res, next) => {
+
+		console.log(`API call logged at :${req.requestTime = new Date().toISOString()}`);
+
+		next();
+	});
+}
 
 
 

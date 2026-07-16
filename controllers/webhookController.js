@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const Order = require('../models/orderModel');
 const Transaction = require('../models/transactionModel');
+const StripePaymentLock = require('../models/stripePaymentLockModel');
 const User = require('../models/userModel');
 const Counter = require('../models/counterModel');
 
@@ -16,6 +17,9 @@ const GuestAddress = require('../models/guestAddressModel');
 
 
 const Email = require('./../utilities/emailClass');
+
+const { buildGuestOrderUrl } = require('../utilities/guestOrderAccess');
+
 const priceAtPurchaseDiscount = require('../utilities/priceAtPurchase');
 const categoryDiscountPrice = require('../utilities/categoryDiscountOnPurchase');
 
@@ -159,11 +163,7 @@ exports.handleStripeWebhook = async (req, res) => {
 
 		try {
 
-
-
 			const paidAmount = Number(session.amount_total);
-
-
 
 			if (!Number.isInteger(paidAmount) || paidAmount <= 0) {
 				throw new Error('Invalid Stripe payment amount');
@@ -174,7 +174,9 @@ exports.handleStripeWebhook = async (req, res) => {
 			}
 
 
+
 			/// Retrieve the actual payment method used
+
 
 			let paymentMethod = 'Stripe';
 
@@ -185,6 +187,41 @@ exports.handleStripeWebhook = async (req, res) => {
 
 				if (actualMethod === 'afterpay_clearpay') paymentMethod = 'Afterpay';
 			}
+
+
+
+			/// Stripe Payment Lock ///
+
+
+			let stripePaymentLock;
+
+			const getStripeCheckoutType = () => {
+
+				if (session.metadata?.cart) return 'logged-in-cart';
+				if (session.metadata?.userId === 'guest') return 'guest-buy-now';
+
+				return 'logged-in-buy-now';
+			};
+
+			const markStripeLockFailed = async err => {
+
+				if (!stripePaymentLock?._id) return;
+
+				try {
+
+					await StripePaymentLock.findByIdAndUpdate(stripePaymentLock._id, {
+						status: 'failed',
+						errorMessage: err.message,
+						failedAt: new Date()
+					});
+
+				} catch (lockErr) {
+
+					console.error('Stripe payment lock failed-state update failed:', lockErr.message);
+				}
+			};
+
+
 
 
 			/// ✅ Extract session data
@@ -240,6 +277,43 @@ exports.handleStripeWebhook = async (req, res) => {
 			} catch (err) {
 
 				throw new Error('Invalid Stripe metadata');
+			}
+
+
+			try {
+
+				stripePaymentLock = await StripePaymentLock.create({
+
+					stripeSessionId: session.id,
+					paymentIntent: session.payment_intent,
+					status: 'processing',
+					checkoutType: getStripeCheckoutType(),
+					customerEmail: session.customer_details?.email || session.customer_email,
+					amount: paidAmount,
+					currency: session.currency?.toUpperCase()
+				});
+
+			} catch (err) {
+
+				if (err.code === 11000) {
+
+					const existingLock = await StripePaymentLock.findOne({
+
+						$or: [
+							{ stripeSessionId: session.id },
+							{ paymentIntent: session.payment_intent }
+						]
+					}).populate({ path: 'order', select: 'orderNum user' });
+
+					return res.status(200).json({
+
+						received: true,
+						duplicate: true,
+						lockStatus: existingLock?.status || 'unknown'
+					});
+				}
+
+				throw err;
 			}
 
 
@@ -492,6 +566,21 @@ exports.handleStripeWebhook = async (req, res) => {
 
 					await User.findByIdAndUpdate(userId, userUpdate);
 
+					try {
+
+						await StripePaymentLock.findByIdAndUpdate(stripePaymentLock._id, {
+
+							status: 'completed',
+							order: order._id,
+							completedAt: new Date()
+						});
+
+					} catch (lockErr) {
+
+						console.error('Stripe payment lock completed-state update failed:', lockErr.message);
+					}
+
+
 
 					///			Send Order confirmation Email			///
 
@@ -537,7 +626,7 @@ exports.handleStripeWebhook = async (req, res) => {
 
 				} catch (err) {
 
-					console.error('❌ Failed to save order or transaction:', err);
+					console.error('Stripe order save failed:', err.message);
 
 
 					throw err;
@@ -757,15 +846,36 @@ exports.handleStripeWebhook = async (req, res) => {
 
 					/// 🔗 Link transaction to order  
 
+
+
 					order.transaction = transaction._id;
 
 					await order.save();
 
+
+					try {
+
+						await StripePaymentLock.findByIdAndUpdate(stripePaymentLock._id, {
+
+							status: 'completed',
+							order: order._id,
+							completedAt: new Date()
+						});
+
+					} catch (lockErr) {
+
+						console.error('Stripe payment lock completed-state update failed:', lockErr.message);
+					}
+
+
+
+
 					const emailRecipient = isGuest ? guestAddress : user;
 
 					const emailUrl = isGuest
-						? `${req.protocol}://${req.get('host')}/guest-order-number/${order._id}`
+						? `${req.protocol}://${req.get('host')}${buildGuestOrderUrl(order._id, guestAddress._id)}`
 						: `${req.protocol}://${req.get('host')}/user-order-number/${orderNum}`;
+
 
 					const adminOrderUrl = `${req.protocol}://${req.get('host')}/admin/be_order-page/${orderNum}`;
 
@@ -808,7 +918,7 @@ exports.handleStripeWebhook = async (req, res) => {
 
 				} catch (err) {
 
-					console.error('❌ Failed to save order or transaction:', err);
+					console.error('Stripe order save failed:', err.message);
 
 
 					throw err;
@@ -818,7 +928,9 @@ exports.handleStripeWebhook = async (req, res) => {
 
 		} catch (err) {
 
-			console.error('Paid Stripe webhook failed before order was fully created:', err);
+			await markStripeLockFailed(err);
+
+			console.error('Paid Stripe webhook failed before order was fully created:', err.message);
 
 			try {
 

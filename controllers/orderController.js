@@ -10,10 +10,16 @@ const Discount = require('./../models/discountModel');
 const User = require('./../models/userModel');
 const GuestAddress = require('../models/guestAddressModel');
 const Counter = require('../models/counterModel');
+const PayPalCaptureLock = require('../models/paypalCaptureLockModel');
 
 const AppError = require('../utilities/appError');
 const catchAsync = require('../utilities/catchAsync');
 const Email = require('../utilities/emailClass');
+
+
+
+const { buildGuestOrderUrl } = require('../utilities/guestOrderAccess');
+
 const { overwriteMiddlewareResult } = require('mongoose');
 
 
@@ -98,9 +104,18 @@ exports.getStripeGuestOrderStatus = catchAsync(async (req, res, next) => {
 		return res.status(200).json({ status: 'processing' });
 	}
 
+
+
+	const guestAddress = await GuestAddress.findOne({ order: order._id });
+
+	if (!guestAddress) {
+		return res.status(200).json({ status: 'processing' });
+	}
+
+
 	return res.status(200).json({
 		status: 'confirmed',
-		orderUrl: `/guest-order-number/${order._id}`
+		orderUrl: buildGuestOrderUrl(order._id, guestAddress._id)
 	});
 });
 
@@ -564,23 +579,143 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 
 	const amount = Number(captureData.amount?.value);
-
 	const currency = captureData.amount?.currency_code;
+	const payer = orderData.payer;
+
+
+
+	/// Helper function for paypal capture ///
+
+
+	const checkoutType = isCartCheckout
+		? 'logged-in-cart'
+		: isGuestRoute
+			? 'guest-buy-now'
+			: 'logged-in-buy-now';
+
+
+	const getPayPalCheckoutData = (extra = {}) => ({
+
+		userId: user?._id?.toString(),
+		product,
+		qty,
+		variant,
+		cart: user?.cart?.map(item => ({
+			product: item.product?._id?.toString() || item.product?.toString(),
+			variant: item.variant?.toString(),
+			quantity: item.quantity
+		})),
+		paypalStatus: captureData.status,
+		paypalAmount: captureData.amount,
+		...extra
+	});
+
+
+
+	let paypalCaptureLock;
+
+	let paypalGuestAddress;
+
+
+	const buildPayPalOrderUrl = async orderDoc => {
+
+		if (!isGuestRoute) {
+
+			return `/user-order-number/${orderDoc.orderNum}`;
+		}
+
+		const guestAddress = await GuestAddress.findOne({ order: orderDoc._id });
+
+
+		if (!guestAddress) {
+
+			throw new AppError('Guest order access record not found', 500);
+		}
+
+		return buildGuestOrderUrl(orderDoc._id, guestAddress._id);
+	};
+
+
+	const markPayPalLockFailed = async err => {
+
+		if (!paypalCaptureLock?._id) return;
+
+		try {
+			await PayPalCaptureLock.findByIdAndUpdate(paypalCaptureLock._id, {
+				status: 'failed',
+				errorMessage: err.message,
+				failedAt: new Date()
+			});
+		} catch (lockErr) {
+			console.error('PayPal capture lock failed-state update failed:', lockErr.message);
+		}
+	};
+
+
+
+
+
+	const sendCapturedPayPalFailureResponse = async (err, checkoutData = {}) => {
+
+		await markPayPalLockFailed(err);
+
+		console.error('=== PAYPAL CAPTURED ORDER FAILURE ===', err.message);
+
+
+		try {
+
+			await new Email(
+				{ name: 'Ang Hiyas Support', email: process.env.SUPPORT_ALERT_TO },
+				null
+			).sendPayPalOrderFailureAlert({
+
+				paypalOrderId: orderID,
+				paypalCaptureId: captureData.id,
+				customerEmail: user?.email || payer?.email_address,
+				amount: Number.isFinite(amount) ? amount : undefined,
+				currency: currency || captureData.amount?.currency_code || 'unknown',
+				fulfilmentMethod,
+				checkoutType,
+				checkoutData: getPayPalCheckoutData(checkoutData),
+				errorMessage: err.message
+			});
+
+		} catch (emailErr) {
+
+			console.error('PayPal order failure alert email failed:', emailErr.message);
+		}
+
+		return res.status(500).json({
+			status: 'fail',
+			message: 'PayPal payment was captured, but we could not finish creating your order. Please contact support before trying again.'
+		});
+	};
+
+
+	/// ////////////////////////////////// ///
 
 
 	if (!Number.isFinite(amount) || amount <= 0) {
 
-		return next(new AppError('Invalid PayPal payment amount', 400));
+		return await sendCapturedPayPalFailureResponse(
+
+			new AppError('Invalid PayPal payment amount', 400),
+			{ stage: 'paypal-amount-validation' }
+		);
 	}
+
 
 	if (currency !== 'AUD') {
 
-		return next(new AppError('Invalid PayPal payment currency', 400));
+		return await sendCapturedPayPalFailureResponse(
+
+			new AppError('Invalid PayPal payment currency', 400),
+			{ stage: 'paypal-currency-validation' }
+		);
 	}
 
 
 
-	const payer = orderData.payer;
 
 	const shipping = orderData.purchase_units?.[0]?.shipping;
 
@@ -602,7 +737,13 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 		(!shippingAddress || !shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.postcode)
 	) {
 
-		return next(new AppError('PayPal shipping address is incomplete', 400));
+		return await sendCapturedPayPalFailureResponse(
+			new AppError('PayPal shipping address is incomplete', 400),
+			{
+				stage: 'paypal-shipping-validation',
+				paypalAddress
+			}
+		);
 	}
 
 
@@ -615,13 +756,33 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 		transactionId: captureData.id
 	}).populate('order');
 
+
 	if (existingTransaction && existingTransaction.order) {
+
 
 		const existingOrder = existingTransaction.order;
 
-		const orderUrl = existingOrder.user
-			? `/user-order-number/${existingOrder.orderNum}`
-			: `/guest-order-number/${existingOrder._id}`;
+		let orderUrl;
+
+		if (existingOrder.user) {
+
+			orderUrl = `/user-order-number/${existingOrder.orderNum}`;
+
+		} else {
+
+			const guestAddress = await GuestAddress.findOne({ order: existingOrder._id });
+
+			if (!guestAddress) {
+
+				return await sendCapturedPayPalFailureResponse(
+
+					new AppError('Guest order access record not found', 500),
+					{ stage: 'paypal-existing-transaction-guest-access' }
+				);
+			}
+
+			orderUrl = buildGuestOrderUrl(existingOrder._id, guestAddress._id);
+		}
 
 		return res.status(200).json({
 			success: true,
@@ -632,7 +793,61 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 	if (existingTransaction) {
 
-		return next(new AppError('This PayPal payment has already been processed', 409));
+		return await sendCapturedPayPalFailureResponse(
+
+			new AppError('PayPal transaction exists but no linked order was found', 409),
+			{ stage: 'paypal-existing-transaction-missing-order' }
+		);
+	}
+
+	try {
+		paypalCaptureLock = await PayPalCaptureLock.create({
+			paypalOrderId: orderID,
+			paypalCaptureId: captureData.id,
+			status: 'processing',
+			checkoutType,
+			customerEmail: user?.email || payer?.email_address,
+			amount,
+			currency
+		});
+
+	} catch (err) {
+
+		if (err.code === 11000) {
+
+			const existingLock = await PayPalCaptureLock.findOne({
+				$or: [
+					{ paypalOrderId: orderID },
+					{ paypalCaptureId: captureData.id }
+				]
+			}).populate({ path: 'order', select: 'orderNum user' });
+
+			if (existingLock?.order) {
+
+				return res.status(200).json({
+					success: true,
+					orderUrl: await buildPayPalOrderUrl(existingLock.order)
+				});
+			}
+
+			if (existingLock?.status === 'failed') {
+
+				return res.status(500).json({
+					status: 'fail',
+					message: 'PayPal payment was captured, but we could not finish creating your order. Support has been notified. Please contact support before trying again.'
+				});
+			}
+
+			return res.status(409).json({
+				status: 'fail',
+				message: 'This PayPal payment is already being processed. Please wait for the order confirmation or contact support if it does not arrive.'
+			});
+		}
+
+		return await sendCapturedPayPalFailureResponse(
+			err,
+			{ stage: 'paypal-capture-lock-create' }
+		);
 	}
 
 
@@ -649,13 +864,15 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 			for (const item of user.cart) {
 
 				if (!item.product || !item.product._id) {
-					return next(new AppError('Invalid cart product', 400));
+
+					throw new AppError('Invalid cart product', 400);
 				}
 
 				const qty = Number(item.quantity);
 
 				if (!Number.isInteger(qty) || qty < 1) {
-					return next(new AppError('Invalid cart item quantity', 400));
+
+					throw new AppError('Invalid cart item quantity', 400);
 				}
 
 				let product = await SpecProd.findById(item.product.id).populate('category');
@@ -673,7 +890,8 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 				}
 
 				if (!product) {
-					return next(new AppError('Product not found', 404));
+
+					throw new AppError('Product not found', 404);
 				}
 
 				let selectedVariant = null;
@@ -681,24 +899,28 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 				if (product.variants && product.variants.length > 0) {
 
 					if (!item.variant) {
-						return next(new AppError('Cart item variant is missing', 400));
+
+						throw new AppError('Cart item variant is missing', 400);
 					}
 
 					selectedVariant = product.variants.id(item.variant);
 
 					if (!selectedVariant) {
-						return next(new AppError('Variant not found in product', 404));
+
+						throw new AppError('Variant not found in product', 404);
 					}
 
 					if (selectedVariant.inStock < qty) {
-						return next(new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400));
+
+						throw new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400);
 					}
 				}
 
 				priceAtPurchase = await checkoutVar(product, priceAtPurchase);
 
 				if (typeof priceAtPurchase !== 'number' || Number.isNaN(priceAtPurchase) || priceAtPurchase <= 0) {
-					return next(new AppError('Invalid cart item price', 400));
+
+					throw new AppError('Invalid cart item price', 400);
 				}
 
 				cartArray.push({
@@ -716,7 +938,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 			if (cartArray.length === 0) {
 
-				return next(new AppError('Cart is empty', 400));
+				throw new AppError('Cart is empty', 400);
 			}
 
 
@@ -731,7 +953,8 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 			const expectedAmount = Number((expectedNetTotal + delivery + taxAmount / 100).toFixed(2));
 
 			if (Math.abs(amount - expectedAmount) > 0.01) {
-				return next(new AppError('PayPal payment amount does not match order total', 400));
+
+				throw new AppError('PayPal payment amount does not match order total', 400);
 			}
 
 
@@ -769,9 +992,10 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 		} catch (err) {
 
+			await markPayPalLockFailed(err);
+
 			console.error('=== CART ERROR ===', err.message);
 
-			console.error(err.stack);
 
 			try {
 
@@ -817,7 +1041,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 			if (!foundProduct) foundProduct = await Shoe.findById(product).populate('category');
 			if (!foundProduct) foundProduct = await Bag.findById(product).populate('category');
 			if (!foundProduct) foundProduct = await Accessory.findById(product).populate('category');
-			if (!foundProduct) return next(new AppError('Product not found', 404));
+			if (!foundProduct) throw new AppError('Product not found', 404);
 
 
 			/// 2. Find the variant
@@ -828,12 +1052,12 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 				if (!actualVariant) {
 
-					return next(new AppError('Missing product variant', 400));
+					throw new AppError('Missing product variant', 400);
 				}
 
 				if (!selectedVariant) {
 
-					return next(new AppError('Invalid product variant', 400));
+					throw new AppError('Invalid product variant', 400);
 				}
 			}
 
@@ -844,7 +1068,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 			if (typeof priceAtPurchase !== 'number' || isNaN(priceAtPurchase)) {
 
-				return next(new AppError('Invalid price at purchase', 500));
+				throw new AppError('Invalid price at purchase', 500);
 			}
 
 
@@ -852,12 +1076,12 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 			if (!Number.isInteger(qtyNum) || qtyNum < 1) {
 
-				return next(new AppError('Invalid quantity', 400));
+				throw new AppError('Invalid quantity', 400);
 			}
 
 			if (selectedVariant && selectedVariant.inStock < qtyNum) {
 
-				return next(new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400));
+				throw new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400);
 			}
 
 
@@ -870,7 +1094,8 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 			const expectedAmount = Number((expectedNetTotal + delivery + taxAmount / 100).toFixed(2));
 
 			if (Math.abs(amount - expectedAmount) > 0.01) {
-				return next(new AppError('PayPal payment amount does not match order total', 400));
+
+				throw new AppError('PayPal payment amount does not match order total', 400);
 			}
 
 
@@ -920,7 +1145,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 			/// 7. Guest address (if no logged-in user)
 
 			if (!user) {
-				await GuestAddress.create({
+				paypalGuestAddress = await GuestAddress.create({
 					order: order._id,
 					email: payer.email_address,
 					name: `${payer.name.given_name} ${payer.name.surname}`,
@@ -935,9 +1160,10 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 		catch (err) {
 
+			await markPayPalLockFailed(err);
+
 			console.error('=== BUYITNOW ERROR ===', err.message);
 
-			console.error(err.stack);
 
 			try {
 				await new Email(
@@ -993,10 +1219,24 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 		await order.save();
 
+		try {
+			await PayPalCaptureLock.findByIdAndUpdate(paypalCaptureLock._id, {
+				status: 'completed',
+				order: order._id,
+				completedAt: new Date()
+			});
+
+		} catch (lockErr) {
+
+			console.error('PayPal capture lock completed-state update failed:', lockErr.message);
+		}
+
 	} catch (err) {
 
+		await markPayPalLockFailed(err);
+
 		console.error('=== PAYPAL TRANSACTION LINK ERROR ===', err.message);
-		console.error(err.stack);
+
 
 		try {
 
@@ -1048,7 +1288,15 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 				name: `${payer.name.given_name} ${payer.name.surname}`
 			};
 
-			const urlConfirm = `${req.protocol}://${req.get('host')}/guest-order-number/${order._id}`;
+			const guestAddress = paypalGuestAddress || await GuestAddress.findOne({ order: order._id });
+
+			if (!guestAddress) {
+
+				throw new AppError('Guest order access record not found', 500);
+			}
+
+			const urlConfirm = `${req.protocol}://${req.get('host')}${buildGuestOrderUrl(order._id, guestAddress._id)}`;
+
 
 			await new Email(guestUser, urlConfirm).orderConfirm();
 		}
@@ -1101,20 +1349,33 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 	}
 
 
-	const orderUrl = isGuestRoute
-		? `/guest-order-number/${order._id}`
-		: `/user-order-number/${order.orderNum}`;
+	let orderUrl;
+
+	if (isGuestRoute) {
+		const guestAddress = paypalGuestAddress || await GuestAddress.findOne({ order: order._id });
+
+		if (!guestAddress) {
+
+			return await sendCapturedPayPalFailureResponse(
+
+				new AppError('Guest order access record not found', 500),
+				{ stage: 'paypal-final-response-guest-access' }
+			);
+		}
+
+		orderUrl = buildGuestOrderUrl(order._id, guestAddress._id);
+
+	} else {
+
+		orderUrl = `/user-order-number/${order.orderNum}`;
+	}
 
 
 
 	res.status(200).json({
 		success: true,
-		orderUrl,
-		order,
-		transaction
+		orderUrl
 	});
-
-	// res.status(200).json({ success: true, order, transaction });
 
 });
 
@@ -1520,10 +1781,13 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 		});
 
 	} catch (stripeError) {
-		console.error('STRIPE ERROR:', stripeError);
-		console.error('STRIPE ERROR MESSAGE:', stripeError.message);
-		console.error('STRIPE ERROR TYPE:', stripeError.type);
-		return next(new AppError(`Stripe error: ${stripeError.message}`, 500));
+
+		console.error('Stripe checkout session creation failed:', {
+			message: stripeError.message,
+			type: stripeError.type
+		});
+
+		return next(new AppError('Payment setup failed. Please try again or contact support.', 500));
 	}
 });
 
@@ -1955,11 +2219,8 @@ exports.updateUserOrder = catchAsync(async (req, res, next) => {
 	}
 
 	if (typeof address !== 'object' || Array.isArray(address)) {
-		return next(new AppError('Invalid shipping address data', 400));
-	}
 
-	if (!address.street || !address.city || !address.postcode) {
-		return next(new AppError('Shipping address is incomplete', 400));
+		return next(new AppError('Invalid shipping address data', 400));
 	}
 
 
@@ -1978,9 +2239,30 @@ exports.updateUserOrder = catchAsync(async (req, res, next) => {
 	}
 
 
+	const existingOrder = await Order.findOne({ orderNum });
+
+	if (!existingOrder) return next(new AppError('Order not found', 404));
+
+
+
+	const isPickupOrder = existingOrder.fulfilmentMethod === 'pickup';
+
+	if (!isPickupOrder && (!address.street || !address.city || !address.postcode)) {
+
+		return next(new AppError('Shipping address is incomplete', 400));
+	}
+
+
+	const orderUpdate = { status: orderStatus };
+
+	if (!isPickupOrder) {
+
+		orderUpdate.shippingAddress = address;
+	}
+
 	const order = await Order.findOneAndUpdate(
 		{ orderNum },
-		{ status: orderStatus, shippingAddress: address },
+		orderUpdate,
 		{ new: true, runValidators: true }
 	);
 

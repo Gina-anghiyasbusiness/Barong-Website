@@ -13,13 +13,13 @@ const productController = require('./../controllers/productController.js');
 router.use(authController.protectRoute);
 
 
-router.post('/',
-	authController.restrictTo('user'),
-	productController.setProductUserIds,
-	reviewController.createReview);
+/// Public review creation is disabled for V1 until purchase verification is added.
 
 
-
+// router.post('/',
+// 	authController.restrictTo('user'),
+// 	productController.setProductUserIds,
+// 	reviewController.createReview);
 
 
 

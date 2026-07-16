@@ -66,11 +66,12 @@ router.get('/bag-list', viewController.getBagListPage);
 router.get('/bag/:slug', viewController.getBagPage);
 
 
-/// Shoes
 
-router.get('/shoe-list', viewController.getShoeListPage);
+/// Shoes - redirect to sales whilst not selling
 
-router.get('/shoe/:slug', viewController.getShoePage);
+
+router.get('/shoe-list', (req, res) => res.redirect(301, '/static/sales'));
+router.get('/shoe/:slug', (req, res) => res.redirect(301, '/static/sales'));
 
 
 
@@ -183,7 +184,8 @@ router.get('/order-success-guest',
 router.get('/checkout-page/buy-it-now-guest/:productId/:qty/:variant', viewController.getCheckoutPageGuest);
 
 
-router.get('/guest-order-number/:orderId',
+
+router.get('/guest-order-number/:orderId/:accessToken',
 	viewController.getGuestOrderPage);
 
 
