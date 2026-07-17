@@ -190,6 +190,7 @@ block content
 
 												.myAccount__cart--text-box
 													p.myAccount__cart--name #{item.product.name}
+													p.myAccount__cart--decription #{item.product.description}
 													p.myAccount__cart--color Color: #{item.product.color}
 
 													button(class='remove-cart--item' , data-remove=`${item._id}`, data-user=`${user._id}`)

@@ -53,54 +53,90 @@ if (!process.env.GUEST_ORDER_ACCESS_SECRET || process.env.GUEST_ORDER_ACCESS_SEC
 
 if (process.env.SITE_PREVIEW === 'false') {
 
-	const livePaymentEnvVars = [
+	const paymentEnvVars = [
 		'STRIPE_SECRET_KEY',
 		'STRIPE_PUBLISHABLE_KEY',
 		'STRIPE_WEBHOOK_SECRET',
 		'PAYPAL_CLIENT_ID',
 		'PAYPAL_SECRET_KEY',
-		'PAYPAL_MODE'
+		'PAYPAL_MODE',
+		'SITE_URL',
+		'CANONICAL_URL'
 	];
 
-	const missingLivePaymentEnvVars = livePaymentEnvVars.filter(envVar => !process.env[envVar]);
 
-	if (missingLivePaymentEnvVars.length > 0) {
+	const missingPaymentEnvVars = paymentEnvVars.filter(envVar => !process.env[envVar]);
 
-		throw new Error(`SITE_PREVIEW=false requires live payment environment variables: ${missingLivePaymentEnvVars.join(', ')}`);
+	if (missingPaymentEnvVars.length > 0) {
+
+		throw new Error(`SITE_PREVIEW=false requires payment environment variables: ${missingPaymentEnvVars.join(', ')}`);
 	}
 
-	if (!process.env.STRIPE_SECRET_KEY.startsWith('sk_live_')) {
+	if (process.env.NODE_ENV === 'development') {
 
-		throw new Error('SITE_PREVIEW=false requires a live Stripe secret key');
-	}
+		if (!process.env.STRIPE_SECRET_KEY.startsWith('sk_test_')) {
 
-	if (!process.env.STRIPE_PUBLISHABLE_KEY.startsWith('pk_live_')) {
+			throw new Error('Development checkout requires a test Stripe secret key');
+		}
 
-		throw new Error('SITE_PREVIEW=false requires a live Stripe publishable key');
-	}
+		if (!process.env.STRIPE_PUBLISHABLE_KEY.startsWith('pk_test_')) {
 
-	if (!process.env.STRIPE_WEBHOOK_SECRET.startsWith('whsec_')) {
+			throw new Error('Development checkout requires a test Stripe publishable key');
+		}
 
-		throw new Error('SITE_PREVIEW=false requires a Stripe webhook signing secret');
-	}
+		if (!process.env.STRIPE_WEBHOOK_SECRET.startsWith('whsec_')) {
 
-	if (process.env.PAYPAL_MODE !== 'live') {
+			throw new Error('Development checkout requires a Stripe webhook signing secret');
+		}
 
-		throw new Error('SITE_PREVIEW=false requires PAYPAL_MODE=live');
-	}
+		if (process.env.PAYPAL_MODE !== 'sandbox') {
 
-	for (const envVar of ['SITE_URL', 'CANONICAL_URL']) {
+			throw new Error('Development checkout requires PAYPAL_MODE=sandbox');
+		}
 
-		const value = process.env[envVar].toLowerCase();
+		for (const envVar of ['SITE_URL', 'CANONICAL_URL']) {
 
-		if (value.includes('localhost') || value.includes('127.0.0.1')) {
+			const value = process.env[envVar].toLowerCase();
 
-			throw new Error(`SITE_PREVIEW=false requires ${envVar} to use the live website URL`);
+			if (!value.includes('localhost') && !value.includes('127.0.0.1')) {
+
+				throw new Error(`Development checkout requires ${envVar} to use localhost`);
+			}
+		}
+
+	} else {
+
+		if (!process.env.STRIPE_SECRET_KEY.startsWith('sk_live_')) {
+
+			throw new Error('SITE_PREVIEW=false requires a live Stripe secret key');
+		}
+
+		if (!process.env.STRIPE_PUBLISHABLE_KEY.startsWith('pk_live_')) {
+
+			throw new Error('SITE_PREVIEW=false requires a live Stripe publishable key');
+		}
+
+		if (!process.env.STRIPE_WEBHOOK_SECRET.startsWith('whsec_')) {
+
+			throw new Error('SITE_PREVIEW=false requires a Stripe webhook signing secret');
+		}
+
+		if (process.env.PAYPAL_MODE !== 'live') {
+
+			throw new Error('SITE_PREVIEW=false requires PAYPAL_MODE=live');
+		}
+
+		for (const envVar of ['SITE_URL', 'CANONICAL_URL']) {
+
+			const value = process.env[envVar].toLowerCase();
+
+			if (value.includes('localhost') || value.includes('127.0.0.1')) {
+
+				throw new Error(`SITE_PREVIEW=false requires ${envVar} to use the live website URL`);
+			}
 		}
 	}
 }
-
-
 
 
 
