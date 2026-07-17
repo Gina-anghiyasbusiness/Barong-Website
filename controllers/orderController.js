@@ -144,8 +144,12 @@ const updateStockLevels = async (productId, variantId, qty) => {
 		const result = await ProductModel.updateOne(
 			{
 				_id: productId,
-				'variants._id': variantId,
-				'variants.inStock': { $gte: qty }
+				variants: {
+					$elemMatch: {
+						_id: variantId,
+						inStock: { $gte: qty }
+					}
+				}
 			},
 			{
 				$inc: { 'variants.$.inStock': -qty }
@@ -852,6 +856,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 
 	let order, priceAtPurchase;
+	let stockUpdates = [];
 
 
 	if (isCartCheckout) {
@@ -958,18 +963,12 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 			}
 
 
-			for (const item of cartArray) {
-
-				await updateStockLevels(item.product, item.selectedVariant, item.quantity);
-			}
-
-
 			const counter = await Counter.findOneAndUpdate(
-
 				{ name: 'order' },
 				{ $inc: { seq: 1 } },
 				{ new: true, upsert: true }
 			);
+
 
 			const orderNum = String(counter.seq).padStart(4, '0');
 
@@ -982,11 +981,18 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 				shippingAddress: fulfilmentMethod === 'delivery' ? shippingAddress : undefined,
 				fulfilmentMethod,
 				deliveryAmount: delivery,
-				status: 'Paid',
+				status: 'Pending',
 				totalAmount: amount,
 				paymentMethod: 'PayPal',
 				currency
 			});
+
+			stockUpdates = cartArray.map(item => ({
+
+				product: item.product,
+				selectedVariant: item.selectedVariant,
+				quantity: item.quantity
+			}));
 
 
 
@@ -1101,15 +1107,6 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 
 
-			/// 4. Update stock (only if variant exists)
-
-
-			if (selectedVariant) {
-
-				await updateStockLevels(product, selectedVariant._id.toString(), qtyNum);
-
-			}
-
 			/// 5. Create order number
 
 			const counter = await Counter.findOneAndUpdate(
@@ -1135,11 +1132,20 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 				shippingAddress: fulfilmentMethod === 'delivery' ? shippingAddress : undefined,
 				fulfilmentMethod,
 				deliveryAmount: delivery,
-				status: 'Paid',
+				status: 'Pending',
 				totalAmount: amount,
 				paymentMethod: 'PayPal',
 				currency
 			});
+
+
+			stockUpdates = selectedVariant
+				? [{
+					product,
+					selectedVariant: selectedVariant._id.toString(),
+					quantity: qtyNum
+				}]
+				: [];
 
 
 			/// 7. Guest address (if no logged-in user)
@@ -1208,7 +1214,6 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 	try {
 
 		transaction = await Transaction.create({
-
 			order: order._id,
 			transactionId: captureData.id,
 			status: captureData.status === 'COMPLETED' ? 'Completed' : 'Pending',
@@ -1219,7 +1224,17 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 		await order.save();
 
+		for (const item of stockUpdates) {
+			await updateStockLevels(item.product, item.selectedVariant, item.quantity);
+		}
+
+		order.status = 'Paid';
+
+		await order.save();
+
+
 		try {
+
 			await PayPalCaptureLock.findByIdAndUpdate(paypalCaptureLock._id, {
 				status: 'completed',
 				order: order._id,

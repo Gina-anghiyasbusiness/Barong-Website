@@ -35,6 +35,8 @@ const { calculateTotals } = require('../utilities/newCheckoutTotals');
 
 
 
+
+
 const updateStockLevels = async (productId, variantId, qty) => {
 
 	const productModels = [SpecProd, Shoe, Bag, Accessory];
@@ -52,8 +54,12 @@ const updateStockLevels = async (productId, variantId, qty) => {
 		const result = await ProductModel.updateOne(
 			{
 				_id: productId,
-				'variants._id': variantId,
-				'variants.inStock': { $gte: qty }
+				variants: {
+					$elemMatch: {
+						_id: variantId,
+						inStock: { $gte: qty }
+					}
+				}
 			},
 			{
 				$inc: { 'variants.$.inStock': -qty }
@@ -491,31 +497,14 @@ exports.handleStripeWebhook = async (req, res) => {
 
 				try {
 
-					for (const item of orderProducts) {
-
-						await updateStockLevels(item.product, item.selectedVariant, item.quantity);
-					}
-
-
-					/// create an order number independant of ordering 	///
-
-
-					/// find orderNum in counter
-
-
 					const counter = await Counter.findOneAndUpdate(
-
 						{ name: 'order' },
 						{ $inc: { seq: 1 } },
 						{ new: true, upsert: true }
-					)
+					);
+
 
 					const orderNum = String(counter.seq).padStart(4, '0');
-
-
-
-
-					/// 💾 Save the Order to the Database
 
 
 					const order = await Order.create({
@@ -525,16 +514,12 @@ exports.handleStripeWebhook = async (req, res) => {
 						shippingAddress,
 						fulfilmentMethod,
 						deliveryAmount: delivery,
-						status: 'Paid',
+						status: 'Pending',
 						totalAmount: paidAmount / 100,
 						paymentMethod,
 						currency: session.currency.toUpperCase(),
 						orderNum
-
 					});
-
-
-					/// 💳 Save the Transaction to the Database
 
 
 					const transaction = await Transaction.create({
@@ -543,19 +528,32 @@ exports.handleStripeWebhook = async (req, res) => {
 						transactionId: session.payment_intent,
 						status: 'Completed',
 						paidAt: new Date()
-
 					});
-
-
-					/// 🔗 Link transaction to order
 
 
 					order.transaction = transaction._id;
 
 					await order.save();
 
+					try {
 
-					/// 🧹 Optional: Clear user cart
+						await StripePaymentLock.findByIdAndUpdate(stripePaymentLock._id, {
+							order: order._id
+						});
+
+					} catch (lockErr) {
+
+						console.error('Stripe payment lock order-link update failed:', lockErr.message);
+					}
+
+					for (const item of orderProducts) {
+
+						await updateStockLevels(item.product, item.selectedVariant, item.quantity);
+					}
+
+					order.status = 'Paid';
+
+					await order.save();
 
 					const userUpdate = { cart: [] };
 
@@ -564,7 +562,14 @@ exports.handleStripeWebhook = async (req, res) => {
 						userUpdate.$addToSet = { addresses: shippingAddress };
 					}
 
-					await User.findByIdAndUpdate(userId, userUpdate);
+					try {
+
+						await User.findByIdAndUpdate(userId, userUpdate);
+
+					} catch (cartErr) {
+
+						console.error('Stripe cart clear failed after paid order:', cartErr.message);
+					}
 
 					try {
 
@@ -573,17 +578,14 @@ exports.handleStripeWebhook = async (req, res) => {
 							status: 'completed',
 							order: order._id,
 							completedAt: new Date()
+
 						});
 
 					} catch (lockErr) {
 
 						console.error('Stripe payment lock completed-state update failed:', lockErr.message);
+
 					}
-
-
-
-					///			Send Order confirmation Email			///
-
 
 					const url = `${req.protocol}://${req.get('host')}/user-order-number/${orderNum}`;
 
@@ -603,9 +605,11 @@ exports.handleStripeWebhook = async (req, res) => {
 					try {
 
 						await new Email(
+
 							{ name: 'Ang Hiyas Orders', email: process.env.ORDER_ALERT_TO },
 							adminOrderUrl
 						).sendInternalOrderCreated({
+
 							orderNum,
 							orderId: order._id,
 							paymentIntent: session.payment_intent,
@@ -617,20 +621,19 @@ exports.handleStripeWebhook = async (req, res) => {
 						});
 
 					} catch (err) {
-
 						console.error('Internal order alert email failed:', err.message);
 					}
 
 					return;
 
-
 				} catch (err) {
 
 					console.error('Stripe order save failed:', err.message);
 
-
 					throw err;
+
 				}
+
 			}
 
 
