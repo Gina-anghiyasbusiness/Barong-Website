@@ -211,6 +211,7 @@ mongoose.connect(process.env.CONNECTION_STRING)
 	.then(() => {
 
 		console.log(`DB Connected: ${process.env.NODE_ENV.toUpperCase()} MODE`);
+		console.log(`Site Preview: ${process.env.SITE_PREVIEW.toUpperCase()}`);
 	});
 
 
