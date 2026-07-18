@@ -72,7 +72,8 @@ block content
 						.admin-order-product-flex
 							each item in order.product
 								if item.product
-									input#admin-order-product(type="text" name='admin-order-product' value=`${item.quantity} x ${item.product.name}`, disabled)
+									- const sizeText = item.sizeAtPurchase ? ` - Size ${item.sizeAtPurchase}` : ''
+									input#admin-order-product(type="text" name='admin-order-product' value=`${item.quantity} x ${item.product.name} ${sizeText}`, disabled)
 								else
 									input#admin-order-product(type="text" name='admin-order-product' value=`${item.quantity} x Product not found or deleted`, disabled)
 					.admin-order-form--row 

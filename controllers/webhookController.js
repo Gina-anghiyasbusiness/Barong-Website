@@ -458,7 +458,8 @@ exports.handleStripeWebhook = async (req, res) => {
 							productModel: productDoc.constructor.modelName,
 							quantity: qtyNum,
 							priceAtPurchase: itemPrice,
-							selectedVariant: selectedVariant ? selectedVariant._id : null
+							selectedVariant: selectedVariant ? selectedVariant._id : null,
+							sizeAtPurchase: selectedVariant ? selectedVariant.size : null
 
 
 						};
@@ -738,7 +739,8 @@ exports.handleStripeWebhook = async (req, res) => {
 
 						//------------- Variant -------------//
 
-						selectedVariant: selectedVariant ? selectedVariant._id : null
+						selectedVariant: selectedVariant ? selectedVariant._id : null,
+						sizeAtPurchase: selectedVariant ? selectedVariant.size : null
 
 						//------------- ------- -------------//
 					}

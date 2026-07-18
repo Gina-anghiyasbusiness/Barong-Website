@@ -50,6 +50,12 @@ const orderSchema = new mongoose.Schema({
 
 			},
 
+			sizeAtPurchase: {
+
+				type: String,
+				required: false
+			},
+
 			//-------------------- ------- ----------------//
 
 			priceAtPurchase: {

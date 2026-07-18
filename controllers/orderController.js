@@ -932,6 +932,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 					product: item.product._id.toString(),
 					productModel: product.constructor.modelName,
 					selectedVariant: selectedVariant ? selectedVariant._id.toString() : null,
+					sizeAtPurchase: selectedVariant ? selectedVariant.size : null,
 					quantity: qty,
 					priceAtPurchase
 				});
@@ -1127,6 +1128,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 					productModel: foundProduct.constructor.modelName,
 					quantity: qtyNum,
 					selectedVariant: selectedVariant ? selectedVariant._id : null,
+					sizeAtPurchase: selectedVariant ? selectedVariant.size : null,
 					priceAtPurchase
 				}],
 				shippingAddress: fulfilmentMethod === 'delivery' ? shippingAddress : undefined,
