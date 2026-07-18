@@ -5,24 +5,7 @@ header
 		a(href="/admin/be_home") 
 			img(src='/img/logo/default-logo.png', alt='image',width="250",height="100", class='header__logo' fetchpriority="high")
 		
-		.header__nav--box
-		
-			h1.admin_heading Project Admin Page
-			nav.header 
-				ul.admin-nav 
-					li 
-						a(href="/admin/be_user-list") Users
-					li 
-						a(href="/admin/be_products-dashboard") Products
-					li 
-						a(href="/admin/be_category-list") Categories
-					li 
-						a(href="/admin/be_order-list") Orders
-					li 
-						a(href="/admin/be_transaction-list") Transactions
-
-					li 
-						a(href="/admin/be_discount-list") Discounts
+		h1.admin_heading Ang Hiyas - Admin Page
 				
 		.header__login--btn
 			if user
@@ -32,3 +15,24 @@ header
 					a(href="/" class='header__login--link logout--btn') Logout
 			else
 				a(href="/login-page" class='header__login--link login--btn') Login/Signup
+	.header__nav--box
+	
+		nav.header 
+			ul.admin-nav 
+				li 
+					a(href="/admin/be_user-list") Users
+				li 
+					a(href="/admin/be_products-dashboard") Products
+				li 
+					a(href="/admin/be_category-list") Categories
+				li 
+					a(href="/admin/be_order-list") Orders
+				li 
+					a(href="/admin/be_transaction-list") Transactions
+
+				li 
+					a(href="/admin/be_discount-list") Discounts
+				li 
+					a(href="/admin/be_enquiries") Enquiries
+				li 
+					a(href="/admin/be_custom-enquiries" ) Custom Enquiries

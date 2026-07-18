@@ -27,7 +27,7 @@ export const updateEnquiry = async (status, id) => {
 
 			window.setTimeout(() => {
 
-				location.assign(`/admin/be_enquiries/${id}`)
+				location.assign(`/admin/be_enquiries`)
 			}, 3000)
 		}
 	}
@@ -59,7 +59,7 @@ export const updateCustomEnquiry = async (status, id) => {
 
 			window.setTimeout(() => {
 
-				location.assign(`/admin/be_custom-enquiries/${id}`)
+				location.assign(`/admin/be_custom-enquiries`)
 			}, 3000)
 		}
 	}
