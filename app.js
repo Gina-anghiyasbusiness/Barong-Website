@@ -249,6 +249,32 @@ morgan.token('url', req => {
 });
 
 
+
+/// TEMP: identify who is repeatedly requesting product list pages.
+
+
+/// Remove after diagnosing the source.
+
+
+app.use((req, res, next) => {
+	if (req.path === '/barong-list') {
+		console.log('[barong-list requester]', {
+			time: new Date().toISOString(),
+			ip: req.ip,
+			forwardedFor: req.get('x-forwarded-for'),
+			userAgent: req.get('user-agent'),
+			referer: req.get('referer') || req.get('referrer'),
+			host: req.get('host')
+		});
+	}
+
+	next();
+});
+
+
+///////////////////////  ////////////////////// ////////////////////
+
+
 app.use(morgan('dev', {
 	skip: req => req.path === '/health'
 }));
