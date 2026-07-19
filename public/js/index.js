@@ -802,7 +802,6 @@ function enableRemoveFromCart() {
 
 ///					 	Add To Wishlist			 			///
 
-
 const addToWishlistBtn = document.getElementById('add-to-wishlist');
 
 if (addToWishlistBtn) {
@@ -813,24 +812,17 @@ if (addToWishlistBtn) {
 
 		const id = addToWishlistBtn.dataset.productId;
 		const slug = addToWishlistBtn.dataset.productSlug;
-		const productType = addToWishlistBtn.dataset.productType; // Get the type
-		const qty = document.getElementById('add-to-cart-qty')?.value || 1;
+		const user = addToWishlistBtn.dataset.user;
+		const wishlistId = addToWishlistBtn.dataset.wishlistId;
 
-
-		if (productType !== 'accessory' && productType !== 'bag' && !selectedVariant) {
-
-			showAlert('error', 'Please select a size first');
-
+		if (wishlistId) {
+			removeProductFromWishlist(wishlistId, user, window.location.pathname);
 			return;
 		}
 
-
-		const variant = productType === 'accessory' || productType === 'bag' ? null : selectedVariant;
-
-		addProductToUser(id, variant, slug, 'wishlist', qty);
+		addProductToUser(id, null, slug, 'wishlist', 1);
 	})
 }
-
 
 
 ///					Remove from Wishlist					///

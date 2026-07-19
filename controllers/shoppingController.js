@@ -283,7 +283,7 @@ exports.addToWishlist = catchAsync(async (req, res, next) => {
 
 	const user = req.user.id;
 
-	const { product, variant } = req.body;
+	const { product } = req.body;
 
 
 	if (!product || !mongoose.Types.ObjectId.isValid(product)) {
@@ -318,28 +318,9 @@ exports.addToWishlist = catchAsync(async (req, res, next) => {
 	if (!foundProduct) return next(new AppError('Product not found', 404));
 
 
-	let selectedVariant = null;
-
-	if (foundProduct.variants && foundProduct.variants.length > 0) {
-
-		if (!variant || variant === 'null' || variant === 'undefined') {
-			return next(new AppError('Please select a size', 400));
-		}
-
-		selectedVariant = foundProduct.variants.id(variant);
-
-		if (!selectedVariant) return next(new AppError('Variant not found in product', 404));
-	}
-
-
-	const requestedVariant = selectedVariant ? selectedVariant._id.toString() : null;
-
 	const duplicate = userWishlist.wishlist.some(
-
-		item => item.product.toString() === product.toString() &&
-			(item.variant ? item.variant.toString() : null) === requestedVariant
+		item => item.product.toString() === product.toString()
 	);
-
 
 	let addWishlist;
 
@@ -355,7 +336,8 @@ exports.addToWishlist = catchAsync(async (req, res, next) => {
 				wishlist: {
 					product,
 					productModel,
-					variant: selectedVariant ? selectedVariant._id : null
+					variant: null,
+					quantity: 1
 				}
 			}
 		},

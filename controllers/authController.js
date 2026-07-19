@@ -93,11 +93,11 @@ exports.login = catchAsync(async (req, res, next) => {
 
 	const { email, password } = req.body;
 
-	if (!email || !password) return next(new AppError('Incorrect Login Credentials. Please try again', 404));
+	if (!email || !password) return next(new AppError('Please enter your email and password.', 404));
 
 	const user = await User.findOne({ email: email }).select('+password');
 
-	if (!user || !await user.correctPassword(password, user.password)) return next(new AppError('Incorrect Login Details', 401));
+	if (!user || !await user.correctPassword(password, user.password)) return next(new AppError('Incorrect email or password.', 401));
 
 	user.lastLoggedIn = new Date();
 
@@ -248,7 +248,7 @@ exports.restrictTo = (...roles) => {
 
 		if (!roles.includes(req.user.role)) {
 
-			return next(new AppError('You Do not have permission for this action', 403));
+			return next(new AppError('You Do not have permission for this action.', 403));
 		}
 
 		next();
@@ -259,47 +259,6 @@ exports.restrictTo = (...roles) => {
 
 //----------------	Password Functionailty ---------------- //
 
-
-
-
-// exports.forgotPassword = catchAsync(async (req, res, next) => {
-
-// 	const user = await User.findOne({ email: req.body.email });
-
-// 	if (!user) {
-
-// 		return next(new AppError('No user found with that email', 404));
-// 	}
-
-// 	const resetToken = user.createPasswordResetToken();
-
-// 	await user.save({ validateBeforeSave: false });
-
-// 	try {
-
-// 		const resetUrl = `${resetToken}`;
-
-// 		/// send email with data
-
-// 		await new Email(user, resetUrl).resetPassword();
-
-// 		res.status(200).json({
-
-// 			status: "success",
-// 			message: 'Token Sent'
-// 		})
-// 	}
-
-// 	catch (err) {
-
-// 		user.passwordResetToken = undefined;
-// 		user.passwordResetExpires = undefined;
-
-// 		await user.save({ validateBeforeSave: false });
-
-// 		return next(new AppError('Error sending email. Please try again', 500));
-// 	}
-// });
 
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
@@ -388,7 +347,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
 	if (!user || !await user.correctPassword(req.body.passwordCurrent, user.password)) {
 
-		return next(new AppError('No user or vaild password', 401));
+		return next(new AppError('Current password is incorrect.', 401));
 
 	}
 

@@ -1,6 +1,29 @@
 
 let product, qty, variant;
 
+const showPayPalMessage = msg => {
+
+	const message = msg || 'PayPal could not start. Please try again or use card payment.';
+
+	const alertBox = document.createElement('div');
+	alertBox.classList.add('alert', 'alert--error');
+	alertBox.textContent = message;
+
+	const existing = document.querySelector('.alert');
+	if (existing) existing.remove();
+
+	document.body.prepend(alertBox);
+
+	window.setTimeout(() => alertBox.remove(), 5000);
+};
+
+
+
+const getPayPalMessage = err => {
+	return err?.message || 'PayPal could not start. Please try again or use card payment.';
+};
+
+
 
 const getFulfilmentMethod = () => {
 
@@ -10,9 +33,11 @@ const getFulfilmentMethod = () => {
 };
 
 
+
 document.addEventListener('DOMContentLoaded', function () {
 
 	if (typeof paypal === "undefined") return;
+
 
 
 	/// GUEST CHECKOUT
@@ -51,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 				} catch (err) {
 
-					alert('There was an error creating the PayPal order.');
+					showPayPalMessage(getPayPalMessage(err));
 
 					throw err;
 				}
@@ -84,13 +109,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
 				} catch (err) {
 
-					alert(err.message || 'There was an error capturing your PayPal order. Please try again or use another payment method.');
+					showPayPalMessage(getPayPalMessage(err));
 				}
 			},
 
 			onError: function (err) {
 
-				alert('There was a PayPal error! Please try again or use another payment method.');
+				if (document.querySelector('.alert')) return;
+
+				showPayPalMessage('PayPal could not complete. Please try again or use card payment.');
 			}
 
 		}).render('#paypal-button-container-guest');
@@ -144,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 				} catch (err) {
 
-					alert('There was an error creating the PayPal order.');
+					showPayPalMessage(getPayPalMessage(err));
 
 					throw err;
 				}
@@ -180,13 +207,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
 				} catch (err) {
 
-					alert(err.message || 'There was an error capturing your PayPal order. Please try again or use another payment method.');
+					showPayPalMessage(getPayPalMessage(err));
 				}
 			},
 
 			onError: function (err) {
 
-				alert('There was a PayPal error! Please try again or use another payment method.');
+				if (document.querySelector('.alert')) return;
+
+				showPayPalMessage('PayPal could not complete. Please try again or use card payment.');
 			}
 
 		}).render('#paypal-button-container');
@@ -223,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 				} catch (err) {
 
-					alert('There was an error creating the PayPal order.');
+					showPayPalMessage(getPayPalMessage(err));
 
 					throw err;
 				}
@@ -255,13 +284,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
 				} catch (err) {
 
-					alert(err.message || 'There was an error capturing your PayPal order. Please try again or use another payment method.');
+					showPayPalMessage(getPayPalMessage(err));
 				}
 			},
 
 			onError: function (err) {
 
-				alert('There was a PayPal error! Please try again or use another payment method.');
+				if (document.querySelector('.alert')) return;
+
+				showPayPalMessage('PayPal could not complete. Please try again or use card payment.');
 			}
 		}).render('#paypal-button-container');
 

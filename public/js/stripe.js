@@ -19,6 +19,11 @@ const getStripe = () => {
 };
 
 
+const checkoutErrorMessage = err => {
+
+	return err?.response?.data?.message || err?.message || 'Checkout could not start. Please check your cart and try again.';
+};
+
 
 
 export const buyCart = async (fulfilmentMethod = 'delivery') => {
@@ -43,11 +48,13 @@ export const buyCart = async (fulfilmentMethod = 'delivery') => {
 		if (result.error) {
 
 			showAlert('error', result.error.message);
+			throw new Error(result.error.message);
 		}
 
 	} catch (err) {
 
-		showAlert('error', err);
+		showAlert('error', checkoutErrorMessage(err));
+		throw err;
 	}
 }
 
@@ -74,11 +81,13 @@ export const buyItNow = async (product, qty, variant, fulfilmentMethod = 'delive
 		if (result.error) {
 
 			showAlert('error', result.error.message);
+			throw new Error(result.error.message);
 		}
 
 	} catch (err) {
 
-		showAlert('error', err);
+		showAlert('error', checkoutErrorMessage(err));
+		throw err;
 	}
 }
 
@@ -109,11 +118,13 @@ export const buyItNowGuest = async (product, qty, guestAddressId, variant, fulfi
 		if (result.error) {
 
 			showAlert('error', result.error.message);
+			throw new Error(result.error.message);
 		}
 
 	} catch (err) {
 
-		showAlert('error', err);
+		showAlert('error', checkoutErrorMessage(err));
+		throw err;
 	}
 };
 

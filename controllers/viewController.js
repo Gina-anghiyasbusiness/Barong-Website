@@ -327,8 +327,11 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 
 	}
 
-	const selectedOption = req.query.productSort || 'newest';
-	const sortOption = parameterFilter[req.query.productSort] || { createdAt: -1 };
+
+
+	const selectedOption = parameterFilter[req.query.productSort] ? req.query.productSort : 'newest';
+
+	const sortOption = parameterFilter[selectedOption];
 
 
 
@@ -379,7 +382,7 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 	const size = req.query.productSize;
 	const selectedColor = req.query.color;
 	const selectedSex = req.query.sex;
-	const selectedcategory = req.query.category;
+	const selectedcategory = mongoose.Types.ObjectId.isValid(req.query.category) ? req.query.category : '';
 
 	const formatBreadcrumbLabel = value => {
 
@@ -723,8 +726,8 @@ exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 		alphabet: { name: 1 }
 	};
 
-	const selectedOption = req.query.productSort || 'newest';
-	const sortOption = parameterFilter[req.query.productSort] || { createdAt: -1 };
+	const selectedOption = parameterFilter[req.query.productSort] ? req.query.productSort : 'newest';
+	const sortOption = parameterFilter[selectedOption];
 
 
 	/// Display Colors in dropdown ///
@@ -758,7 +761,7 @@ exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 	/// Filtering ///
 
 	const selectedColor = req.query.color;
-	const selectedcategory = req.query.category;
+	const selectedcategory = mongoose.Types.ObjectId.isValid(req.query.category) ? req.query.category : '';
 
 
 	const formatBreadcrumbLabel = value => {
@@ -955,7 +958,7 @@ exports.getBagListPage = catchAsync(async (req, res, next) => {
 
 
 	const selectedColor = req.query.color;
-	const selectedcategory = req.query.category;
+	const selectedcategory = mongoose.Types.ObjectId.isValid(req.query.category) ? req.query.category : '';
 
 
 	const formatBreadcrumbLabel = value => {
@@ -1546,8 +1549,15 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 
 		cart = await User.findById(user).populate('cart.product').select('cart');
 
+		if (!cart.cart.some(item => item.product)) {
+
+			return res.redirect(`/my-account/${user.id}?show=my-account-cart`);
+		}
+
 	}
+
 	else {
+
 		product = await SpecProd.findById(productId).populate('category');
 
 		if (!product) {
@@ -1614,7 +1624,7 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 
 			if (variant.inStock < qty) {
 
-				return next(new AppError(`Not enough ${variant.size} in stock! Only ${variant.inStock} left.`, 400));
+				return next(new AppError(`Only ${variant.inStock} left in size ${variant.size}. Please choose a lower quantity.`, 400));
 			}
 
 		} else {
@@ -1847,7 +1857,7 @@ exports.getCheckoutPageGuest = catchAsync(async (req, res, next) => {
 
 		if (variant.inStock < qty) {
 
-			return next(new AppError(`Not enough ${variant.size} in stock! Only ${variant.inStock} left.`, 400));
+			return next(new AppError(`Only ${variant.inStock} left in size ${variant.size}. Please choose a lower quantity.`, 400));
 		}
 	}
 

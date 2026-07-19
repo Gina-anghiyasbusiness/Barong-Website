@@ -251,7 +251,7 @@ exports.buyItNowItemPayPal = catchAsync(async (req, res, next) => {
 
 		if (buyItNowVariant.inStock < qtyNum) {
 
-			return next(new AppError(`Not enough ${buyItNowVariant.size} in stock! Only ${buyItNowVariant.inStock} left.`, 400));
+			return next(new AppError(`Only ${buyItNowVariant.inStock} left in size ${buyItNowVariant.size}. Please choose a lower quantity.`, 400));
 		}
 	}
 
@@ -347,28 +347,34 @@ exports.cartItemsPayPal = catchAsync(async (req, res, next) => {
 		const qty = Number(item.quantity);
 
 		if (!Number.isInteger(qty) || qty < 1) {
+
 			return next(new AppError('Invalid cart item quantity', 400));
 		}
 
 		if (!item.product || !item.product.id) {
+
 			return next(new AppError('Invalid cart product', 400));
 		}
 
 		let product = await SpecProd.findById(item.product.id).populate('category');
 
 		if (!product) {
+
 			product = await Shoe.findById(item.product.id).populate('category');
 		}
 
 		if (!product) {
+
 			product = await Bag.findById(item.product.id).populate('category');
 		}
 
 		if (!product) {
+
 			product = await Accessory.findById(item.product.id).populate('category');
 		}
 
 		if (!product) {
+
 			return next(new AppError('Product not found', 404));
 		}
 
@@ -377,17 +383,20 @@ exports.cartItemsPayPal = catchAsync(async (req, res, next) => {
 		if (product.variants && product.variants.length > 0) {
 
 			if (!item.variant) {
+
 				return next(new AppError('Cart item variant is missing', 400));
 			}
 
 			selectedVariant = product.variants.id(item.variant);
 
 			if (!selectedVariant) {
-				return next(new AppError('Variant not found in product', 404));
+
+				return next(new AppError('This item or size is no longer available. Please remove it from your cart and add it again.', 400));
 			}
 
 			if (selectedVariant.inStock < qty) {
-				return next(new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400));
+
+				return next(new AppError(`Only ${selectedVariant.inStock} left in size ${selectedVariant.size}. Please update your cart.`, 400));
 			}
 		}
 
@@ -912,12 +921,12 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 					if (!selectedVariant) {
 
-						throw new AppError('Variant not found in product', 404);
+						throw new AppError('This item or size is no longer available. Please remove it from your cart and add it again.', 400);
 					}
 
 					if (selectedVariant.inStock < qty) {
 
-						throw new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400);
+						throw new AppError(`Only ${selectedVariant.inStock} left in size ${selectedVariant.size}. Please update your cart.`, 400);
 					}
 				}
 
@@ -1088,7 +1097,7 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 
 			if (selectedVariant && selectedVariant.inStock < qtyNum) {
 
-				throw new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400);
+				throw new AppError(`Only ${selectedVariant.inStock} left in size ${selectedVariant.size}. Please choose a lower quantity.`, 400);
 			}
 
 
@@ -1471,7 +1480,7 @@ exports.buyItNowItem = catchAsync(async (req, res, next) => {
 
 		if (buyItNowVariant.inStock < qtyNum) {
 
-			return next(new AppError(`Not enough ${buyItNowVariant.size} in stock! Only ${buyItNowVariant.inStock} left.`, 400));
+			return next(new AppError(`Only ${buyItNowVariant.inStock} left in size ${buyItNowVariant.size}. Please choose a lower quantity.`, 400));
 		}
 
 	}
@@ -1691,7 +1700,7 @@ exports.buyItNowGuestItem = catchAsync(async (req, res, next) => {
 
 		if (buyItNowVariant.inStock < qtyNum) {
 
-			return next(new AppError(`Not enough ${buyItNowVariant.size} in stock! Only ${buyItNowVariant.inStock} left.`, 400));
+			return next(new AppError(`Only ${buyItNowVariant.inStock} left in size ${buyItNowVariant.size}. Please choose a lower quantity.`, 400));
 		}
 	}
 
@@ -1909,12 +1918,12 @@ exports.buyCartItems = catchAsync(async (req, res, next) => {
 
 			if (!selectedVariant) {
 
-				return next(new AppError('Variant not found in product', 404));
+				return next(new AppError('This item or size is no longer available. Please remove it from your cart and add it again.', 400));
 			}
 
 			if (selectedVariant.inStock < qty) {
 
-				return next(new AppError(`Not enough ${selectedVariant.size} in stock! Only ${selectedVariant.inStock} left.`, 400));
+				return next(new AppError(`Only ${selectedVariant.inStock} left in size ${selectedVariant.size}. Please update your cart.`, 400));
 			}
 		}
 

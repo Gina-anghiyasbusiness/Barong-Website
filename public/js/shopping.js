@@ -95,9 +95,21 @@ export const saveAddressCheckoutGuest = async (data, product, qty, variant, fulf
 
 				const guestAddressId = result.data.guestAddressId;
 
+
+				const originalHtml = purchaseCart.innerHTML;
+
+				purchaseCart.disabled = true;
 				purchaseCart.textContent = "Processing....";
 
-				buyItNowGuest(product, qty, guestAddressId, variant, fulfilmentMethod);
+				try {
+
+					await buyItNowGuest(product, qty, guestAddressId, variant, fulfilmentMethod);
+
+				} catch (err) {
+
+					purchaseCart.disabled = false;
+					purchaseCart.innerHTML = originalHtml;
+				}
 
 			}
 		}
@@ -111,7 +123,6 @@ export const saveAddressCheckoutGuest = async (data, product, qty, variant, fulf
 		showAlert('error', msg);
 	}
 }
-
 
 
 
@@ -141,35 +152,36 @@ export const saveAddressCheckout = async (data, product, qty, variant, fulfilmen
 				);
 			}
 
+			const purchaseCart = document.getElementById('checkout-submit--stripe');
+			const originalHtml = purchaseCart.innerHTML;
 
-			/// call buyCart or BuyitNow functions
+			purchaseCart.disabled = true;
+			purchaseCart.textContent = "Processing....";
 
-			if (!product) {
+			try {
 
-				const purchaseCart = document.getElementById('checkout-submit--stripe');
+				if (!product) {
+					await buyCart(fulfilmentMethod);
+				} else {
+					await buyItNow(product, qty, variant, fulfilmentMethod);
+				}
 
-				purchaseCart.textContent = "Processing....";
+			} catch (err) {
 
-				buyCart(fulfilmentMethod);
-
-			} else {
-
-				const purchaseCart = document.getElementById('checkout-submit--stripe');
-
-				purchaseCart.textContent = "Processing....";
-
-				buyItNow(product, qty, variant, fulfilmentMethod);
-
-
+				purchaseCart.disabled = false;
+				purchaseCart.innerHTML = originalHtml;
 			}
 		}
+
 	} catch (err) {
 
-		showAlert('error', err);
+		const msg = err.response && err.response.data && err.response.data.message
+			? err.response.data.message
+			: 'An error occurred. Please try again.';
+
+		showAlert('error', msg);
 	}
 }
-
-
 
 
 
@@ -260,7 +272,7 @@ export const removeProductFromCart = async (removeItem, user) => {
 //---------- Remove product - user wishlist -----------//
 
 
-export const removeProductFromWishlist = async (removeItem, user) => {
+export const removeProductFromWishlist = async (removeItem, user, redirectUrl = `/my-account/${user}?show=my-account-wishlist`) => {
 
 	try {
 
@@ -278,7 +290,7 @@ export const removeProductFromWishlist = async (removeItem, user) => {
 
 			window.setTimeout(() => {
 
-				location.assign(`/my-account/${user}?show=my-account-wishlist`);
+				location.assign(redirectUrl);
 
 			}, 2500);
 

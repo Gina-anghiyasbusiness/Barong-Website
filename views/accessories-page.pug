@@ -30,17 +30,19 @@ block content
 						.productPage-heading-flex
 							h1.productPage__product-name #{product.name}
 							if user
-								- const isWishlisted = user.wishlist.some(item => item.product && item.product.toString() === product.id)
-								.productPage-wishlist--box
-									button#add-to-wishlist.productPage__wishlist--btn(
-										class=isWishlisted ? 'productPage__wishlist--active' : ''
-										data-product-id=product.id
-										data-user=user.id
-										data-product-slug=product.slug
-										data-product-type="accessory"
-										aria-pressed=isWishlisted
-									)
-										i.productPage__product--star(data-lucide='star')
+								- const wishlistItem = user.wishlist.find(item => item.product && item.product.toString() === product.id)
+								- const isWishlisted = Boolean(wishlistItem)
+									.productPage-wishlist--box
+										button#add-to-wishlist.productPage__wishlist--btn(
+											class=isWishlisted ? 'productPage__wishlist--active' : ''
+											data-product-id=product.id
+											data-user=user.id
+											data-product-slug=product.slug
+											data-product-type="accessory"
+											data-wishlist-id=wishlistItem ? wishlistItem.id : ''
+											aria-pressed=isWishlisted
+										)
+											i.productPage__product--star(data-lucide='star')
 						p.productPage_sku Product No. #{product.productSku}
 					
 					.productPage__text-price--box

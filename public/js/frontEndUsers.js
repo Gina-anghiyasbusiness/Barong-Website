@@ -22,7 +22,7 @@ export const userUpdateSettings = async (data, type, userId) => {
 		)
 		if (result.data.status === 'success') {
 
-			showAlert('success', `${type.toUpperCase()} Updated Successfully!!`);
+			showAlert('success', type === 'password' ? 'Password updated successfully.' : 'Account details updated successfully.');
 
 			window.setTimeout(() => {
 

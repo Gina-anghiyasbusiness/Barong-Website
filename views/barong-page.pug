@@ -32,7 +32,8 @@ block content
 							.productPage-heading-flex
 								h1.productPage__product-name #{product.name}
 								if user
-									- const isWishlisted = user.wishlist.some(item => item.product && item.product.toString() === product.id)
+									- const wishlistItem = user.wishlist.find(item => item.product && item.product.toString() === product.id)
+									- const isWishlisted = Boolean(wishlistItem)
 										.productPage-wishlist--box
 											button#add-to-wishlist.productPage__wishlist--btn(
 												class=isWishlisted ? 'productPage__wishlist--active' : ''
@@ -40,6 +41,7 @@ block content
 												data-user=user.id
 												data-product-slug=product.slug
 												data-product-type="barong"
+												data-wishlist-id=wishlistItem ? wishlistItem.id : ''
 												aria-pressed=isWishlisted
 											)
 												i.productPage__product--star(data-lucide='star')

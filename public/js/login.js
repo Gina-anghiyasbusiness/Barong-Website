@@ -73,7 +73,7 @@ export const logout = async () => {
 		}
 	} catch (err) {
 
-		showAlert('error', 'Error logging out ..... Try Again!!');
+		showAlert('error', 'Could not log out. Please try again.');
 	}
 }
 
@@ -94,7 +94,7 @@ export const signUpUser = async (data) => {
 
 		if (result.data.status === 'success') {
 
-			showAlert('success', 'SignUp Successful');
+			showAlert('success', 'Account created successfully.');
 
 			window.setTimeout(() => {
 
@@ -104,7 +104,7 @@ export const signUpUser = async (data) => {
 
 	} catch (err) {
 
-		showAlert('error', 'Error Signing up ..... Try Again!!');
+		showAlert('error', err.response?.data?.message || 'Could not create account. Please try again.');
 	}
 }
 
@@ -125,7 +125,7 @@ export const resetEmailPasswordUser = async (email) => {
 
 		if (result.data.status === 'success') {
 
-			showAlert('success', 'Reset Password Email sent. Please check your inbox.');
+			showAlert('success', 'Password reset email sent. Please check your inbox.');
 
 			window.setTimeout(() => {
 
@@ -135,7 +135,7 @@ export const resetEmailPasswordUser = async (email) => {
 
 	} catch (err) {
 
-		showAlert('error', 'Error Password Reset ..... Try Again!!');
+		showAlert('error', err.response?.data?.message || 'Could not reset password. Please try again.');
 	}
 }
 
@@ -166,7 +166,7 @@ export const setNewPasswordUser = async (data, token) => {
 
 	} catch (err) {
 
-		showAlert('error', 'Error Password Reset ..... Try Again!!');
+		showAlert('error', err.response?.data?.message || 'Could not reset password. Please try again.');
 	}
 }
 
