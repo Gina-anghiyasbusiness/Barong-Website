@@ -22,10 +22,13 @@ block content
 
 				if (currentAdmin.role !== 'admin' || userPage.role === 'user') && currentAdmin.id !== userPage.id
 					.admin__form--buttons
+						button#deactivateUser(type='button'  data-user-id=`${userPage._id}`) 
+							p Deactivate User
+							p (Use before delete)
+						button#deleteUser(type='button'  data-user-id=`${userPage._id}`) 
+							p Delete User
+							p (Last Resort)
 						button#user__form-submit Update User
-					.admin__form--delete-user
-						button#deactivateUser(type='button'  data-user-id=`${userPage._id}`) Deactivate User
-						button#deleteUser(type='button'  data-user-id=`${userPage._id}`) Delete User
 
 					
 			if userPage.addresses.length > 0			
@@ -35,7 +38,12 @@ block content
 						form.admin__form--update.address__form--update(data-id=userPage._id , data-role=userPage.role, data-address-id=address._id)
 							.admin__form--group.admin__form--group-gap
 								.form-group-address
-									+formRowsLabels(`label`,'text',address.label)
+									.form-group-address-row
+										label(for=`address-label-${address._id}`) LABEL
+										select.label(id=`address-label-${address._id}` name="label" required)
+											option(value="Home" selected=address.label === 'Home') Home
+											option(value="Work" selected=address.label === 'Work') Work
+											option(value="Other" selected=address.label === 'Other') Other
 									+formRowsLabels('number','text',address.number)
 									+formRowsLabels('street','text',address.street.toUpperCase())
 									+formRowsLabels('city','text',address.city.toUpperCase())

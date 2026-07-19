@@ -387,7 +387,7 @@ if (updateAddressForm) {
 
 
 		const form = {
-			type: document.getElementById('type').value,
+			label: document.getElementById('label').value,
 			number: document.getElementById('number').value,
 			street: document.getElementById('street').value,
 			city: document.getElementById('city').value,

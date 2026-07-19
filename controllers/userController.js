@@ -13,6 +13,33 @@ const filterObj = require('../utilities/filterObject');
 
 
 
+
+///				Helpers				///
+
+
+/// enable default address
+
+const ensureUserHasDefaultAddress = async (userId) => {
+
+	const user = await User.findById(userId);
+
+	if (!user || user.addresses.length === 0) return;
+
+	const hasDefault = user.addresses.some(address => address.isDefault === true);
+
+	if (hasDefault) return;
+
+	user.addresses[0].isDefault = true;
+
+	await user.save({ validateBeforeSave: false });
+};
+
+
+
+
+
+
+
 ///				Create				///
 
 
@@ -47,6 +74,8 @@ exports.createBeUser = catchAsync(async (req, res, next) => {
 	});
 
 
+
+
 	res.status(200).json({
 
 		status: 'success',
@@ -63,11 +92,11 @@ exports.createBeUser = catchAsync(async (req, res, next) => {
 
 exports.createNewAddress = catchAsync(async (req, res, next) => {
 
-	const { type, number, street, city, state, postcode, isDefault } = req.body;
+	const { label, number, street, city, state, postcode, isDefault } = req.body;
 
 	const defaultValue = isDefault === true || isDefault === 'true';
 
-	if (!['Home', 'Work', 'Other'].includes(type)) {
+	if (!['Home', 'Work', 'Other'].includes(label)) {
 
 		return next(new AppError('Invalid address label', 400));
 	}
@@ -78,12 +107,12 @@ exports.createNewAddress = catchAsync(async (req, res, next) => {
 	if (!user) return next(new AppError('User not found', 404));
 
 
-	const duplicate = user.addresses.some(addr => addr.label === type);
+	const duplicate = user.addresses.some(addr => addr.label === label);
 
 
 	if (duplicate) {
 
-		return next(new AppError(`You already have an address labeled '${type}'`, 400));
+		return next(new AppError(`You already have an address labeled '${label}'`, 400));
 	}
 
 
@@ -106,12 +135,12 @@ exports.createNewAddress = catchAsync(async (req, res, next) => {
 		{
 			$push: {
 				addresses: {
-					label: type,
-					number: number,
-					street: street,
-					city: city,
-					state: state,
-					postcode: postcode,
+					label,
+					number,
+					street,
+					city,
+					state,
+					postcode,
 					isDefault: defaultValue
 				}
 			}
@@ -119,6 +148,9 @@ exports.createNewAddress = catchAsync(async (req, res, next) => {
 
 		{ new: true, runValidators: true }
 	);
+
+
+	await ensureUserHasDefaultAddress(req.user.id);
 
 	res.status(200).json({
 
@@ -294,11 +326,11 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
 exports.updateMyAddress = catchAsync(async (req, res, next) => {
 
-	const { type, number, street, city, state, postcode, isDefault } = req.body;
+	const { label, number, street, city, state, postcode, isDefault } = req.body;
 
 	const defaultValue = isDefault === true || isDefault === 'true';
 
-	if (!['Home', 'Work', 'Other'].includes(type)) {
+	if (!['Home', 'Work', 'Other'].includes(label)) {
 
 		return next(new AppError('Invalid address label', 400));
 	}
@@ -347,7 +379,7 @@ exports.updateMyAddress = catchAsync(async (req, res, next) => {
 			/// $[elem] === addressId 
 
 			$set: {
-				'addresses.$[elem].label': type,
+				'addresses.$[elem].label': label,
 				'addresses.$[elem].number': number,
 				'addresses.$[elem].street': street,
 				'addresses.$[elem].city': city,
@@ -377,6 +409,8 @@ exports.updateMyAddress = catchAsync(async (req, res, next) => {
 
 		await new Email(user).accountChanges();
 	}
+
+	await ensureUserHasDefaultAddress(userId);
 
 
 	res.status(200).json({
@@ -423,6 +457,8 @@ exports.deleteAnAddress = catchAsync(async (req, res, next) => {
 
 		return next(new AppError('Address not found', 404));
 	}
+
+	await ensureUserHasDefaultAddress(req.user.id);
 
 	res.status(200).json({
 

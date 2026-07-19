@@ -301,7 +301,7 @@ block content
 
 										.addressCard__body
 											p.addressCard__line
-												span #{addr.number}
+												span #{addr.number} &nbsp;
 												span #{addr.street}
 											p.addressCard__muted #{addr.city.toUpperCase()}
 											p.addressCard__muted #{addr.state.toUpperCase()}
@@ -311,7 +311,7 @@ block content
 											a.btn.btn--secondary(href=`/address-form--user/${addr.id}`) Edit
 
 											if !addr.isDefault
-												button.btn.btn--danger#remove-address-btn(
+												button.btn.btn--danger.remove-address-btns(
 													data-address=`${addr.id}`,
 													data-user=`${user.id}`
 												) Remove

@@ -8131,13 +8131,24 @@ height: 200px;
 	
 }
 
+
+.admin-userList--grid{
+	
+	margin-bottom: 10rem;
+}
+
 p.admin-user__text,	h4.admin-user__heading  {
 	
 	
 	font-size: var(--text-body);
 }
 
-
+	.form-group-address-row{
+		
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
 
 section.admin-userList--form-role	{
 	
@@ -8327,10 +8338,21 @@ width: 60%;
 	
 	width: 35%;
 	align-self: center;
-	margin-top: 2.4rem;
+	margin: 1.8rem 0;
 	
 }
 
+#user__form-submit{
+	
+	
+	background-color: var(--color-secondary);
+	
+	color: var(--color-text-primary-light);
+	padding: .75rem;
+	font-size: 1.8rem;
+	font-weight: 600;
+	
+}
 
 
 section.admin__create {
@@ -8373,6 +8395,8 @@ section.admin__create {
 	display: flex;
 	align-items: center;
 	justify-content:center;
+	gap: 10rem;
+	
 }
 
 .admin__form--delete-user{
