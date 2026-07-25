@@ -138,7 +138,9 @@ router.get('/enquiry-success', viewController.getEnquirySuccess);
 
 
 
+/// Privacy Policy
 
+router.get('/static/privacy', viewController.getPrivacyPage);
 
 
 

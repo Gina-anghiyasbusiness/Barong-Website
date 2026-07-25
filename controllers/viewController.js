@@ -161,7 +161,7 @@ exports.getHomePage = catchAsync(async (req, res, next) => {
 	res.status(200).render('home-page', {
 
 		pageTitle: 'Ang Hiyas | Barong Tagalog & Filipiniana Australia',
-		pageDescription: 'Discover authentic Filipino clothing in Australia, including custom-made Barong Tagalog and Filipiniana, rentals and ready-to-wear styles.',
+		pageDescription: 'Discover authentic Filipino clothing in Australia, including custom-made Barong Tagalog, Filipiniana, rentals and ready-to-wear styles for weddings and special occasions.',
 		canonicalUrl: `${process.env.CANONICAL_URL}`,
 		currentPage: 'home',
 
@@ -180,6 +180,7 @@ exports.getHomePage = catchAsync(async (req, res, next) => {
 
 
 const makeBreadcrumbUrl = (basePath, params) => {
+
 	const searchParams = new URLSearchParams();
 
 	Object.entries(params).forEach(([key, value]) => {
@@ -1295,6 +1296,22 @@ exports.getContactPage = (req, res) => {
 		pageTitle: 'Contact Ang Hiyas | Filipino Clothing Australia',
 		pageDescription: 'Contact Ang Hiyas Australia for Barong Tagalog, Filipiniana, custom clothing enquiries, wedding attire consultations and Australia-wide Filipino formal wear support.',
 		canonicalUrl: `${process.env.CANONICAL_URL}static/contact`,
+	})
+}
+
+
+//--------------------- Privcay Page --------------------------//
+
+
+
+exports.getPrivacyPage = (req, res) => {
+
+	res.status(200).render('privacy', {
+
+		pageTitle: 'Privacy Policy | Ang Hiyas Australia',
+		pageDescription: 'Read how Ang Hiyas collects, uses and protects customer information for enquiries, accounts, orders and website services.',
+		canonicalUrl: `${process.env.CANONICAL_URL}static/privacy`,
+		noIndex: false
 	})
 }
 
