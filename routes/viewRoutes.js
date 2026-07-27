@@ -13,6 +13,13 @@ const blockPreviewPaymentSuccess = require('../middleware/blockPreviewPaymentSuc
 
 
 
+/// IS LOGGED IN CHECK ON ALL ROUTES
+
+
+router.use(authController.isLoggedIn);
+
+
+
 /// view my account email link guard 
 
 
@@ -23,13 +30,6 @@ router.get('/me', (req, res) => {
 
 	res.redirect('/login-page');
 });
-
-
-
-/// IS LOGGED IN CHECK ON ALL ROUTES
-
-
-router.use(authController.isLoggedIn);
 
 
 
