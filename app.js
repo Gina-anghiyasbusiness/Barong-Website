@@ -197,7 +197,6 @@ app.use(
 
 //----------------  Stripe webhook route ---------------//
 
-/// leave in app.js as ots not needed in a route.js file AND..
 
 /// MUST GO BEFORE app.use(express.json()); AS ITS RAW FORMAT	
 
@@ -316,6 +315,19 @@ app.use((req, res, next) => {
 	const expectedOrigin = `${req.protocol}://${req.get('host')}`;
 
 	if (origin !== expectedOrigin) {
+
+		console.log('INVALID ORIGIN BLOCKED:', {
+			method: req.method,
+			path: req.originalUrl,
+			origin,
+			expectedOrigin,
+			protocol: req.protocol,
+			host: req.get('host'),
+			xfProto: req.get('x-forwarded-proto'),
+			referer: req.get('referer'),
+			hasJwt: !!req.cookies.jwt,
+			userAgent: req.get('user-agent')
+		});
 
 		return next(new AppError('Invalid request origin', 403));
 	}
