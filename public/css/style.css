@@ -6693,10 +6693,38 @@ p.checkout__price{
 }
 
 
+
+
+
 .checkout__page--text-right{
 	
 	
 }
+
+
+	.checkout__page--live-warning {
+		
+		
+		background-color: rgba(253, 66, 66, 0.87);
+		padding: 1.6rem 0;
+		border-top-left-radius: 8px;
+		border-top-right-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		gap: .65rem;
+	}
+	
+	
+	.checkout__page--live-warning p{
+		
+		font-size: 2.2rem;
+		font-weight: 600;
+		color: rgb(75, 0, 0);
+		text-align: center;
+	}
+
+
+
 
 p.checkout__col,
 p.checkout__size,
