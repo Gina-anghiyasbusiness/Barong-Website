@@ -1636,7 +1636,7 @@ exports.getCheckoutPage = catchAsync(async (req, res, next) => {
 
 			if (!variant) {
 
-				return next(new AppError('No Variant Found', 404));
+				return next(new AppError('Please Select a Size', 404));
 			}
 
 			if (variant.inStock < qty) {
