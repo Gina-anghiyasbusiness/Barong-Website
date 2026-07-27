@@ -7,7 +7,23 @@ const viewController = require('./../controllers/viewController.js');
 
 const blockPreviewPaymentSuccess = require('../middleware/blockPreviewPaymentSuccess.js');
 
+
+
 //----------------  CLIENT ROUTES (FRONTEND) -----------------///
+
+
+
+/// view my account email link guard 
+
+
+router.get('/me', (req, res) => {
+	if (req.user) {
+		return res.redirect(`/my-account/${req.user.id}`);
+	}
+
+	res.redirect('/login-page');
+});
+
 
 
 /// IS LOGGED IN CHECK ON ALL ROUTES

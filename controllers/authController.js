@@ -72,7 +72,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 	///			Send Welcome Email			///
 
 
-	const url = `${req.protocol}://${req.get('host')}/me`
+	const url = `${process.env.CANONICAL_URL}me`;
 
 	/// 	Still need to add '/me' route to viewRoutes 	///
 
