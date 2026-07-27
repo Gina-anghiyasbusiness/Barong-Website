@@ -304,37 +304,22 @@ app.use((req, res, next) => {
 	const writeMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
 
 	if (!writeMethods.includes(req.method) || !req.cookies.jwt) {
-
 		return next();
 	}
 
 	const origin = req.get('origin');
 
-	if (!origin) return next();
+	if (!origin || origin === 'null') return next();
 
 	const expectedOrigin = `${req.protocol}://${req.get('host')}`;
 
 	if (origin !== expectedOrigin) {
-
-		console.log('INVALID ORIGIN BLOCKED:', {
-			method: req.method,
-			path: req.originalUrl,
-			origin,
-			expectedOrigin,
-			protocol: req.protocol,
-			host: req.get('host'),
-			xfProto: req.get('x-forwarded-proto'),
-			referer: req.get('referer'),
-			hasJwt: !!req.cookies.jwt,
-			userAgent: req.get('user-agent')
-		});
 
 		return next(new AppError('Invalid request origin', 403));
 	}
 
 	next();
 });
-
 
 
 
