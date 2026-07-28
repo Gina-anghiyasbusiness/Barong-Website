@@ -51,6 +51,9 @@ if (!process.env.GUEST_ORDER_ACCESS_SECRET || process.env.GUEST_ORDER_ACCESS_SEC
 /// Only run if all envs are for live site if preview mode off
 
 
+/// Validate payment environment when checkout is enabled
+
+
 if (process.env.SITE_PREVIEW === 'false') {
 
 	const paymentEnvVars = [
@@ -64,7 +67,6 @@ if (process.env.SITE_PREVIEW === 'false') {
 		'CANONICAL_URL'
 	];
 
-
 	const missingPaymentEnvVars = paymentEnvVars.filter(envVar => !process.env[envVar]);
 
 	if (missingPaymentEnvVars.length > 0) {
@@ -72,35 +74,43 @@ if (process.env.SITE_PREVIEW === 'false') {
 		throw new Error(`SITE_PREVIEW=false requires payment environment variables: ${missingPaymentEnvVars.join(', ')}`);
 	}
 
-	if (process.env.NODE_ENV === 'development') {
+	const isLocalDevelopment = process.env.NODE_ENV === 'development';
+	const isLiveSiteStripeTesting = process.env.NODE_ENV === 'production' && process.env.LIVE_SITE_STRIPE_TESTING === 'true';
+
+	if (isLocalDevelopment || isLiveSiteStripeTesting) {
 
 		if (!process.env.STRIPE_SECRET_KEY.startsWith('sk_test_')) {
 
-			throw new Error('Development checkout requires a test Stripe secret key');
+			throw new Error('Stripe sandbox checkout requires a test Stripe secret key');
 		}
 
 		if (!process.env.STRIPE_PUBLISHABLE_KEY.startsWith('pk_test_')) {
 
-			throw new Error('Development checkout requires a test Stripe publishable key');
+			throw new Error('Stripe sandbox checkout requires a test Stripe publishable key');
 		}
 
 		if (!process.env.STRIPE_WEBHOOK_SECRET.startsWith('whsec_')) {
 
-			throw new Error('Development checkout requires a Stripe webhook signing secret');
+			throw new Error('Stripe sandbox checkout requires a Stripe webhook signing secret');
 		}
 
 		if (process.env.PAYPAL_MODE !== 'sandbox') {
 
-			throw new Error('Development checkout requires PAYPAL_MODE=sandbox');
+			throw new Error('Stripe sandbox checkout requires PAYPAL_MODE=sandbox');
 		}
 
 		for (const envVar of ['SITE_URL', 'CANONICAL_URL']) {
 
 			const value = process.env[envVar].toLowerCase();
 
-			if (!value.includes('localhost') && !value.includes('127.0.0.1')) {
+			if (isLocalDevelopment && !value.includes('localhost') && !value.includes('127.0.0.1')) {
 
 				throw new Error(`Development checkout requires ${envVar} to use localhost`);
+			}
+
+			if (isLiveSiteStripeTesting && (value.includes('localhost') || value.includes('127.0.0.1'))) {
+
+				throw new Error(`Live-site Stripe sandbox testing requires ${envVar} to use the live website URL`);
 			}
 		}
 
@@ -165,6 +175,8 @@ for (const envVar of ['SITE_URL', 'CANONICAL_URL']) {
 		throw new Error(`${envVar} must end with /`);
 	}
 }
+
+
 
 
 if (process.env.JWT_SECRET.length < 32) {
