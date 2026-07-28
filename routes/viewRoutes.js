@@ -208,6 +208,27 @@ router.get('/guest-order-number/:orderId/:accessToken',
 
 
 
+
+/// Render Order page for user
+
+
+router.get('/user-order-number/:orderNum',
+	(req, res, next) => {
+		if (!req.user) {
+			return res.redirect('/login-page');
+		}
+
+		next();
+	},
+	authController.restrictTo('user'),
+	productController.setProductUserIds,
+	viewController.getUserOrderPage);
+
+
+
+
+
+
 router.use(authController.protectRoute);
 
 router.get('/address-form--user/:addressId', viewController.getAddressFormPage);
@@ -254,19 +275,6 @@ router.get('/order-success',
 	blockPreviewPaymentSuccess,
 	productController.setProductUserIds,
 	viewController.getSuccessfulPaymentPage);
-
-
-
-/// Render Order page
-
-
-router.get('/user-order-number/:orderNum',
-	authController.restrictTo('user'),
-	productController.setProductUserIds,
-	viewController.getUserOrderPage);
-
-
-
 
 
 
