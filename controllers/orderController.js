@@ -738,8 +738,8 @@ exports.capturePayPalOrder = catchAsync(async (req, res, next) => {
 		? {
 			label: 'PayPal Address:',
 			number: '',
-			street: paypalAddress?.address_line_2 || paypalAddress?.address_line_1 || '',
-			city: paypalAddress?.address_line_1 || paypalAddress?.admin_area_2 || '',
+			street: [paypalAddress?.address_line_1, paypalAddress?.address_line_2].filter(Boolean).join(', '),
+			city: paypalAddress?.admin_area_2 || '',
 			state: paypalAddress?.admin_area_1 || '',
 			postcode: paypalAddress?.postal_code || '',
 		}
