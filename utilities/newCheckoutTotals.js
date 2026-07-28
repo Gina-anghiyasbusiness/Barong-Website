@@ -1,8 +1,6 @@
-// const DELIVERY_FEE = 10;
-// const FREE_DELIVERY_THRESHOLD = 150;
+const DELIVERY_FEE = 10;
+const FREE_DELIVERY_THRESHOLD = 150;
 
-const DELIVERY_FEE = 1;
-const FREE_DELIVERY_THRESHOLD = 3;
 
 
 const normalizeFulfilmentMethod = method => {
