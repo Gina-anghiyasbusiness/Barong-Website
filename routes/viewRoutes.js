@@ -159,6 +159,11 @@ router.get('/enquiry-success', viewController.getEnquirySuccess);
 router.get('/static/privacy', viewController.getPrivacyPage);
 
 
+/// Refund Policy
+
+router.get('/static/refund-policy', viewController.getRefundPolicyPage);
+
+
 
 
 //---------- Categories and blog not added yet!! ----------//

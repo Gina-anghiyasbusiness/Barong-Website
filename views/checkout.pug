@@ -87,9 +87,9 @@ block content
 			//-//			 PAYMENTS BOX 				//
 			
 			.checkout__page--right-box.checkout__right
-				.checkout__page--live-warning 
-					p Checkout testing is in progress. 
-					p Please do not place an order yet.
+				//- .checkout__page--live-warning 
+				//- 	p Checkout testing is in progress. 
+				//- 	p Please do not place an order yet.
 
 				.checkoutPanel
 				
@@ -169,8 +169,14 @@ block content
 											span Pay with Card or 
 											span 
 												img(src="/img/logo/afterpay.svg", alt="" style="height: 28px; vertical-align: middle;")
-																					
-										
+								.refundPolicy-checkout
+									p.checkout__policyText By continuing, you agree to our &nbsp;
+									a(
+										href="/static/refund-policy"
+										target="_blank"
+										rel="noopener noreferrer"
+									) Refunds and Returns Policy	
+									
 								.checkout__form--address-flex.checkoutPanel__fields
 
 									.checkout__delivery-fields

@@ -1348,6 +1348,24 @@ exports.getPrivacyPage = (req, res) => {
 }
 
 
+//--------------------- Refund Page --------------------------//
+
+
+
+exports.getRefundPolicyPage = (req, res) => {
+
+	setStaticPageCache(res);
+
+	res.status(200).render('refund-policy', {
+
+		pageTitle: 'Refund Policy | Ang Hiyas Australia',
+		pageDescription: 'Read the Ang Hiyas refunds and returns policy, including change of mind returns, faulty items, proof of purchase and your rights under the Australian Consumer Law.',
+		canonicalUrl: `${process.env.CANONICAL_URL}static/refund-policy`,
+		noIndex: false
+	})
+}
+
+
 
 
 //--------------------- Account Page --------------------------//

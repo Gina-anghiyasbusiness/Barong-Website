@@ -1378,6 +1378,11 @@ flex: 0 0 12.5%;
 }
 
 
+	.footerPolicies{
+		display: flex;
+	}
+
+
 /* //----						Login Page 					----// */
 
 
@@ -6854,6 +6859,22 @@ p.creadit-card-address-paypal{
 	width: 100%;
 }
 
+	.refundPolicy-checkout{
+		
+		display: flex;
+		margin-bottom: 1rem;
+		justify-content: center;
+		font-size: 1.15rem;
+	
+	}
+
+	.refundPolicy-checkout a:link,
+	.refundPolicy-checkout a:visited{
+	color: rgb(40, 32, 8);
+	
+	
+	}
+
 /* =========================
    Totals
    ========================= */
@@ -6916,7 +6937,7 @@ p.creadit-card-address-paypal{
 
 	padding: .75rem 0;
 
-margin-bottom: 2rem;
+margin-bottom: .5rem;
 	border: none;
 	border-radius: 10px;
 	cursor: pointer;
