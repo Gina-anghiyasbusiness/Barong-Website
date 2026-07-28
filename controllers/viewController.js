@@ -91,6 +91,23 @@ const buildProductSchema = (product, productDescription, productPath) => {
 };
 
 
+// ------------------ 	Cache Control 	-----------------//
+
+
+///	 1800 = 30 minutes
+///	 3600 = 1 hour
+///	 86400= 1 day
+
+
+const setStaticPageCache = res => {
+
+	if (process.env.NODE_ENV === 'production') {
+
+		res.set('Cache-Control', 'public, max-age=3600');
+	}
+};
+
+
 
 
 //------------------------ login Page ---------------------------
@@ -193,9 +210,6 @@ const makeBreadcrumbUrl = (basePath, params) => {
 
 	return queryString ? `${basePath}?${queryString}` : basePath;
 };
-
-
-
 
 
 
@@ -1174,6 +1188,8 @@ exports.getFrontEndCategoryPage = catchAsync(async (req, res, next) => {
 
 exports.getSalesPage = (req, res) => {
 
+	setStaticPageCache(res);
+
 	res.status(200).render('sales', {
 
 		pageTitle: 'Ready-Made Barong Tagalog & Filipiniana Australia | Ang Hiyas',
@@ -1188,6 +1204,8 @@ exports.getSalesPage = (req, res) => {
 
 
 exports.getServicesPage = (req, res) => {
+
+	setStaticPageCache(res);
 
 	res.status(200).render('services', {
 
@@ -1205,6 +1223,8 @@ exports.getServicesPage = (req, res) => {
 
 exports.getCustomizationPage = (req, res) => {
 
+	setStaticPageCache(res);
+
 	res.status(200).render('custom', {
 
 		pageTitle: 'Custom Barong Tagalog & Filipiniana Australia | Ang Hiyas',
@@ -1215,6 +1235,8 @@ exports.getCustomizationPage = (req, res) => {
 
 
 exports.getCustomContactPage = (req, res) => {
+
+	setStaticPageCache(res);
 
 	res.status(200).render('custom-contact', {
 
@@ -1231,6 +1253,8 @@ exports.getCustomContactPage = (req, res) => {
 
 exports.getRentalsPage = (req, res) => {
 
+	setStaticPageCache(res);
+
 	res.status(200).render('rentals', {
 
 		pageTitle: 'Barong Tagalog & Filipiniana Rentals Australia | Ang Hiyas',
@@ -1241,6 +1265,8 @@ exports.getRentalsPage = (req, res) => {
 
 
 exports.getRentalGuidePage = (req, res) => {
+
+	setStaticPageCache(res);
 
 	res.status(200).render('rental-guide', {
 
@@ -1275,6 +1301,8 @@ exports.getBlogPage = (req, res) => {
 
 exports.getAboutPage = (req, res) => {
 
+	setStaticPageCache(res);
+
 	res.status(200).render('about', {
 
 		pageTitle: 'About Ang Hiyas | Filipino Clothing Australia',
@@ -1291,6 +1319,8 @@ exports.getAboutPage = (req, res) => {
 
 exports.getContactPage = (req, res) => {
 
+	setStaticPageCache(res);
+
 	res.status(200).render('contact', {
 
 		pageTitle: 'Contact Ang Hiyas | Filipino Clothing Australia',
@@ -1305,6 +1335,8 @@ exports.getContactPage = (req, res) => {
 
 
 exports.getPrivacyPage = (req, res) => {
+
+	setStaticPageCache(res);
 
 	res.status(200).render('privacy', {
 
@@ -2140,6 +2172,9 @@ exports.getEnquirySuccess = catchAsync(async (req, res, next) => {
 
 
 exports.adminPage = (req, res) => {
+
+
+	setStaticPageCache(res);
 
 	res.status(200).render('admin/be_home', {
 
