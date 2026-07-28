@@ -10709,8 +10709,16 @@ p.checkout__price{
 .productPage__quantity {
  
     align-items: flex-start;
-   justify-content: flex-end;
-    margin-bottom: 0;
+   justify-content: center;
+    margin-bottom: 1.6rem;
+	
+}
+
+.productPage__purchase-section 	{
+	
+	grid-column: 1/-1;
+	display: flex;
+	flex-direction: column;
 }
 	
 	.myAccount__cart--grid {
@@ -11123,6 +11131,23 @@ padding: 0 0 0 2rem;
 		/* /// 350px */
 		
 @media (max-width: 21.85em) {
+	
+	  .productPage-buyItNow {
+        width: 13.2rem;
+    }
+		
+		    .productPage__product--btn-box {
+       
+        gap: 4rem;
+       
+    }
+		
+		.productPage__product-btn {
+
+
+    padding: .75rem 1.4rem;
+ 
+}
 	
 	.rentalsPage__cta:link, .rentalsPage__cta:visited {
   
