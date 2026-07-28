@@ -5556,7 +5556,7 @@ button.productPage__product-btn.wishlist-btns.wishlist-btn--atc, button.productP
 
 .myAccount__cart--text-box {
 	
-	padding: 2rem 1.2rem;
+	padding: 1.4rem .8rem;
   display: flex;
   flex-direction: column;
 	justify-content: space-around;
@@ -10652,6 +10652,17 @@ p.checkout__price{
 /* /// 425px */
 
 @media (max-width: 26.56em) {
+	
+	.myAccount__cart--grid {
+ 
+    grid-template-columns: 1fr;
+   
+}
+	
+	p.myAccount__cart--decription {
+  
+    /* display: none; */
+}
 	
 	
 	.productPage__text-price--box {

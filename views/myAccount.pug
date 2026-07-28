@@ -134,6 +134,7 @@ block content
 
 												.myAccount__cart--text-box
 													p.myAccount__cart--name #{item.product.name}
+													p.myAccount__cart--decription #{item.product.description}
 													p.myAccount__cart--color Color: #{item.product.color}
 
 													button(class='remove-wishlist--item' , data-remove=`${item._id}`, data-user=`${user._id}`)
@@ -141,8 +142,8 @@ block content
 											
 													////-------- Variants -------// 
 													
-													.productPage__variant-size--flex.wishlist-btn
-														if item.product.variants && item.product.variants.length
+													if item.product.variants && item.product.variants.length
+														.productPage__variant-size--flex.wishlist-btn
 															each variant, i in item.product.variants
 																if variant.inStock > 0
 																	button(class=`product__size--btn variant__size--${i+1}` , data-variant=variant._id) #{variant.size}
