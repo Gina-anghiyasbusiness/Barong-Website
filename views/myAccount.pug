@@ -138,7 +138,7 @@ block content
 													p.myAccount__cart--color Color: #{item.product.color}
 
 													button(class='remove-wishlist--item' , data-remove=`${item._id}`, data-user=`${user._id}`, aria-label=`Remove ${item.product.name} from wishlist`)
-  													i(data-lucide='x' width="16" height="16" aria-hidden="true")
+														i(data-lucide='x' width="16" height="16" aria-hidden="true")
 											
 													////-------- Variants -------// 
 													
@@ -155,8 +155,8 @@ block content
 															- const wishlistQtyId = `wishlist-qty-${item._id}`
 
 															.productPage__quantity--box
-															  label(for=wishlistQtyId) Quantity:
-															  input.add-to-cart-qty(id=wishlistQtyId type="number" name="quantity" value="1" min="1")
+																label(for=wishlistQtyId) Quantity:
+																input.add-to-cart-qty(id=wishlistQtyId type="number" name="quantity" value="1" min="1")
 
 															.productPage__quantity-price--box
 																p.myAccount__cart--cprice $#{item.discountPrice}
