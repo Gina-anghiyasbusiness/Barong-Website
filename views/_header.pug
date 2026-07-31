@@ -34,17 +34,17 @@ header.main_header
 				.header__user
 							
 					.header__user--icons 
-						a(href=`/my-account/${user.id}`).header__user--link.user__account--link
+						a(href=`/my-account/${user.id}` aria-label="Account").header__user--link.user__account--link
 							i(data-lucide='user-round')
 							
-						a(href=`/my-account/${user.id}?show=my-account-wishlist`).header__user--link.user__wishlist--link
+						a(href=`/my-account/${user.id}?show=my-account-wishlist` aria-label="Wishlist").header__user--link.user__wishlist--link
 							i(data-lucide='star')
 							if user.wishlist.length > 0
 								span.user__wishlist--span #{user.wishlist.length}
 							else 
 								span.user__wishlist 
 							
-						a(href=`/my-account/${user.id}?show=my-account-cart`).header__user--link.user__cart--link 
+						a(href=`/my-account/${user.id}?show=my-account-cart` aria-label="Cart").header__user--link.user__cart--link 
 							i(data-lucide='shopping-cart')
 							if user.cart.length > 0
 								span.user__cart--span #{user.cart.length}
@@ -85,9 +85,9 @@ header.main_header
 			a.header__mobile-link(href="/static/contact") Contact
 
 			if user
-				a.header__mobile-link(href=`/my-account/${user.id}`) My Account
-				a.header__mobile-link(href=`/my-account/${user.id}?show=my-account-wishlist`) Wishlist
-				a.header__mobile-link(href=`/my-account/${user.id}?show=my-account-cart`) Cart
+				a.header__mobile-link(href=`/my-account/${user.id}` aria-label="Account") My Account
+				a.header__mobile-link(href=`/my-account/${user.id}?show=my-account-wishlist` aria-label="Wishlist") Wishlist
+				a.header__mobile-link(href=`/my-account/${user.id}?show=my-account-cart` aria-label="Cart") Cart
 			else
 				a.header__mobile-link(href="/login-page") Login/Signup	
 					
