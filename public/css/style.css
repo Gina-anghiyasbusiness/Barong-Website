@@ -133,10 +133,7 @@
 
 
 
-/* ---------- Google fonts ------------- */
-
-
-/*// SEE README FILE FOR FONT IMPLEMENTATION - AND ChatGPT-PUG TEMPLATES */
+/* ---------- Self-hosted fonts ------------- */
 
 
 /* /// rubik */
@@ -221,92 +218,6 @@
 	src: url('/img/fonts/rubik/Rubik-ExtraBoldItalic.woff2') format('woff2');
 }
 
-
-
-/*/// PlayFair Display */
-
-
-
-
-@font-face {
-  font-family: "Playfair Display";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/img/fonts/playfair/PlayfairDisplay-Regular.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Playfair Display";
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/img/fonts/playfair/PlayfairDisplay-Italic.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Playfair Display";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/img/fonts/playfair/PlayfairDisplay-Medium.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Playfair Display";
-  font-style: italic;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/img/fonts/playfair/PlayfairDisplay-MediumItalic.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Playfair Display";
-  font-style: italic;
-  font-weight: 600;
-  font-display: swap;
-  src: url("/img/fonts/playfair/PlayfairDisplay-SemiBoldItalic.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Playfair Display";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("/img/fonts/playfair/PlayfairDisplay-Bold.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Playfair Display";
-  font-style: italic;
-  font-weight: 700;
-  font-display: swap;
-  src: url("/img/fonts/playfair/PlayfairDisplay-BoldItalic.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Playfair Display";
-  font-style: normal;
-  font-weight: 800;
-  font-display: swap;
-  src: url("/img/fonts/playfair/PlayfairDisplay-ExtraBold.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Playfair Display";
-  font-style: italic;
-  font-weight: 800;
-  font-display: swap;
-  src: url("/img/fonts/playfair/PlayfairDisplay-ExtraBoldItalic.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Playfair Display";
-  font-style: italic;
-  font-weight: 900;
-  font-display: swap;
-  src: url("/img/fonts/playfair/PlayfairDisplay-BlackItalic.woff2") format("woff2");
-}
 
 
  /*// Cairo */
@@ -500,10 +411,9 @@ main{
 }
 
 
-h1, h2, h3,h4{
+h1, h2, h3, h4 {
 	
 	line-height: 1;		
-  /* font-family: "Playfair Display", serif; */
   font-family: "Cairo", serif;
 }
 
@@ -845,8 +755,6 @@ ul.header__nav--list{
 	
 	
 	background-color: var(--color-bg);
-	
-	/* font-family: "Playfair Display", serif; */
 	
 	font-family: "Cairo", serif;
 	
@@ -7564,8 +7472,6 @@ ul.admin-nav li a{
 	color: var(--color-text);
 	font-weight: 600;
 	
-	  /* font-family: "Playfair Display", serif; */
-		
 	font-family: "Cairo", serif;
 }
 

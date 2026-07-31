@@ -70,11 +70,11 @@ block content
 										form#main-profile-form(class='myAccount__main--user-form' , data-user=`${user._id}`)
 										
 											.myAccount-form--group
-												label(for="email") Email:
+												label(for="user-update-email") Email:
 												input#user-update-email(type="email" , name='email' value=`${user.email}`)
 												
 											.myAccount-form--group
-												label(for="phone") Phone:
+												label(for="user-update-phone") Phone:
 												input#user-update-phone(type="tel" , name='phone' value=`${user.phone || 'No Phone number'}`)
 											.myAccount-form--group-btn
 												button.myAccount__form--submit Update Details
@@ -130,15 +130,15 @@ block content
 												- const productUrl = item.productType
 												.myAccount__cart--img-box
 													a(href=`/${productUrl}/${item.product.slug}`)
-														img(src=`/img/product_imgs/${item.product.imageCover}`, alt="" , class='myAccount__cart--img' , width='450' , height='800')
+														img(src=`/img/product_imgs/${item.product.imageCover}`, alt=`${item.product.name}-image` , class='myAccount__cart--img' , width='450' , height='800')
 
 												.myAccount__cart--text-box
 													p.myAccount__cart--name #{item.product.name}
 													p.myAccount__cart--decription #{item.product.description}
 													p.myAccount__cart--color Color: #{item.product.color}
 
-													button(class='remove-wishlist--item' , data-remove=`${item._id}`, data-user=`${user._id}`)
-														i(data-lucide='x' width="16" height="16")
+													button(class='remove-wishlist--item' , data-remove=`${item._id}`, data-user=`${user._id}`, aria-label=`Remove ${item.product.name} from wishlist`)
+  													i(data-lucide='x' width="16" height="16" aria-hidden="true")
 											
 													////-------- Variants -------// 
 													
@@ -152,9 +152,11 @@ block content
 													
 													if user		
 														.myAccount__cart__quantity
+															- const wishlistQtyId = `wishlist-qty-${item._id}`
+
 															.productPage__quantity--box
-																label(for=`quantity`)  Quantity:
-																input#add-to-cart-qty.add-to-cart-qty(type="number" name=`quantity` value="1" min="1")
+															  label(for=wishlistQtyId) Quantity:
+															  input.add-to-cart-qty(id=wishlistQtyId type="number" name="quantity" value="1" min="1")
 
 															.productPage__quantity-price--box
 																p.myAccount__cart--cprice $#{item.discountPrice}
@@ -169,8 +171,8 @@ block content
 											else
 												.myAccount__missing-product
 													p Product no longer exists
-													button.remove-wishlist--item(data-remove=`${item._id}` data-user=`${user._id}`)
-														i(data-lucide='x' width="16" height="16")
+													button.remove-wishlist--item(data-remove=`${item._id}` data-user=`${user._id}` aria-label="Remove unavailable product from wishlist")
+														i(data-lucide='x' width="16" height="16" aria-hidden="true")
 							.myAccount__cart--checkout 
 								if wishlist.length < 1
 									p.myAccount__checkout--empty Wishlist Empty									
@@ -187,15 +189,15 @@ block content
 												- const productUrl = item.productType
 												.myAccount__cart--img-box
 													a(href=`/${productUrl}/${item.product.slug}`)
-														img(src=`/img/product_imgs/${item.product.imageCover}`, alt="" , class='myAccount__cart--img' , width='450' , height='800')
+														img(src=`/img/product_imgs/${item.product.imageCover}`, alt=`${item.product.name}-image` , class='myAccount__cart--img' , width='450' , height='800')
 
 												.myAccount__cart--text-box
 													p.myAccount__cart--name #{item.product.name}
 													p.myAccount__cart--decription #{item.product.description}
 													p.myAccount__cart--color Color: #{item.product.color}
 
-													button(class='remove-cart--item' , data-remove=`${item._id}`, data-user=`${user._id}`)
-														i(data-lucide='x' width="16" height="16")
+													button(class='remove-cart--item' , data-remove=`${item._id}`, data-user=`${user._id}`, aria-label=`Remove ${item.product.name} from cart`)
+														i(data-lucide='x' width="16" height="16" aria-hidden="true")
 											
 													
 													if item.variantDetails
@@ -211,8 +213,8 @@ block content
 											else
 												.myAccount__missing-product
 													p Product no longer exists
-													button.remove-cart--item(data-remove=`${item._id}` data-user=`${user._id}`)
-														i(data-lucide='x' width="16" height="16")
+													button.remove-cart--item(data-remove=`${item._id}` data-user=`${user._id}` aria-label="Remove unavailable product from cart")
+														i(data-lucide='x' width="16" height="16" aria-hidden="true")
 							.myAccount__cart--checkout
 								if cart.some(item => item.product)
 									a(href="/checkout-page" class='myAccount__checkout--link') Checkout Now!
