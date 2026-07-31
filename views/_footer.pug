@@ -28,12 +28,18 @@ footer
 					img(src="/img/icons/tiktok-logo.svg", alt='', class='footer_socials-icon')
 				
 
-			.footer__contact 
-			
+			.footer__contact(data-nosnippet)
+				h4 Contact Us
 
-				h4 Contact Us 
-				a(href="mailto:info@anghiyas.com.au" class='footer_contact-link') Email: info@anghiyas.com.au
-				a(href="tel:+61403542521" class='footer_contact-link-desktop') Phone: 0403542521
+				p.footer_contact-p
+					strong Email:
+					|  
+					a(href="mailto:info@anghiyas.com.au" class="footer_contact-link") info@anghiyas.com.au
+
+				p.footer_contact-p
+					strong Phone:
+					|  
+					a(href="tel:+61403542521" class="footer_contact-link") 0403 542 521
 				.footerPolicies
 					a(href="/static/privacy" class='footer_contact-link') Privacy Policy &nbsp; | &nbsp;
 					a(href="/static/refund-policy" class='footer_contact-link-desktop') Refund Policy
@@ -65,13 +71,19 @@ footer
 					img(src="/img/icons/tiktok-logo.svg", alt='',  class='footer_socials-icon-desktop')
 				
 
-			.footer__contact-desktop 
-			
-				//- a(href="/contact" class='footer_contact-link') Contact Us 
-				h4 Contact Us 
+			.footer__contact-desktop(data-nosnippet)
+				h4 Contact Us
+
 				.footer_contact-p--box
-					a(href="mailto:info@anghiyas.com.au" class='footer_contact-link-desktop') Email: info@anghiyas.com.au
-					a(href="tel:+61403542521" class='footer_contact-link-desktop') Phone: +61403542521
+					p.footer_contact-p
+						strong Email:
+						|  
+						a(href="mailto:info@anghiyas.com.au" class="footer_contact-link-desktop") info@anghiyas.com.au
+
+					p.footer_contact-p
+						strong Phone:
+						|  
+						a(href="tel:+61403542521" class="footer_contact-link-desktop") 0403 542 521
 				.footer_contact-p--box
 					p.footer_contact-p Ang Hiyas
 					p.footer_contact-p Queensland, Australia

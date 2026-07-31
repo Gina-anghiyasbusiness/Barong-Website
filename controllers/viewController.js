@@ -178,7 +178,7 @@ exports.getHomePage = catchAsync(async (req, res, next) => {
 	res.status(200).render('home-page', {
 
 		pageTitle: 'Ang Hiyas | Barong Tagalog & Filipiniana Australia',
-		pageDescription: 'Shop Barong Tagalog and Filipiniana in Australia. Ang Hiyas offers custom Filipino formalwear, rentals, and ready-to-wear styles for weddings and events.',
+		pageDescription: 'Shop Barong Tagalog and Filipiniana in Australia. Ang Hiyas offers custom Filipino formalwear, rentals, and ready-to-wear styles for weddings, events, and special occasions.',
 		canonicalUrl: `${process.env.CANONICAL_URL}`,
 		currentPage: 'home',
 
