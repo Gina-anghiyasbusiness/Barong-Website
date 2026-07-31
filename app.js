@@ -99,6 +99,11 @@ app.use((req, res, next) => {
 	next();
 });
 
+app.use((req, res, next) => {
+	res.locals.sitePreview = process.env.SITE_PREVIEW === 'true';
+	next();
+});
+
 //-- Helmet --/
 
 app.use(
