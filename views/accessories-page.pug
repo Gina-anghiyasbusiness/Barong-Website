@@ -34,6 +34,8 @@ block content
 								- const isWishlisted = Boolean(wishlistItem)
 									.productPage-wishlist--box
 										button#add-to-wishlist.productPage__wishlist--btn(
+											type='button'
+											aria-label="Add to wishlist"
 											class=isWishlisted ? 'productPage__wishlist--active' : ''
 											data-product-id=product.id
 											data-user=user.id
@@ -73,7 +75,7 @@ block content
 					if user
 						.productPage__purchase-section 		
 							.productPage__quantity
-								label(for=`quantity`)  Quantity:
+								label(for="add-to-cart-qty")   Quantity:
 								input#add-to-cart-qty(type="number" name=`quantity` value="1" min="1")
 
 							.productPage__product--btn-box 

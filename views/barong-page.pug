@@ -37,6 +37,8 @@ block content
 										.productPage-wishlist--box
 											button#add-to-wishlist.productPage__wishlist--btn(
 												class=isWishlisted ? 'productPage__wishlist--active' : ''
+												type="button"
+												aria-label="Add to wishlist"
 												data-product-id=product.id
 												data-user=user.id
 												data-product-slug=product.slug
@@ -107,7 +109,7 @@ block content
 					
 					if user		
 						.productPage__quantity
-							label(for=`quantity`)  Quantity:
+							label(for="add-to-cart-qty")  Quantity:
 							input#add-to-cart-qty(type="number" name=`quantity` value="1" min="1")
 
 						.productPage__product--btn-box 
