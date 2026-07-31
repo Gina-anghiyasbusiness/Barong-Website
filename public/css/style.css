@@ -5029,19 +5029,20 @@ h2.productPage__reviews--heading{
 	display:flex;
 }
 
-ul.myAccount__side-menu--ul{
+.myAccount__side-menu-main{
 	flex:1;
 	display:flex;
 	flex-direction:column;
 }
 
-ul.myAccount__side-menu--ul{
+ul.myAccount__side-menu-main{
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
   gap: 1.6rem;
+
 	
 }
 
