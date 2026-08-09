@@ -2301,3 +2301,31 @@ if (updateDiscount) {
 //------------ Enquiries -----------//
 
 
+const enquiryForms = document.querySelectorAll(
+	'.contactPage__form-box, .customContactPage__form-box'
+);
+
+enquiryForms.forEach(form => {
+
+	form.addEventListener('submit', e => {
+
+		if (form.dataset.submitting === 'true') {
+
+			e.preventDefault();
+			return;
+		}
+
+		form.dataset.submitting = 'true';
+		form.setAttribute('aria-busy', 'true');
+
+		const submitButton = form.querySelector('button[type="submit"]');
+
+		if (submitButton) {
+
+			submitButton.disabled = true;
+			submitButton.textContent = 'Submitting...';
+		}
+	})
+})
+
+
