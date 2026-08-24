@@ -1062,6 +1062,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			const url = new URL(window.location.href);
 
 			url.searchParams.set('productSort', sortOption.value);
+			url.searchParams.delete('page');
 
 			window.location.href = url.toString();
 		});

@@ -1,6 +1,7 @@
 extends base
 
 include ../mixins/_breadcrumbs
+include ../mixins/_pagination
 
 
 block content 
@@ -79,3 +80,4 @@ block content
 											p.price--new $#{product.discountPrice}
 										else 
 											p.price--single $#{product.originalPrice}
+				+productPagination(pagination)

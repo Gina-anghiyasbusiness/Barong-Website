@@ -109,6 +109,75 @@ const setStaticPageCache = res => {
 
 
 
+// --------------------		 	Pagination 			------------------//
+
+const PRODUCT_LIST_PAGE_SIZE = 16;
+
+
+const getRequestedProductListPage = page => {
+	const requestedPage = Number.parseInt(page, 10);
+
+	if (!Number.isInteger(requestedPage) || requestedPage < 1) {
+		return 1;
+	}
+
+	return requestedPage;
+};
+
+
+
+const buildProductListPagination = (req, totalProducts, requestedPage) => {
+	const totalPages = Math.max(
+		Math.ceil(totalProducts / PRODUCT_LIST_PAGE_SIZE),
+		1
+	);
+
+	const currentPage = Math.min(requestedPage, totalPages);
+
+	const buildPageUrl = page => {
+		const searchParams = new URLSearchParams(req.query);
+
+		if (page === 1) {
+			searchParams.delete('page');
+		} else {
+			searchParams.set('page', page);
+		}
+
+		const queryString = searchParams.toString();
+
+		return queryString
+			? `${req.path}?${queryString}`
+			: req.path;
+	};
+
+	return {
+		currentPage,
+		totalPages,
+		totalProducts,
+		limit: PRODUCT_LIST_PAGE_SIZE,
+		skip: (currentPage - 1) * PRODUCT_LIST_PAGE_SIZE,
+		hasPreviousPage: currentPage > 1,
+		hasNextPage: currentPage < totalPages,
+		previousPageUrl:
+			currentPage > 1 ? buildPageUrl(currentPage - 1) : '',
+		nextPageUrl:
+			currentPage < totalPages ? buildPageUrl(currentPage + 1) : '',
+		pages: Array.from({ length: totalPages }, (_, index) => {
+			const page = index + 1;
+
+			return {
+				number: page,
+				url: buildPageUrl(page),
+				isCurrent: page === currentPage
+			};
+		})
+	};
+};
+
+
+
+
+
 
 //------------------------ login Page ---------------------------
 
@@ -463,7 +532,9 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 	}
 
 
-	const queryObj = {};
+	const queryObj = {
+		discontinued: false
+	};
 
 	if (selectedColor) {
 		queryObj.color = selectedColor;
@@ -486,9 +557,27 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 		};
 	}
 
+
+	/// Pagination 
+
+	const requestedPage = getRequestedProductListPage(req.query.page);
+
+	const totalProducts = await SpecProd.countDocuments(queryObj);
+
+	const pagination = buildProductListPagination(
+		req,
+		totalProducts,
+		requestedPage
+	);
+
 	let productlist = await SpecProd.find(queryObj)
 		.sort(sortOption)
+		.skip(pagination.skip)
+		.limit(pagination.limit)
 		.populate('category');
+
+	//////////
+
 
 	await Promise.all(productlist.map(async product => {
 		await missingDiscountCheck(product);
@@ -504,7 +593,7 @@ exports.getBarongListPage = catchAsync(async (req, res, next) => {
 		canonicalUrl: `${process.env.CANONICAL_URL}barong-list`,
 
 		noIndex: hasFilters,
-
+		pagination,
 		productlist,
 		sizeList,
 		sexList,
@@ -816,7 +905,9 @@ exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 	}
 
 
-	const queryObj = {};
+	const queryObj = {
+		discontinued: false
+	};
 
 	if (selectedColor) {
 		queryObj.color = selectedColor;
@@ -826,9 +917,26 @@ exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 		queryObj.category = selectedcategory;
 	}
 
+	//// Pagination
+
+
+	const requestedPage = getRequestedProductListPage(req.query.page);
+
+	const totalProducts = await Accessory.countDocuments(queryObj);
+
+	const pagination = buildProductListPagination(
+		req,
+		totalProducts,
+		requestedPage
+	);
+
 	let productlist = await Accessory.find(queryObj)
 		.sort(sortOption)
+		.skip(pagination.skip)
+		.limit(pagination.limit)
 		.populate('category');
+
+	////////////
 
 	await Promise.all(productlist.map(async product => {
 		await missingDiscountCheck(product);
@@ -845,6 +953,7 @@ exports.getAccessoryListPage = catchAsync(async (req, res, next) => {
 
 
 		productlist,
+		pagination,
 		colorList,
 		categoryList,
 		breadcrumbs,
@@ -1015,7 +1124,9 @@ exports.getBagListPage = catchAsync(async (req, res, next) => {
 
 
 
-	const queryObj = {};
+	const queryObj = {
+		discontinued: false
+	};
 
 	if (selectedColor) {
 		queryObj.color = selectedColor;
@@ -1025,9 +1136,28 @@ exports.getBagListPage = catchAsync(async (req, res, next) => {
 		queryObj.category = selectedcategory;
 	}
 
+
+	/// Pagination
+
+	const requestedPage = getRequestedProductListPage(req.query.page);
+
+	const totalProducts = await Bag.countDocuments(queryObj);
+
+	const pagination = buildProductListPagination(
+		req,
+		totalProducts,
+		requestedPage
+	);
+
 	let productlist = await Bag.find(queryObj)
 		.sort(sortOption)
+		.skip(pagination.skip)
+		.limit(pagination.limit)
 		.populate('category');
+
+
+	////////////
+
 
 	await Promise.all(productlist.map(async product => {
 		await missingDiscountCheck(product);
@@ -1043,6 +1173,7 @@ exports.getBagListPage = catchAsync(async (req, res, next) => {
 		noIndex: hasFilters,
 
 		productlist,
+		pagination,
 		colorList,
 		categoryList,
 		breadcrumbs,

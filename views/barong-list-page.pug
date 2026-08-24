@@ -1,6 +1,7 @@
 extends base 
 
 include ../mixins/_breadcrumbs
+include ../mixins/_pagination
 
 block content 
 
@@ -96,6 +97,7 @@ block content
 											p.price--new $#{Number.isInteger(product.discountPrice) ? product.discountPrice : product.discountPrice.toFixed(2)}
 										else 
 											p.price--single $#{product.originalPrice}
+				+productPagination(pagination)
 				
 
 					

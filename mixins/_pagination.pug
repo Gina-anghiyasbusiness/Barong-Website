@@ -1,0 +1,35 @@
+mixin productPagination(pagination)
+	if pagination && pagination.totalPages > 1
+		nav.product-list-pagination(aria-label="Product pagination")
+			if pagination.hasPreviousPage
+				a.product-list-pagination__link(
+					href=pagination.previousPageUrl
+					aria-label="Previous page"
+				) Previous
+			else
+				span.product-list-pagination__link.product-list-pagination__link--disabled(
+					aria-disabled="true"
+				) Previous
+
+			ul.product-list-pagination__pages
+				each page in pagination.pages
+					li
+						if page.isCurrent
+							span.product-list-pagination__page.product-list-pagination__page--current(
+								aria-current="page"
+							)= page.number
+						else
+							a.product-list-pagination__page(
+								href=page.url
+								aria-label=`Page ${page.number}`
+							)= page.number
+
+			if pagination.hasNextPage
+				a.product-list-pagination__link(
+					href=pagination.nextPageUrl
+					aria-label="Next page"
+				) Next
+			else
+				span.product-list-pagination__link.product-list-pagination__link--disabled(
+					aria-disabled="true"
+				) Next
