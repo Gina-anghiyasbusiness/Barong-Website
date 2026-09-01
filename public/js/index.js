@@ -599,6 +599,10 @@ if (buyItNowBtnId) {
 
 		selectedVariant = productType === 'accessory' || productType === 'bag' ? null : selectedVariant;
 
+		buyItNowBtnId.disabled = true;
+		buyItNowBtnId.setAttribute('aria-busy', 'true');
+		buyItNowBtnId.textContent = 'Processing...';
+
 		buyItNowCheckout(productId, qty, selectedVariant);
 	})
 }
@@ -626,6 +630,10 @@ if (buyItNowBtnGuest) {
 		}
 
 		selectedVariant = productType === 'accessory' || productType === 'bag' ? null : selectedVariant;
+
+		buyItNowBtnGuest.disabled = true;
+		buyItNowBtnGuest.setAttribute('aria-busy', 'true');
+		buyItNowBtnGuest.textContent = 'Processing...';
 
 		buyItNowGuestCheckout(productId, qty, selectedVariant);
 	})
@@ -664,6 +672,10 @@ if (buyItNowBtn) {
 
 			selectedVariant = selectedVariant || 'null';
 
+			btn.disabled = true;
+			btn.setAttribute('aria-busy', 'true');
+			btn.textContent = 'Processing...';
+
 			buyItNowCheckout(productId, qty, selectedVariant);
 		})
 	})
@@ -700,6 +712,10 @@ if (addToCartBtnId) {
 		}
 
 		const variant = productType === 'accessory' || productType === 'bag' ? null : selectedVariant;
+
+		addToCartBtnId.disabled = true;
+		addToCartBtnId.setAttribute('aria-busy', 'true');
+		addToCartBtnId.textContent = 'Processing...';
 
 		addProductToUser(id, variant, slug, 'cart', qty);
 
@@ -740,6 +756,10 @@ if (addToCartBtns.length > 0) {
 			}
 
 			const variant = productType === 'accessory' || productType === 'bag' ? null : selectedVariant;
+
+			btn.disabled = true;
+			btn.setAttribute('aria-busy', 'true');
+			btn.textContent = 'Processing...';
 
 			addProductToUser(id, variant, slug, 'cart', qty);
 		});

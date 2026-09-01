@@ -10359,6 +10359,7 @@ p.checkout__price{
 	
 	
 	.productPage-heading-flex {
+		align-items: start;
    justify-content: space-between;
 	 margin-right: 2.4rem;
 }
@@ -10663,7 +10664,7 @@ padding: 1rem;
 	
 	.productList-box--heading{
 	
-	height: 5.2rem;
+	height: 7rem;
 	
 }
 
