@@ -3071,7 +3071,7 @@ exports.getOrderPage = catchAsync(async (req, res, next) => {
 		.populate('transaction')
 		.populate({
 			path: 'product.product',
-			select: 'name'
+			select: 'name productSku'
 		})
 		.populate('user');
 

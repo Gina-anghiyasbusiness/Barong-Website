@@ -73,7 +73,8 @@ block content
 							each item in order.product
 								if item.product
 									- const sizeText = item.sizeAtPurchase ? ` - Size ${item.sizeAtPurchase}` : ''
-									input#admin-order-product(type="text" name='admin-order-product' value=`${item.quantity} x ${item.product.name} ${sizeText}`, disabled)
+									- const productNumber = item.product.productSku ?? 'N/A'
+									input#admin-order-product(type="text" name='admin-order-product' value=`${item.quantity} x Product No. ${productNumber} - ${item.product.name}${sizeText}`, disabled)
 								else
 									input#admin-order-product(type="text" name='admin-order-product' value=`${item.quantity} x Product not found or deleted`, disabled)
 					.admin-order-form--row 

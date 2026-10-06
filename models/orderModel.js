@@ -146,7 +146,7 @@ orderSchema.pre(/^find/, function (next) {
 
 	this
 		.populate('user')
-		.populate({ path: 'product.product', select: 'slug name _id imageCover color sex' })
+		.populate({ path: 'product.product', select: 'slug name _id imageCover color sex productSku' })
 
 	next();
 })
