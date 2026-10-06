@@ -197,6 +197,7 @@ module.exports = class Email {
 		await this.send('customizationEnquiryConfirmation', 'Thanks for your custom enquiry | Ang Hiyas');
 	}
 
+
 	/// user order emails
 
 	async orderConfirm() {
@@ -224,6 +225,21 @@ module.exports = class Email {
 
 
 	/// workspace support
+
+
+	/// account signup notification
+
+
+	async sendInternalSignup(signupData) {
+
+		await this.sendInternal(
+			'internalSignup',
+			'New customer signup | Ang Hiyas',
+			signupData,
+			process.env.SIGNUP_ALERT_TO
+		);
+	};
+
 
 
 	// / Stripe

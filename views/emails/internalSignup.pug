@@ -1,0 +1,19 @@
+extends baseEmail
+
+block content
+
+	main.email-wrapper
+		.email-card
+
+			.email-header
+				img.email-logo(src=logoUrl, alt="Ang Hiyas logo")
+				h1 New customer signup
+				p.email-subtitle A customer has created an Ang Hiyas account.
+
+			.message-box
+				p Name: #{data.name}
+				p Email: #{data.email}
+
+
+			.email-footer
+				p Ang Hiyas account signup notification

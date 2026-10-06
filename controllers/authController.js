@@ -74,9 +74,25 @@ exports.signup = catchAsync(async (req, res, next) => {
 
 	const url = `${process.env.CANONICAL_URL}me`;
 
+
 	/// 	Still need to add '/me' route to viewRoutes 	///
 
-	await new Email(newUser, url).sendWelcome()
+	await new Email(newUser, url).sendWelcome();
+
+
+
+	/// Notify new signups 
+
+	try {
+		await new Email(newUser).sendInternalSignup({
+
+			name: newUser.name,
+			email: newUser.email
+		});
+	} catch (err) {
+
+		console.error('Signup notification failed:', err.message);
+	}
 
 
 	createSendToken(newUser, 200, res);
