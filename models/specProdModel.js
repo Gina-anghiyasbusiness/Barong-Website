@@ -71,30 +71,61 @@ const specProdSchema = new mongoose.Schema({
 
 	features: {
 		type: [String],
-		enum: [
-			'Hand Crafted',
-			'Quality Cotton',
-			'Lightweight Fabric',
-			'Traditional Embroidery',
-			'Formal Occasion',
-			'Wedding Appropriate',
-			'Embroidered Front Panel',
-			'Delicate Sleeve Detail',
-			'Comfort Fit',
-			'Premium Embroidery',
-			'Premium Jusilin Fabric',
-			'Premium pina-organza Fabric',
-			'Machine Embroidery',
-			'Hand Embroidered',
-			'Breathable Fabric',
-			'Premium Fabric',
-			'Filipino Wedding Attire',
-			'Groom Wear',
-			'Groomsmen Wear',
-			'Graduation Wear',
-			'Oath Taking Ceremony'
 
+		/// Original List
+
+		// enum: [
+		// 	'Hand Crafted',
+		// 	'Quality Cotton',
+		// 	'Lightweight Fabric',
+		// 	'Traditional Embroidery',
+		// 	'Formal Occasion',
+		// 	'Wedding Appropriate',
+		// 	'Embroidered Front Panel',
+		// 	'Delicate Sleeve Detail',
+		// 	'Comfort Fit',
+		// 	'Premium Embroidery',
+		// 	'Premium Jusilin Fabric',
+		// 	'Premium pina-organza Fabric',
+		// 	'Machine Embroidery',
+		// 	'Hand Embroidered',
+		// 	'Breathable Fabric',
+		// 	'Premium Fabric',
+		// 	'Filipino Wedding Attire',
+		// 	'Groom Wear',
+		// 	'Groomsmen Wear',
+		// 	'Graduation Wear',
+		// 	'Oath Taking Ceremony'
+
+		// ],
+
+		/// Updated List
+
+		enum: [
+			'Pina-Jusilyn Fabric',
+			'Jusilyn Fabric',
+			'Organza Fabric',
+			'Satin Fabric',
+			'Chiffon Fabric',
+			'Lace Fabric',
+			'Machine Embroidery',
+			'Intricate Embroidery',
+			'Decorative Embroidery',
+			'Statement Sleeves',
+			'Structured Butterfly Sleeves',
+			'Elegant Silhouette',
+			'Comfort Fit',
+			'Lightweight & Breathable',
+			'Modern Filipino Design',
+			'Timeless Filipino Elegance',
+			'Contemporary Formalwear',
+			'Versatile Styling',
+			'Formal Occasion',
+			'Appliqué',
+			'Hand-Finished Details'
 		],
+
+
 		default: [],
 
 		validate: {

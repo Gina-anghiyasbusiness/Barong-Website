@@ -4044,6 +4044,14 @@ background-image:
 
 }
 
+.contactPage__private--appt  {
+
+	font-size: var(--text-small);
+	color: var(--color-text-muted-dk);
+	font-style: italic;
+	margin-top: 1.4rem;
+}
+
 
 .contactPage__card{
 	
@@ -4072,7 +4080,7 @@ background-image:
 
 	.contactPage__card-icon{
 		
-		margin-bottom: 1.2rem;
+		margin-bottom: .85rem;
 		
 	}
 
@@ -4102,6 +4110,40 @@ background-image:
 	font-weight: 500;
 }
 
+
+.contactPage__card-heading--appointment{
+	
+	/* font-family: 'Rubik' , serif; */
+	
+		font-family: "Cairo", serif;
+
+		font-weight: 500;
+	}
+	
+	.contactPage__card-heading--appointment--heading{
+		
+		font-size: 1.8rem;
+		margin-bottom: .35rem;
+		
+	}
+	.contactPage__card-heading--appointment--sub-heading{
+		
+		font-size: 1.5rem;
+		margin-bottom: 1rem;
+	
+		font-style: italic;
+}
+	.contactPage__card-heading--appointment--sub-heading p{
+		
+		font-size: 1.6rem;
+	
+}
+
+.contactPage__card-details-appt p {
+    font-size: 1.4rem;
+    color: var(--color-text-muted-lt);
+    font-weight: 400;
+}
 
 
 
@@ -9765,6 +9807,13 @@ h2.homePage--sub-heading.checkout-totals-heading{
    
 }
 
+.contactPage__card {
+   
+    height: 22.6rem;
+    padding: 1.2rem .8rem;
+
+}
+
   
 	
 }
@@ -9874,7 +9923,7 @@ h2.homePage--sub-heading.checkout-totals-heading{
 	}
 	
 	.contactPage__card-details p {
-    font-size:1.2rem;
+    font-size:1.5rem;
   
    
 }
@@ -9903,7 +9952,7 @@ h2.homePage--sub-heading.checkout-totals-heading{
 
 .contactPage__card {
    
-    height: 17rem;
+    height: 18.2rem;
     gap: 1rem;
     padding: 1rem .6rem;
   
@@ -9987,6 +10036,12 @@ h2.homePage--sub-heading.checkout-totals-heading{
 /* /// 600px */
 
 @media (max-width: 37.5em) {
+	
+	.footer-container-desktop {
+
+    gap: 1rem;
+ 
+}
 	
 		.myAccount__main--support .myAccount__main-profile--box {
 		padding: 1.8rem;
@@ -10612,7 +10667,7 @@ p.checkout__price{
     }
 		
  .contactPage__card {
-    height: 14rem;
+    height: 20rem;
     gap: 1rem;
     padding: 1rem .6rem;
 }
@@ -10733,7 +10788,7 @@ padding: 1rem;
 }
 	
 	 .contactPage__card {
-    height: 19rem;
+    height: 23.6rem;
    
 }
 	
